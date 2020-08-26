@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.WorkPeratorMapper" >
+
+    <resultMap id="workPeratorMap" type="com.workattendance.pojo.WorkPerator">
+        <result column="id" property="id"></result>
+        <result column="userId" property="userId"></result>
+        <result column="created" property="created"></result>
+        <result column="updated" property="updated"></result>
+        <result column="createdBy" property="createdBy"></result>
+        <result column="updatedBy" property="updatedBy"></result>
+        <result column="template" property="template"></result>
+        <result column="priority" property="priority"></result>
+        <result column="patrolTask" property="patrolTask"></result>
+        <result column="artificialNumber" property="artificialNumber"></result>
+        <result column="aiNumber" property="aiNumber"></result>
+        <result column="planTime" property="planTime"></result>
+        <result column="status" property="status"></result>
+        <result column="cycle" property="cycle"></result>
+        <result column="equipment" property="equipment"></result>
+        <result column="measuringType" property="measuringType"></result>
+        <result column="unit" property="unit"></result>
+        <result column="parent" property="parent"></result>
+        <result column="projectDepartment" property="projectDepartment"></result>
+    </resultMap>
+    
+    <sql id="sql_param">
+        id,patrolTask
+    </sql>
+
+    <select id="selByUser" resultType="java.util.HashMap" parameterType="java.util.HashMap" resultMap="workPeratorMap">
+      select * from workPerator where parent='0'
+      <if test="department!=null and department!=''">
+          and FIND_IN_SET(#{department},projectDepartment)
+      </if>
+      limit ${page},${pageSize}
+    </select>
+
+    <select id="selById" parameterType="int" resultType="java.lang.String">
+        select * from workPerator where id=#{id}
+        <if test="department!=null and department!=''">
+            and FIND_IN_SET(#{department},projectDepartment)
+        </if>
+    </select>
+
+    <select id="selByUserCount" resultType="java.lang.String" parameterType="java.util.HashMap" >
+      select count(*) from workPerator where parent='0'
+    </select>
+
+    <select id="selWorkperator" parameterType="java.lang.String" resultType="com.workattendance.pojo.WorkPerator" resultMap="workPeratorMap">
+      select * from workPerator where id=#{id}
+    </select>
+
+    <insert id="addWorkPerator" parameterType="com.workattendance.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
+        insert into workPerator(userId,created,createdBy,patrolTask,aiNumber,planTime,status,cycle,priority,parent,equipment,measuringType,unit,projectDepartment) values (
+          #{userId},#{created},#{createdBy},#{patrolTask},#{aiNumber},#{planTime},#{status},#{cycle},#{priority},#{parent},#{equipment},#{measuringType},#{unit},#{projectDepartment}
+        )
+    </insert>
+
+    <update id="updStatus" parameterType="java.util.HashMap" keyProperty="id" useGeneratedKeys="true">
+        update workPerator set updated=#{updated},updatedBy=#{updatedBy},status=#{status} where id=#{id}
+    </update>
+
+    <delete id="delWorkPerator" parameterType="java.util.HashMap">
+        delete from workPerator where id=#{id}
+    </delete>
+
+    <select id="getTemplateChildList" resultType="java.util.HashMap" parameterType="java.util.HashMap" resultMap="workPeratorMap">
+        select * from workPerator where parent=#{parent}
+        <if test="admin==null or admin==''">
+            and status='1'
+        </if>
+        order by priority limit ${page},${pageSize}
+    </select>
+
+    <select id="getTemplateChildListCount" resultType="int" parameterType="java.util.HashMap">
+        select count(*) from workPerator where parent=#{parent}
+        <if test="admin==null or admin==''">
+            and status='1'
+        </if>
+    </select>
+
+    <update id="updWorkperator" parameterType="com.workattendance.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
+        update workPerator
+        <trim prefix="set" suffixOverrides=",">
+          <if test="priority!=null and priority!=''">
+              priority=#{priority},
+          </if>
+          <if test="planTime!=null and planTime!=''">
+              planTime=#{planTime},
+          </if>
+          <if test="cycle!=null and cycle!=''">
+              cycle=#{cycle},
+          </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <update id="updWorkperatorChild" parameterType="java.util.HashMap" keyProperty="id" useGeneratedKeys="true">
+        update workPerator set equipment=#{equipment},measuringType=#{measuringType},unit=#{unit} where id=#{id}
+    </update>
+
+    <select id="selAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" resultMap="workPeratorMap">
+        select * from workPerator
+        where parent='0' and status='1'
+        <if test="userId==null or userId==''">
+            and(
+            <trim suffixOverrides="or">
+                <if test="param1!=null and param1!=''">
+                    FIND_IN_SET(#{param1},projectDepartment) or
+                </if>
+                <if test="param2!=null and param2!=''">
+                    FIND_IN_SET(#{param2},projectDepartment) or
+                </if>
+                <if test="param3!=null and param3!=''">
+                    FIND_IN_SET(#{param3},projectDepartment) or
+                </if>
+                <if test="param4!=null and param4!=''">
+                    FIND_IN_SET(#{param4},projectDepartment) or
+                </if>
+            </trim>
+            )
+        </if>
+    </select>
+
+    <select id="selAllCount" resultType="int" parameterType="java.util.HashMap">
+        select count(*) from workPerator
+        where parent='0' and status='1'  and (
+        <if test="param1!=null and param1!=''">
+            FIND_IN_SET(#{param1},projectDepartment) or
+        </if>
+        <if test="param2!=null and param2!=''">
+            FIND_IN_SET(#{param2},projectDepartment) or
+        </if>
+        <if test="param3!=null and param3!=''">
+            FIND_IN_SET(#{param3},projectDepartment) or
+        </if>
+        <if test="param4!=null and param4!=''">
+            FIND_IN_SET(#{param4},projectDepartment) or
+        </if>
+        1>2)
+    </select>
+
+    <select id="selByParam" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select equipment from workPerator where 1=1 and status='1' and
+        <if test="parent!=null and parent!=''">
+            parent=#{parent}
+        </if>
+        <if test="equipment!=null and equipment!=''">
+            equipment=#{equipment}
+        </if>
+        group by equipment
+    </select>
+
+    <select id="getTemplateMap" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select
+        <include refid="sql_param"/>
+        from workPerator where 1=1
+        <if test="status!=null and status!=''">
+          and status=#{status}
+        </if>
+        <if test="parent!=null and parent!=''">
+          and parent=#{parent}
+        </if>
+
+    </select>
+</mapper>

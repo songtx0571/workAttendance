@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.PostperatorMapper" >
+    <resultMap id="postMap" type="com.workattendance.pojo.PostPerator">
+        <result column="id" property="id"></result>
+        <result column="postPeratorId" property="postPeratorId"></result>
+        <result column="created" property="created"></result>
+        <result column="updated" property="updated"></result>
+        <result column="createdBy" property="createdBy"></result>
+        <result column="updatedBy" property="updatedBy"></result>
+        <result column="inspectionStaTime" property="inspectionStaTime"></result>
+        <result column="inspectionEndTime" property="inspectionEndTime"></result>
+        <result column="inspectionEndTheoryTime" property="inspectionEndTheoryTime"></result>
+        <result column="peratorId" property="peratorId"></result>
+        <result column="department" property="department"></result>
+    </resultMap>
+
+    <sql id="param">
+        id,postPeratorId,created,createdBy,inspectionStaTime,inspectionEndTime,inspectionEndTheoryTime,peratorId
+    </sql>
+
+    <select id="getKPIList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select u.id as id,p.Name as userName,p.frequency as frequency,pdd.point as point
+        from (
+          select u.name,COUNT(*) as frequency
+          from postPerator p
+          left join users u on u.Id=p.postPeratorId where 1=1 and p.inspectionEndTime is not null
+          <if test="depart!=null and depart!=''">
+              and p.department=#{depart}
+          </if>
+          <if test="startTime!=null and startTime!=''">
+              and DATE_FORMAT(p.created,'%Y-%m')=#{startTime}
+          </if>
+          group by p.postPeratorId
+        ) p
+        left join users u on u.name=p.name
+        left join (
+          select pd.createdBy as createdBy,count(pd.postPeratorId) as point
+          from postPerator_data pd where 1=1 and pd.measuringTypeData is not null
+          <if test="startTime!=null and startTime!=''">
+              and DATE_FORMAT(pd.created,'%Y-%m')=#{startTime}
+          </if>
+          GROUP BY pd.createdBy
+        ) pdd on pdd.createdBy=u.Id
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <select id="getFrequencyList" parameterType="java.util.HashMap" resultMap="postMap">
+        select <include refid="param"/>
+        from postPerator
+        where 1=1 and inspectionEndTime is not null
+        <if test="postPeratorId!=null and postPeratorId!=''">
+            and postPeratorId=#{postPeratorId}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and DATE_FORMAT(created,'%Y-%m')=#{startTime}
+        </if>
+        order by inspectionStaTime desc
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+</mapper>

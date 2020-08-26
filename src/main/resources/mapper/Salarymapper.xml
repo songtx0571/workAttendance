@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.Projectmapper" >
+    <select id="getCoe" resultType="com.workattendance.pojo.Salary">
+        SELECT * FROM  salary  WHERE cycle=#{param1};
+    </select>
+    <select id="getCoe2" resultType="com.workattendance.pojo.Salary">
+        SELECT canbuxishu,jiabanxishu FROM  employee;
+    </select>
+    <insert id="updateXishu">
+        insert ignore into salary (cycle,canbuxishu,jiabanxishu) values (#{param1},#{param2},#{param3})
+    </insert>
+    <update id="setCanbu">
+     replace into salary(canbuxishu,cycle) values(#{param1},#{param2})
+    </update>
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.Examinationmapper" >
+    <select id="getExamTimes" resultType="com.workattendance.pojo.Examination">
+        select a.userName,a.cycle,a.week,IFNULL(a.times,0)times,a.questionId from examinationRecord a where a.userName=#{param1} and a.cycle=#{param2} and a.week=#{param3}
+    </select>
+    <select id="getWeek" resultType="com.workattendance.pojo.Examination">
+        select a.week from exampublish a where a.state=2
+    </select>
+    <select id="getWorkingHoursByProPeople" resultType="com.workattendance.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+        SELECT a.id,a.datetime,a.people,a.workingHours FROM maintenanceRecord a  WHERE  a.datetime LIKE CONCAT('%',#{startTime},'%')
+    </select>
+
+    <select id="getWorkingHoursByPeople" resultType="com.workattendance.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+        SELECT a.id,a.datetime,a.people,a.workingHours FROM maintenanceRecord a  WHERE  a.datetime LIKE CONCAT('%',#{startTime},'%') and a.datetime LIKE CONCAT('%',#{startTime},'%')
+    </select>
+
+    <select id="getMaintenanceByDate" resultType="com.workattendance.pojo.MaintenanceRecord">
+        SELECT distinct a.id,a.datetime,a.people,a.workingHours,a.content FROM maintenanceRecord a JOIN ( SELECT * FROM users WHERE projectId LIKE CONCAT ('%',#{param1},'%') )b WHERE FIND_IN_SET(b.Name,a.people) AND a.datetime LIKE CONCAT(#{param2},'%')
+    </select>
+
+    <select id="getSalary1" resultType="com.workattendance.pojo.Salary">
+        SELECT l.*,j.canbuxishu,j.jiabanxishu FROM (SELECT b.id,a.cycle,b.userName,b.name,d.departmentName department,b.laowupaiqian,a.jiaban,a.zhiban,a.kaoqin,a.sum score1,c.score score2,b.basicwages,b.meritpay
+		,f.phoneAllowance,f.yanglao,f.shiye,f.yiliao,f.gongjijin,f.zhuanxiang,f.qitakouchu
+		FROM employee b
+		LEFT JOIN (SELECT employeeId,cycle,jiaban,zhiban,kaoqin,`sum` FROM behavior WHERE cycle = #{param1}) a ON a.employeeId = b.id
+		LEFT JOIN (SELECT employeeId,SUM(score) score FROM performance WHERE cycle = #{param1} GROUP BY employeeId ) c ON c.employeeId = b.id
+		LEFT JOIN (SELECT UserName,phoneAllowance,yanglao,shiye,yiliao,gongjijin,zhuanxiang,qitakouchu FROM salary2 WHERE cycle = #{param1})f ON f.UserName = b.UserName
+		LEFT JOIN department d ON b.department = d.id WHERE d.type != 0
+		ORDER BY b.department,laowupaiqian,userName)l
+		left JOIN salary j on l.cycle=j.cycle
+    </select>
+
+    <select id="getSalary2" resultType="com.workattendance.pojo.Salary">
+        SELECT l.*,j.canbuxishu,j.jiabanxishu FROM
+          (SELECT b.id,a.cycle,b.userName,b.name,d.departmentName department,b.laowupaiqian,a.jiaban,a.zhiban,a.kaoqin,a.sum score1,c.score score2,b.basicwages,b.meritpay,a.cycleDate
+		    ,f.phoneAllowance,f.yanglao,f.shiye,f.yiliao,f.gongjijin,f.zhuanxiang,f.qitakouchu
+		  FROM employee b
+		  LEFT JOIN ( SELECT h.* FROM (SELECT employeeId,cycle,jiaban,zhiban,STR_TO_DATE(cycle2,'%Y-%m-%d') AS cycleDate,kaoqin,`sum` FROM behavior ) h WHERE YEAR(h.cycleDate) = #{param1} AND MONTH(h.cycleDate) = #{param2} ) a ON a.employeeId = b.id
+		  LEFT JOIN ( SELECT i.* FROM (SELECT employeeId AS employeeId,STR_TO_DATE(cycle2,'%Y-%m-%d') AS cycleDate,SUM(score) score FROM performance ) i WHERE YEAR(i.cycleDate) = #{param1} AND MONTH(i.cycleDate) = #{param2} GROUP BY i.employeeId ) c ON c.employeeId = b.id
+		  LEFT JOIN (SELECT UserName,phoneAllowance,yanglao,shiye,yiliao,gongjijin,zhuanxiang,qitakouchu FROM salary2 WHERE cycle = #{param3})f ON f.UserName = b.UserName
+		  LEFT JOIN department d ON b.department = d.id WHERE d.type != 0
+		  ORDER BY b.department,laowupaiqian,userName)l
+		left JOIN salary j on l.cycle=j.cycle
+    </select>
+    <select id="getSalary1s" resultType="com.workattendance.pojo.Salary">
+        SELECT l.*,j.canbuxishu,j.jiabanxishu FROM (SELECT b.id,a.cycle,b.userName,b.name,d.departmentName department,b.laowupaiqian,a.jiaban,a.zhiban,a.kaoqin,a.sum score1,c.score score2,b.basicwages,b.meritpay
+		,f.phoneAllowance,f.yanglao,f.shiye,f.yiliao,f.gongjijin,f.zhuanxiang,f.qitakouchu
+		FROM employee b
+		LEFT JOIN (SELECT employeeId,cycle,jiaban,zhiban,kaoqin,`sum` FROM behavior WHERE cycle = #{param1}) a ON a.employeeId = b.id
+		LEFT JOIN (SELECT employeeId,SUM(score) score FROM performance WHERE cycle = #{param1} GROUP BY employeeId ) c ON c.employeeId = b.id
+		LEFT JOIN (SELECT UserName,phoneAllowance,yanglao,shiye,yiliao,gongjijin,zhuanxiang,qitakouchu FROM salary2 WHERE cycle = #{param1})f ON f.UserName = b.UserName
+		LEFT JOIN department d ON b.department = d.id WHERE d.type != 0 and b.manager=#{param2} or b.UserName=#{param2}
+		ORDER BY b.department,laowupaiqian,userName)l  left JOIN salary j on l.cycle=j.cycle
+    </select>
+
+    <select id="getSalary2s" resultType="com.workattendance.pojo.Salary">
+        SELECT l.*,j.canbuxishu,j.jiabanxishu FROM
+        (SELECT b.id,a.cycle,b.userName,b.name,d.departmentName department,b.laowupaiqian,a.jiaban,a.zhiban,a.kaoqin,a.sum score1,c.score score2,b.basicwages,b.meritpay,a.cycleDate
+		  ,f.phoneAllowance,f.yanglao,f.shiye,f.yiliao,f.gongjijin,f.zhuanxiang,f.qitakouchu
+		  FROM employee b
+		  LEFT JOIN ( SELECT h.* FROM (SELECT employeeId,cycle,jiaban,zhiban,STR_TO_DATE(cycle2,'%Y-%m-%d') AS cycleDate,kaoqin,`sum` FROM behavior ) h WHERE YEAR(h.cycleDate) = #{param1} AND MONTH(h.cycleDate) = #{param2} ) a ON a.employeeId = b.id
+		  LEFT JOIN ( SELECT i.* FROM (SELECT employeeId AS employeeId,STR_TO_DATE(cycle2,'%Y-%m-%d') AS cycleDate,SUM(score) score FROM performance ) i WHERE YEAR(i.cycleDate) = #{param1} AND MONTH(i.cycleDate) = #{param2} GROUP BY i.employeeId ) c ON c.employeeId = b.id
+		  LEFT JOIN (SELECT UserName,phoneAllowance,yanglao,shiye,yiliao,gongjijin,zhuanxiang,qitakouchu FROM salary2 WHERE cycle = #{param4})f ON f.UserName = b.UserName
+		  LEFT JOIN department d ON b.department = d.id WHERE d.type != 0 and b.manager=#{param3} or b.UserName=#{param3}
+		  ORDER BY b.department,laowupaiqian,userName)l
+		left JOIN salary j on l.cycle=j.cycle
+    </select>
+
+    <select id="getName" resultType="com.workattendance.pojo.Users">
+        SELECT * FROM employee b JOIN
+          (
+              SELECT a.UserName,a.Name,a.projectId FROM users a WHERE a.UserName=#{param1}
+          ) c
+        ON INSTR(c.projectId,b.Department)
+    </select>
+    <select id="findExamHis" resultType="com.workattendance.pojo.Examination">
+     SELECT b.userName,b.cycle,b.week,b.times,d.Name FROM ( select distinct a.userName,a.cycle,a.week,a.times from examinationRecord a where a.userName=#{param1} ORDER BY a.cycle DESC ,a.week DESC,a.times DESC )b JOIN users d ON b.userName=d.userName
+    </select>
+    <select id="showLaborAll" resultType="com.workattendance.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+     SELECT * FROM (
+        SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+		FROM maintenanceRecord a
+      ) b
+      WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+      OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+      order by b.datetime desc
+      <if test="page!=null and pageSize!=null">
+          limit ${page},${pageSize}
+      </if>
+    </select>
+    <select id="showLaborByDay" resultType="com.workattendance.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+     select * from (
+        SELECT * FROM (
+          SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+		  FROM maintenanceRecord a
+	    ) b
+	    WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+	    OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+	    order by b.datetime desc
+	  )e
+	  where e.datetime like concat (#{DayDateT},'%')
+      <if test="page!=null and pageSize!=null">
+          limit ${page},${pageSize}
+      </if>
+    </select>
+    <select id="showLaborByMonth" resultType="com.workattendance.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+     select * from (
+        SELECT * FROM (
+          SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+		  FROM maintenanceRecord a
+		) b
+		WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+		OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+		order by b.datetime desc
+	  )e
+	  where e.datetime like concat (#{MonthDate},'%')
+      <if test="page!=null and pageSize!=null">
+         limit ${page},${pageSize}
+      </if>
+    </select>
+    <insert id="insertExamHis">
+        insert ignore into examinationRecord (userName,cycle,week,times,questionId) values (#{examination.userName},#{examination.cycle},#{examination.week},#{examination.times},#{examination.questionId})
+    </insert>
+</mapper>

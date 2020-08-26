@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.MenuMapper" >
+
+    <resultMap id="menuMap" type="com.workattendance.pojo.Menu">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="type" property="type"></result>
+        <result column="url" property="url"></result>
+        <result column="parent" property="parent"></result>
+        <result column="active" property="active"></result>
+        <result column="created" property="created"></result>
+        <result column="createdBy" property="createdBy"></result>
+    </resultMap>
+
+    <select id="getMenuTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" resultMap="menuMap">
+      select * from menu where parent=#{parentId} and active='true' and template='2'
+    </select>
+
+
+</mapper>

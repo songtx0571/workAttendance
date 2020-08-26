@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.Maintenancemapper">
+
+	<select id="getMaintenanceByProject" resultType="com.workattendance.pojo.Maintenance">
+		SELECT a.id,a.datetime,project_id projectId,leader,IFNULL(b.num,0) num,IFNULL(attendance,0) attendance,IFNULL(a.totalTime,0) totalTime,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.leader)) FROM users c WHERE FIND_IN_SET(c.UserName,a.leader) ) AS leaderName
+		FROM maintenance a 
+		LEFT JOIN (SELECT maintenanceId,COUNT(id) num FROM maintenanceRecord WHERE `type` = 1 GROUP BY maintenanceId ) b ON maintenanceId = a.id 
+		WHERE a.datetime = #{datetime} AND project_id = #{project}
+ 	</select>
+
+	<select id="getMaintenanceById" resultType="com.workattendance.pojo.Maintenance">
+		SELECT a.id,a.datetime,project_id projectId,leader,COUNT(b.id) num,IFNULL(attendance,0) attendance,IFNULL(a.totalTime,0) totalTime,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.leader)) FROM users c WHERE FIND_IN_SET(c.UserName,a.leader) ) AS leaderName
+		FROM maintenance a 
+ 		JOIN maintenanceRecord b ON maintenanceId = a.id 
+ 		WHERE a.id=#{id} AND b.type = 1 GROUP BY maintenanceId 
+	</select>
+
+	<select id="getMaintenances" resultType="com.workattendance.pojo.Maintenance">
+		SELECT
+		a.id,a.datetime,project_id projectId,leader,COUNT(b.id)	num,IFNULL(attendance,0) attendance,IFNULL(a.totalTime,0) totalTime,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.leader)) FROM users c WHERE FIND_IN_SET(c.UserName,a.leader) ) AS leaderName
+		FROM maintenance a JOIN maintenanceRecord b on maintenanceId = a.id
+		where project_id = #{project} AND b.type = 1 GROUP BY maintenanceId
+	</select>
+
+
+	<select id='getMaintenanceRecords' resultType="com.workattendance.pojo.MaintenanceRecord">
+		SELECT a.id	id,b.id maintenanceId,a.type,a.content ,IFNULL(a.datetime,0) `datetime`,IFNULL(a.people,0) people,
+		IFNULL(a.workingHours,0) workingHours,IFNULL(a.defectNumber,0) defectNumber,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+		FROM maintenanceRecord a
+		LEFT JOIN maintenance b ON b.id = a.maintenanceId
+		WHERE b.datetime = #{datetime} AND b.project_id = #{project}
+	</select>
+	
+	<select id='getMaintenanceRecord' resultType="com.workattendance.pojo.MaintenanceRecord">
+		SELECT id,maintenanceId,type,content,IFNULL(datetime,0) datetime,
+		IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+		FROM maintenanceRecord a  
+		WHERE id = #{id}
+	</select>
+	
+	<select id='getMaintenanceRecordsByMaintenanceId' resultType="com.workattendance.pojo.MaintenanceRecord">
+		SELECT id ,maintenanceId,type,content,IFNULL(datetime,0) datetime,IFNULL(people,0) people,
+		IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName 
+		FROM maintenanceRecord a
+		WHERE maintenanceId = #{maintenanceId}
+	</select>
+	
+	<select id='getMaintenanceRecordsByMaintenanceId1' resultType="com.workattendance.pojo.MaintenanceRecord">
+		SELECT id ,maintenanceId,type,content,IFNULL(datetime,0) datetime,IFNULL(people,0) people,
+		IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,
+		(SELECT GROUP_CONCAT(c.name ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName 
+		FROM maintenanceRecord a
+		WHERE type = 1 AND maintenanceId = #{maintenanceId}
+	</select>
+	
+	<select id='getAttendance' resultType="java.lang.String">
+		SELECT GROUP_CONCAT(people) FROM  maintenanceRecord WHERE maintenanceId = #{maintenanceId} AND TYPE = 1;
+	</select>
+	
+	<update id="updateMaintenanceAttendance">
+		UPDATE maintenance SET attendance = #{attendance} WHERE id = #{id}
+	</update>
+	
+	<update id="updateMaintenanceTotalTime">
+		UPDATE maintenance SET totalTime = #{totalTime} WHERE id = #{id}
+	</update>
+	<update id="updateMaintenance" parameterType="com.workattendance.pojo.Maintenance">
+		UPDATE maintenance SET leader = #{maintenance.leader}, num = #{maintenance.num},attendance = ${maintenance.attendance} 
+		WHERE id = #{maintenance.id}
+	</update>
+	
+	<insert id="insertMaintenance"  parameterType="com.workattendance.pojo.Maintenance">
+		INSERT ignore INTO maintenance(datetime,project_id,leader,num,attendance)
+		VALUES(#{maintenance.datetime},#{maintenance.projectId},#{maintenance.leader},#{maintenance.num},#{maintenance.attendance})
+			
+	</insert>
+	
+	
+	
+	<insert id="insertMaintenanceRecord" parameterType="com.workattendance.pojo.MaintenanceRecord">
+		INSERT ignore INTO maintenanceRecord(maintenanceId,type,content)
+		VALUES(#{maintenanceRecord.maintenanceId},#{maintenanceRecord.type},#{maintenanceRecord.content})
+	</insert>
+	
+	<insert id="insertMaintenanceRecordALL" parameterType="com.workattendance.pojo.MaintenanceRecord">
+		INSERT ignore INTO maintenanceRecord(maintenanceId,type,content,datetime,people,workingHours,defectNumber)
+		VALUES(#{maintenanceRecord.maintenanceId},#{maintenanceRecord.type},#{maintenanceRecord.content},
+		#{maintenanceRecord.datetime},#{maintenanceRecord.people},#{maintenanceRecord.workingHours},#{maintenanceRecord.defectNumber})
+	</insert>
+	
+	<update  id="updateMaintenanceRecord" parameterType="com.workattendance.pojo.MaintenanceRecord">
+		UPDATE maintenanceRecord SET content = #{maintenanceRecord.content} WHERE id = #{maintenanceRecord.id}
+	</update>
+	<update  id="updateMaintenanceRecordALL" parameterType="com.workattendance.pojo.MaintenanceRecord">
+		UPDATE maintenanceRecord SET content = #{maintenanceRecord.content},people =#{maintenanceRecord.people},
+		defectNumber = #{maintenanceRecord.defectNumber}
+		WHERE id = #{maintenanceRecord.id}
+	</update>
+	<update  id="updateMaintenanceRecordALL1" parameterType="com.workattendance.pojo.MaintenanceRecord">
+		UPDATE maintenanceRecord SET workingHours = #{maintenanceRecord.workingHours}
+		WHERE id = #{maintenanceRecord.id}
+	</update>
+	
+	<delete id="delMaintenance">
+		delete from maintenance where id = #{id}
+	</delete>
+	<delete id="delMaintenanceRecord">
+		delete from maintenanceRecord where id = #{id}
+	</delete>
+	<delete id="delMaintenanceRecordByMaintenanceId">
+		delete from maintenanceRecord where maintenanceId = = #{maintenanceId}
+	</delete>
+	
+	<insert id='insertMaintenanceByLeader'  parameterType="com.workattendance.pojo.MaintenanceRecord">
+		INSERT ignore INTO maintenance(datetime,project_id,leader)
+		VALUES(#{maintenance.datetime},#{maintenance.projectId},#{maintenance.leader})
+	</insert>
+	<update id='addLeader'  parameterType="com.workattendance.pojo.MaintenanceRecord">
+		UPDATE maintenance SET leader = #{maintenance.leader} WHERE id = #{maintenance.id}
+	</update>
+	
+</mapper>

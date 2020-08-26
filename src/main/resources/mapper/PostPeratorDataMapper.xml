@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.PostperatorDataMapper" >
+    <resultMap id="postDataMap" type="com.workattendance.pojo.PostPeratorData">
+        <result column="id" property="id"></result>
+        <result column="measuringType" property="measuringType"></result>
+        <result column="measuringTypeData" property="measuringTypeData"></result>
+        <result column="equipment" property="equipment"></result>
+        <result column="created" property="created"></result>
+        <result column="createdBy" property="createdBy"></result>
+        <result column="postPeratorId" property="postPeratorId"></result>
+        <result column="ind" property="ind"></result>
+        <result column="unit" property="unit"></result>
+    </resultMap>
+
+    <sql id="param">
+        id,measuringType,measuringTypeData,equipment,created,postPeratorId,unit
+    </sql>
+
+    <select id="selByPostId" parameterType="com.workattendance.pojo.PostPeratorData" resultType="java.util.HashMap" resultMap="postDataMap">
+        select * from postPerator_data where postPeratorld=#{postPeratorld}
+    </select>
+
+    <insert id="crePostChild" parameterType="com.workattendance.pojo.PostPeratorData" keyProperty="id" useGeneratedKeys="true">
+        insert into postPerator_data(measuringType,postPeratorId,createdBy,created,measuringTypeData,equipment,ind,unit) values(
+            #{measuringType},#{postPeratorId},#{createdBy},#{created},#{measuringTypeData},#{equipment},#{ind},#{unit}
+        )
+    </insert>
+
+    <select id="selByEquipment" parameterType="java.util.Map" resultType="com.workattendance.pojo.PostPeratorData" resultMap="postDataMap">
+        select * from postPerator_data where 1=1
+        <if test="postPeratorId!=null and postPeratorId!=''">
+            and postPeratorId=#{postPeratorId}
+        </if>
+        <if test="equipment!=null and equipment!=''">
+            and equipment=#{equipment}
+        </if>
+    </select>
+
+    <update id="updPostData" parameterType="java.util.Map" keyProperty="id" useGeneratedKeys="true">
+        update postPerator_data set measuringTypeData=#{measuringTypeData} where id=#{id}
+    </update>
+
+    <select id="selTypeByName" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select DISTINCT pd.measuringType from postPerator_data pd
+        left join postPerator p on p.id=pd.postPeratorId
+        where pd.measuringTypeData is not null
+        <if test="projectDepartment!=null and projectDepartment!=''">
+            and p.department=#{projectDepartment}
+        </if>
+        <if test="equipment!=null and equipment!=''">
+            and pd.equipment=#{equipment}
+        </if>
+        ORDER BY measuringType
+    </select>
+
+    <select id="selByName" parameterType="java.util.HashMap" resultMap="postDataMap" resultType="com.workattendance.pojo.PostPeratorData">
+        select pd.* from postPerator_data pd
+        left join postPerator p on p.id=pd.postPeratorId
+        where pd.measuringTypeData is not null
+        <if test="projectDepartment!=null and projectDepartment!=''">
+            and p.department=#{projectDepartment}
+        </if>
+        <if test="equipment!=null and equipment!=''">
+            and equipment=#{equipment}
+        </if>
+        <if test="measuringType!=null and measuringType!=''">
+            and measuringType=#{measuringType}
+        </if>
+    </select>
+
+    <select id="selPostPerDataById" parameterType="java.lang.String" resultType="java.util.HashMap">
+        select * from postPerator_data where postPeratorId=#{postPeratorld}
+    </select>
+
+    <select id="getPointList" parameterType="java.util.HashMap" resultMap="postDataMap">
+        select
+        <include refid="param"/>
+        from postPerator_data
+        where 1=1 and measuringTypeData is not null
+        <if test="createdBy!=null and createdBy!=''">
+            and createdBy=#{createdBy}
+        </if>
+        <if test="startTime!=null and startTime!='' and endTime!=null and endTime!=''">
+            and DATE_FORMAT(created,'%Y-%m')=#{startTime}
+        </if>
+        order by created desc
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+</mapper>
