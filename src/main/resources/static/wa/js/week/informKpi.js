@@ -1,3 +1,5 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     date();
 });
@@ -49,7 +51,7 @@ function showKpi(){
     var startTime= $('#startTime').combobox('getText');
 
     $('#KPITable').datagrid({
-        url: '/wa/kpi/getInformKPIList',
+        url: path + '/wa/kpi/getInformKPIList',
         method: 'get',
         title: 'kpi数据列表',
         width: 'auto',
@@ -64,7 +66,7 @@ function showKpi(){
         queryParams: {'startTime':startTime}, //往后台传参数用的。
         columns: [[
             {field: 'Id', title: '编号', align: 'center', hidden:true,width: 120},
-            {field: 'Name', title: '姓名', align: 'center',width: 750},
+            {field: 'userName', title: '姓名', align: 'center',width: 750},
             {field: 'createdCount', title: '创建数', align: 'center',width: 750,
                 formatter: function (value, row, index) {
                     var html='<a href="javascript:toCreatedCount('+row.Id+')" style="text-decoration: none">'+row.createdCount+'</a>';

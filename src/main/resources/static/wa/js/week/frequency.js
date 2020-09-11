@@ -1,8 +1,10 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     var userId=$("#userId").val();
     var startTime= $('#startTime').val();
     $('#frequencyTable').datagrid({
-        url: '/wa/kpi/getFrequencyList',
+        url: path + '/wa/kpi/getFrequencyList',
         method: 'get',
         title: '巡检次数数据展示',
         //width: 'auto',

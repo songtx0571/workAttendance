@@ -5,8 +5,6 @@ import com.workattendance.pojo.Menu;
 import com.workattendance.pojo.Users;
 import com.workattendance.service.MenuService;
 import com.workattendance.service.UserService;
-import eu.bitwalker.useragentutils.OperatingSystem;
-import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +45,7 @@ public class UserController {
 
     @RequestMapping(value = "/loginPage", method = {RequestMethod.POST, RequestMethod.GET})
     public String loginadmin(HttpServletRequest request, HttpSession session) {
-        String UserName = request.getParameter("UserName");
+       /* String UserName = request.getParameter("UserName");
         String Password = request.getParameter("Password");
         Users users = userService.findUser(UserName, Password);
         if (users!=null) {
@@ -58,7 +56,8 @@ public class UserController {
             return "home";
         } else {
             return "redirect:/login";
-        }
+        }*/
+        return "home";
     }
 
     @RequestMapping("/getMenu")

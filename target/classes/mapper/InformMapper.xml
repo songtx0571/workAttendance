@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.InformMapper" >
+    <resultMap id="informMap" type="com.workattendance.pojo.Inform">
+        <result column="id" property="id"></result>
+        <result column="Title" property="Title"></result>
+        <result column="Content" property="Content"></result>
+        <result column="Time" property="Time"></result>
+        <result column="Name" property="Name"></result>
+        <result column="filedir" property="filedir"></result>
+        <result column="type1" property="type1"></result>
+        <result column="type2" property="type2"></result>
+        <result column="type" property="type"></result>
+    </resultMap>
+
+    <select id="getInformKPIList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select u.Id,u.Name,f.createdCount,uf.userName,uf.selCount from (
+          select count(*) as createdCount,f.Name from inform f
+          join users u on u.`Name`=f.Name
+          where 1=1
+          <if test="startTime!=null and startTime!=''">
+            and DATE_FORMAT(f.Time,'%Y-%m')=#{startTime}
+          </if>
+          group by f.Name
+        ) f
+        join users u on u.`Name`=f.`Name`
+        right join (
+          select ui.userName,count(*) as selCount from user_inform ui
+          GROUP BY ui.userName
+        ) uf on uf.userName=u.UserName
+        order by uf.selCount desc
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <select id="getSelList" parameterType="java.util.HashMap" resultType="com.workattendance.pojo.Inform">
+        select i.* from user_inform ui
+        left join inform i on ui.informId=i.id
+        where ui.userName=#{createdBy}
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <select id="getCreatedList" parameterType="java.util.HashMap" resultType="com.workattendance.pojo.Inform">
+        select i.* from inform i
+        where i.Name=#{createdBy}
+        <if test="startTime!=null and startTime!=''">
+            and DATE_FORMAT(i.Time,'%Y-%m')=#{startTime}
+        </if>
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+</mapper>

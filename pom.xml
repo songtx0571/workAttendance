@@ -130,7 +130,7 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.0</version>
         </dependency>
-        <!--解析浏览器-->
+        <!--&lt;!&ndash;解析浏览器&ndash;&gt;
         <dependency>
             <groupId>cz.mallat.uasparser</groupId>
             <artifactId>uasparser</artifactId>
@@ -140,7 +140,7 @@
             <groupId>eu.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
             <version>1.20</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <repositories>

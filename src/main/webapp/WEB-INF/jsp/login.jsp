@@ -143,14 +143,14 @@
             <div id="secondPage" class="show">
                 <form action="loginPage" name="register2" method="post"
                       id="loginlist">
-                    账号:<input type="text" name="UserName" placeholder="请输入账号"
-                              id="UserName" class="set"  onfocus="this.placeholder=''"
+                    账号:<input type="text" name="UserNumber" placeholder="请输入账号"
+                              id="UserNumber" class="set"  onfocus="this.placeholder=''"
                               onblur="this.placeholder='请输入账号'"><br>
                     密码:<input
                         type="password" name="Password" placeholder="请输入密码" id="Password"
                         class="set"  onfocus="this.placeholder=''"
                         onblur="this.placeholder='请输入密码'"><br>
-                    <input type="submit" value="登录" onClick="javascript:loginPage();" class="button" style="text-align: center;" id="button02">
+                    <input type="submit" value="登录" onClick="loginPage();" class="button" style="text-align: center;" id="button02">
                 </form>
             </div>
         </div>

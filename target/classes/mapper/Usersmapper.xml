@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.workattendance.mapper.UsersMapper" >
+
+    <resultMap id="userMap" type="com.workattendance.pojo.Users">
+        <result column="Id" property="Id"></result>
+        <result column="Name" property="Name"></result>
+        <result column="UserName" property="UserName"></result>
+        <result column="Password" property="Password"></result>
+        <result column="Permissions" property="Permissions"></result>
+        <result column="projectId" property="projectId"></result>
+        <result column="roleId" property="roleId"></result>
+        <result column="Sex" property="Sex"></result>
+        <result column="Phone" property="Phone"></result>
+        <result column="EMail" property="EMail"></result>
+    </resultMap>
+
+    <select id="findUser" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String" resultMap="userMap">
+        select * from users where UserName=#{param1} and Password=#{param2}
+    </select>
+
+    <select id="findById" resultMap="userMap" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String">
+        select * from users where id=#{id}
+    </select>
+
+    <select id="getProjectIdS" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String">
+        select a.Name,a.projectId from users a where UPPER(UserName)=UPPER(#{param1})
+    </select>
+
+    <select id="getNameByProjectId" resultType="com.workattendance.pojo.Users" parameterType="java.lang.Integer">
+        SELECT * FROM
+        (
+        SELECT u.Id,a.Name,a.UserName,a.Department AS projectId FROM employee a
+        left JOIN users u on u.UserName=a.UserName
+        )b
+        <if test="projectId!=null and projectId!=''">
+            WHERE b.projectId=#{projectId}
+        </if>
+    </select>
+
+    <select id="findByUserName" parameterType="java.lang.String" resultType="com.workattendance.pojo.Users">
+        select * from users where UserName=#{userName}
+    </select>
+</mapper>
