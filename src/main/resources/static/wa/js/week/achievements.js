@@ -1,6 +1,6 @@
 var index = 0;
 var index1 = 0;
-// var path = "http://192.168.1.26:8081/";
+// var path = "http://192.168.1.26:8081";
 var path = "";
 $(function(){
     //显示考核日期
@@ -58,7 +58,7 @@ function showAchievementsList(){
         table.render({
             elem: '#demo'
             ,height: 500
-            ,url: path + 'achievements/getAssessment?cycle='+  cycle //数据接口
+            ,url: path + '/achievements/getAssessment?cycle='+  cycle //数据接口
             ,page: true //开启分页
             ,limit: 10
             ,limits: [10, 20, 30]
@@ -156,7 +156,7 @@ function showSetSign() {
     var cycle = $("#cycleDataHidden").val();
     var id = $("#employeeIdHidden").val();
     $.ajax({
-        url: path + 'achievements/findPeAcc',//请求地址
+        url: path + '/achievements/findPeAcc',//请求地址
         datatype: "json",//数据格式
         type: "get",//请求方式
         data: {"employeeId": id, "cycle": cycle},
@@ -220,7 +220,7 @@ function showAchievement() {
     var id = $("#employeeIdHidden").val();
     $.ajax({
         type: "GET",
-        url: path + 'achievements/findPeAcc?cycle=' + cycle + '&employeeId=' + id,
+        url: path + '/achievements/findPeAcc?cycle=' + cycle + '&employeeId=' + id,
         dataType: "json",
         success: function(data){
             var tbody = document.getElementById("achievementTbody");
@@ -259,7 +259,7 @@ function showAchievement() {
 //删除工作业绩
 function delectAchievement(id) {
     $.ajax({
-        url: path + 'achievements/deletePeAcc',//请求地址
+        url: path + '/achievements/deletePeAcc',//请求地址
         dataType: "json",//数据格式
         type: "post",//请求方式
         data: {"id": id},
@@ -278,7 +278,7 @@ function updAchievement(id) {
     var score =$(".score"+id).val();//考核分
     var weights =$(".weights"+id).val();//权重
     $.ajax({
-        url: path + 'achievements/updatePeAcc',//请求地址
+        url: path + '/achievements/updatePeAcc',//请求地址
         dataType: "json",//数据格式
         type: "post",//请求方式
         data: {"id": id, "workTasks": workTasks, "access": access, "detail": detail, "score": score, "weights": weights},
@@ -321,7 +321,7 @@ function addAteAchievement() {
     performance.employeeId = $("#employeeIdHidden1").val();// 员工id
     performance.cycle = $("#addCycleDataHidden").val();// 考核日期
     $.ajax({
-        url: path + 'achievements/insertPeAcc',//请求地址
+        url: path + '/achievements/insertPeAcc',//请求地址
         dataType: "json",//数据格式
         type: "post",//请求方式
         data: JSON.stringify(performance),
@@ -355,7 +355,7 @@ function showBehavior() {
     var cycle = $("#cycleDataHidden2").val();
     $.ajax({
         type:"post",
-        url: path + 'achievements/findBehavior',
+        url: path + '/achievements/findBehavior',
         data:{'employeeId': id, "cycle": cycle},
         dataType:"json",
         success:function(data){
@@ -415,7 +415,7 @@ function showBehavior() {
             //计算数值
             calculateAttendance();
             $.ajax({
-                url:  path + "achievements/getAssessmentByEmployeeId",//请求地址
+                url:  path + "/achievements/getAssessmentByEmployeeId",//请求地址
                 datatype: "json",//数据格式
                 data: {"cycle":cycle,employeeId:id},
                 type: "post",//请求方式
@@ -537,7 +537,7 @@ function updBehavior() {
     performance.employeeId = employeeId;
     performance.sum = sum;
     $.ajax({
-        url: path + 'achievements/updateBehavior',//请求地址
+        url: path + '/achievements/updateBehavior',//请求地址
         dataType: "json",//数据格式
         type: "post",//请求方式
         data: JSON.stringify(performance),

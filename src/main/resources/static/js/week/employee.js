@@ -1,5 +1,5 @@
 var index = 0;
-// var path = "http://192.168.1.26:8081/wa/";
+// var path = "http://192.168.1.26:8081/wa";
 var path = "";
 $(function(){
     // showCompany();
@@ -12,7 +12,7 @@ function showEmployeeList(){
         table.render({
             elem: '#demo'
             ,height: 500
-            ,url: path + 'employee/getEmployeeList'  //数据接口
+            ,url: path + '/employee/getEmployeeList'  //数据接口
             ,page: true //开启分页
             ,limit: 10
             ,limits: [10, 20, 30]
@@ -52,7 +52,7 @@ function showEmployeeList(){
 function shouInfo() {
     $.ajax({
         type: "GET",
-        url: path + "employee/getEmployee",
+        url: path + "/employee/getEmployee",
         data: {"id": $("#userIdHidden").val()},
         dataType: "json",
         success: function(data){
@@ -88,21 +88,12 @@ function shouInfo() {
 /*根据姓名搜索员工信息*/
 function searchBtn() {
     var searchName = $("#searchName").val();
-    /*$.ajax({
-    type: "GET",
-    url: path + "employee/searchEmployee",
-    data: {"name": searchName, "page": 1, "limit": 10},
-    dataType: "json",
-    success: function(data){
-            console.log(data);
-        }
-    });*/
     layui.use('table', function(){
         var table = layui.table;
         table.render({
             elem: '#demo'
             ,height: 500
-            ,url: path + "employee/searchEmployee?search="+ searchName //数据接口
+            ,url: path + "/employee/searchEmployee?search="+ searchName //数据接口
             ,page: true //开启分页
             ,limit: 10
             ,limits: [10, 20, 30]
@@ -171,7 +162,7 @@ function updUserInfo() {
     var q=JSON.stringify(employee);
     $.ajax({
         type: "post",
-        url: path + "employee/updateEmployee",
+        url: path + "/employee/updateEmployee",
         data: JSON.stringify(employee),
         contentType: "application/json; charset=utf-8",
         dataType: "json",

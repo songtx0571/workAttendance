@@ -1,5 +1,5 @@
 var index = 0;
-// var path = "http://192.168.1.26:8081/";
+// var path = "http://192.168.1.26:8081";
 var path = "";
 $(function () {
     getConfigureList();
@@ -17,7 +17,7 @@ function getConfigureList() {
         table.render({
             elem: '#demo'
             , height: 500
-            , url: path + 'leave/getConfigureList' //数据接口
+            , url: path + '/leave/getConfigureList' //数据接口
             , page: true //开启分页
             , limit: 10
             , limits: [10, 20, 30]
@@ -90,7 +90,7 @@ function getConfigureList() {
                     return;
                 }
                 $.ajax({
-                    url: path + "leave/updateConfigure",
+                    url: path + "/leave/updateConfigure",
                     dataType: "json",//数据格式
                     type: "post",//请求方式
                     data: {name:name, unit: unit, data: data1, status: status, id : id},
@@ -137,7 +137,7 @@ function addLeaveConfigure() {
         return;
     }else{
         $.ajax({
-            url: path + "leave/addConfigure",
+            url: path + "/leave/addConfigure",
             dataType: "json",//数据格式
             type: "post",//请求方式
             data: JSON.stringify(leave),
