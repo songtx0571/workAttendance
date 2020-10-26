@@ -144,14 +144,12 @@
                     <button type="button" class="layui-btn layui-btn-fluid" onclick="showAddLeaveConfigure()">添加配置项</button>
                 </div>
                 <div class="addLeaveConfigureHtml">
-
+                    <form class="layui-form" action="">
                         <table class="updTable" cellspacing="0">
                             <tr style="background: #f2f2f2">
                                 <td>名字</td>
                                 <td>数值</td>
                                 <td>单位</td>
-                                <td>备注</td>
-                                <td>限额</td>
                                 <td>操作</td>
                             </tr>
                             <tr>
@@ -177,17 +175,12 @@
                                         </div>
                                     </form>
                                 </td>
-                                <td class="updTableTd">
-                                    <input type="text" id="addRemark" placeholder="请输入备注">
-                                </td>
-                                <td class="updTableTd">
-                                    <input type="text" id="addQuota" oninput = "value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')" placeholder="请输入限额">
-                                </td>
                                 <td>
                                     <button type="button" class="layui-btn layui-btn-sm" onclick="addLeaveConfigure()">确定</button>
                                 </td>
                             </tr>
                         </table>
+                    </form>
                 </div>
             </div>
         </div>

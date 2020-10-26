@@ -1,4 +1,3 @@
-// var path = "http://192.168.1.26:8081/";
 var path = "";
 $(function(){
     $('#startTime').datebox({
@@ -36,8 +35,8 @@ $(function(){
         }
     });
     var p = $('#startTime').datebox('panel'), // 日期选择对象
-    tds = false, // 日期选择对象中月份
-    span = p.find('span.calendar-text'); // 显示月份层的触发控件
+        tds = false, // 日期选择对象中月份
+        span = p.find('span.calendar-text'); // 显示月份层的触发控件
 });
 
 /**

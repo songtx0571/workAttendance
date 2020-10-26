@@ -3,11 +3,11 @@ package com.howei.controller;
 import com.alibaba.fastjson.JSON;
 import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
+import com.howei.service.EmployeeService;
+import com.howei.service.PerformanceService;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import com.howei.util.Type;
-import com.howei.service.EmployeeService;
-import com.howei.service.PerformanceService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -28,7 +28,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
  */
 @Controller
 @RequestMapping("/wa/achievements")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
+//@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class AchievementsController {
 
     @Autowired
@@ -45,7 +45,6 @@ public class AchievementsController {
         return "achievements";
     }
 
-
     public Users getPrincipal(){
         Subject subject=SecurityUtils.getSubject();
         Users users=(Users) subject.getPrincipal();
@@ -53,7 +52,7 @@ public class AchievementsController {
     }
 
     /**
-     * 查询员工业绩
+     * 查询所有员工业绩
      * @param request
      * @return
      */
@@ -68,7 +67,6 @@ public class AchievementsController {
         String empIdStr="";
         Users users=this.getPrincipal();
         if(users!=null){
-            empIdStr+=users.getEmployeeId()+",";
             List<Employee> rootList=employeeService.getEmployeeByManager(users.getEmployeeId());
             if(rootList!=null){
                 List<Employee> empList=employeeService.getEmployeeByManager(0);
@@ -88,7 +86,6 @@ public class AchievementsController {
         map.put("page",rows);
         map.put("pageSize",pageSize);
         List<Assessment> list= behaviorService.getAssessment(map);
-
         Result result=new Result();
         result.setData(list);
         result.setCount(total.size());

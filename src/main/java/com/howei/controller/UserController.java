@@ -2,12 +2,11 @@ package com.howei.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.howei.pojo.Users;
 import com.howei.pojo.Menu;
+import com.howei.pojo.Users;
 import com.howei.service.EmployeeService;
 import com.howei.service.MenuService;
 import com.howei.service.UserService;
-import com.howei.util.MD5;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
@@ -16,18 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 
 @Controller
-@CrossOrigin(origins={"http://192.168.1.27:8081","http://localhost:8080"},allowCredentials = "true")
+//@CrossOrigin(origins="http://test.hopeop.com",allowCredentials = "true")
 public class UserController {
 
     @Autowired
@@ -50,7 +46,7 @@ public class UserController {
     }
 
     @RequestMapping("/home")
-    //@CrossOrigin
+    @CrossOrigin
     public String home(HttpSession session){
         return "home";
     }
@@ -67,10 +63,11 @@ public class UserController {
         return users;
     }
 
-    @RequestMapping(value = "/loginPage",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping("/loginPage")
     public String loginadmin(HttpServletRequest request) {
         String username = request.getParameter("userNumber").toUpperCase();
         String password = request.getParameter("password");
+
         UsernamePasswordToken upt = new UsernamePasswordToken(username,password);
         Subject subject = SecurityUtils.getSubject();
         try {
@@ -78,13 +75,13 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             if("no_user".equals(e.getMessage())){
-                return JSON.toJSONString("login");
+                return JSON.toJSONString("用户不存在");
             }else if("no_permission".equals(e.getMessage())){
-                return JSON.toJSONString("login");
+                return JSON.toJSONString("用户无权限访问");
             }else if("no_status".equals(e.getMessage())){
-                return JSON.toJSONString("login");
+                return JSON.toJSONString("用户已停用");
             }
-            return JSON.toJSONString("error");
+            return JSON.toJSONString("密码错误");
         }
         Session session = subject.getSession();
         Users user = userService.loginUserNumber(username);
@@ -93,21 +90,15 @@ public class UserController {
         return "home";
     }
 
-    /**
-     * 获取根级菜单
-     * @param request
-     * @return
-     */
     @RequestMapping("/getMenu")
     @ResponseBody
     @CrossOrigin
-    public List<Menu> getMenuTree(HttpServletRequest request){
+    public String getMenuTree(HttpServletRequest request){
         String parentId=request.getParameter("parent");
         Map map=new HashMap();
         map.put("parentId",parentId);
         map.put("template","2");
         Subject subject=SecurityUtils.getSubject();
-        Session session=subject.getSession();
         List<Menu> result=menuService.getMenuTree(map);
         Iterator<Menu> iterator = result.iterator();
         while(iterator.hasNext()){
@@ -116,7 +107,7 @@ public class UserController {
                 iterator.remove();
             }
         }
-        return result;
+        return JSON.toJSONString(result);
     }
 
     // 获取员工所属项目部信息

@@ -18,7 +18,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/wa/menu")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
+@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class MenuController {
 
     @Autowired
@@ -26,6 +26,7 @@ public class MenuController {
 
     @RequestMapping("/getMenuTree")
     @ResponseBody
+    @CrossOrigin
     public String getMenuTree(HttpSession session, HttpServletRequest request){
         String id= request.getParameter("id");
         Subject subject=SecurityUtils.getSubject();

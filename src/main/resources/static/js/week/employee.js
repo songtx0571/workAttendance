@@ -1,4 +1,3 @@
-var index = 0;
 var path = "";
 $(function(){
     // 显示员工信息();
@@ -106,7 +105,6 @@ function shouInfo() {
             $("#wages").val(data.wages);//待遇标准
             $("#basicwages").val(data.basicwages);//基本工资
             $("#meritpay").val(data.meritpay);//绩效工资
-
             layui.use('form', function(){
                 var form = layui.form;
                 $("#managerName").val(data.manager);//绩效管理人

@@ -2,15 +2,14 @@ package com.howei.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.howei.pojo.*;
+import com.howei.service.EmployeeService;
+import com.howei.service.LeaveService;
 import com.howei.service.UserService;
 import com.howei.util.DateFormat;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import com.howei.util.Type;
-import com.howei.service.EmployeeService;
-import com.howei.service.LeaveService;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
  */
 @Controller
 @RequestMapping("/wa/leave")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
+@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class LeaveController {
 
     @Autowired
@@ -42,16 +41,6 @@ public class LeaveController {
     private Map<Integer,String> empName;
     void init(){
         empName=employeeService.getEmployeeMap();
-    }
-
-    /**
-     * 跳转请假页面
-     * @return
-     */
-    @RequestMapping("/toLeave")
-    public String toLeave(){
-
-        return "leave";
     }
 
     /**
@@ -74,6 +63,16 @@ public class LeaveController {
         return "leaveStatistics";
     }
 
+    /**
+     * 跳转请假页面
+     * @return
+     */
+    @RequestMapping("/toLeave")
+    public String toLeave(){
+        Subject subject=SecurityUtils.getSubject();
+        return "leave";
+    }
+
     public Users getPrincipal(){
         Subject subject=SecurityUtils.getSubject();
         Users users=(Users)subject.getPrincipal();
@@ -87,7 +86,7 @@ public class LeaveController {
      * @param request
      * @return
      */
-    @RequiresPermissions(value = {"请假配置"},logical= Logical.OR)
+    @RequiresPermissions(value = {"请假配置"})
     @RequestMapping("/getConfigureList")
     @ResponseBody
     public String getConfigureList(HttpServletRequest request){
@@ -178,7 +177,7 @@ public class LeaveController {
      * 获取请假数据列表
      * @return
      */
-    //@RequiresPermissions(value = {"请假查询"},logical = OR)
+    @RequiresPermissions(value = {"请假查询"},logical = OR)
     @RequestMapping("/getLeaveDataList")
     @ResponseBody
     public String getLeaveDataList(HttpServletRequest request){
@@ -312,7 +311,7 @@ public class LeaveController {
      * 下拉框员工
      * @return
      */
-    //@RequiresPermissions("可选请假人")
+    @RequiresPermissions("可选请假人")
     @RequestMapping("/getEmployeeName")
     @ResponseBody
     public String getEmployeeName(){
@@ -322,15 +321,6 @@ public class LeaveController {
         if(users!=null){
             Integer empId=users.getEmployeeId();
             List<Employee> rootList=employeeService.getEmployeeByManager(empId);
-            if(rootList!=null){
-                List<Employee> empList=employeeService.getEmployeeByManager(0);
-                for(Employee employee:rootList){
-                    empIdStr+=employee.getId()+",";
-                    empIdStr+=getUsersId(employee.getId(),empList);
-                }
-            }
-        }else{
-            List<Employee> rootList=employeeService.getEmployeeByManager(240);
             if(rootList!=null){
                 List<Employee> empList=employeeService.getEmployeeByManager(0);
                 for(Employee employee:rootList){
@@ -447,7 +437,7 @@ public class LeaveController {
         return JSON.toJSONString(Type.ERROR);
     }
 
-    //@RequiresPermissions(value = {"请假查询"},logical = OR)
+    @RequiresPermissions(value = {"请假查询"},logical = OR)
     @RequestMapping("/updateLeaveData")
     @ResponseBody
     public String updateLeaveData(HttpServletRequest request){
@@ -553,13 +543,53 @@ public class LeaveController {
         }
     }
 
+    /**
+     * 根据条件查询请假信息列表
+     * @param request
+     * @return
+     */
+    @RequiresPermissions(value = {"请假查询"},logical = OR)
+    @RequestMapping("/searchLeaveDataList")
+    @ResponseBody
+    public String searchLeaveDataList(HttpServletRequest request){
+        String startTime = request.getParameter("startTime");
+        String employeeId = request.getParameter("employeeId");
+        String page = request.getParameter("page");
+        String pageSize = request.getParameter("limit");
+        Subject subject=SecurityUtils.getSubject();
+        Users user=(Users)subject.getPrincipal();
+        Integer departmentId=user.getDepartmentId();
+
+        int rows=Page.getOffSet(page,pageSize);
+        Map map=new HashMap();
+        if((startTime!=null&&!startTime.equals(""))){
+            map.put("startTime",startTime+"-01");
+        }
+        if(departmentId!=null){
+            map.put("departmentId",departmentId);
+        }
+        if(employeeId!=null&&!employeeId.equals("")){
+            map.put("employeeId",employeeId);
+        }
+        List<LeaveData> total= leaveService.getLeaveDataList(map);
+        map.put("page",rows);
+        map.put("pageSize",pageSize);
+        List<LeaveData> list= leaveService.getLeaveDataList(map);
+        Result result= null;
+        result = new Result();
+        result.setCode(0);
+        result.setData(list);
+        result.setCount(total.size());
+        return JSON.toJSONString(result);
+    }
+
     /*****************************************************请假统计********************************************************/
 
     /**
      * 获取请假统计
      * @return
      */
-    //@RequiresPermissions(value = {"请假统计"},logical = OR)
+    @RequiresPermissions(value = {"请假统计"},logical = OR)
     @RequestMapping("/getLeaveDataStatisticsList")
     @ResponseBody
     public String getLeaveDataStatisticsList(HttpServletRequest request){
@@ -597,12 +627,7 @@ public class LeaveController {
             map.put("month",month);
         }
         String empIdStr="";
-        List<Employee> rootList=null;
-        if(empId==null||empId.equals("")){
-            rootList=employeeService.getEmployeeByManager(240);
-        }else{
-            rootList=employeeService.getEmployeeByManager(Integer.parseInt(empId));
-        }
+        List<Employee> rootList=employeeService.getEmployeeByManager(Integer.parseInt(empId));
         if(rootList!=null){
             empIdStr+=empId+",";
             List<Employee> empList=employeeService.getEmployeeByManager(0);

@@ -1,4 +1,3 @@
-// var path = "http://192.168.1.26:8081/";
 var path = "";
 window.onload = function() {
 
@@ -19,16 +18,6 @@ window.onload = function() {
                     iconCls:"icon-open"//e.Icon
                 });
                 $.parser.parse();
-                /*$.post(path + "/wa/menu/getMenuTree?id="+id,  function(data) {//循环创建树的项
-                    $("#tree" + id).tree({
-                        data: data,
-                        onClick : function(node){
-                            if (node.attributes) {
-                                Open(node.text, node.url);
-                            }
-                        }
-                    });
-                }, 'json');*/
 
                 $.ajax({
                     type: "POST",
@@ -37,10 +26,6 @@ window.onload = function() {
                     xhrFields: {
                         withCredentials: true,
                     },
-                    // beforeSend: function(xhr) {
-                    //     xhr.withCredentials = true;
-                    // },
-                    // contentType: "application/x-www-form-urlencoded",
                     crossDomain: true,
                     success: function(data){
                         $("#tree" + id).tree({

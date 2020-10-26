@@ -182,28 +182,6 @@ function showSetSign() {
             }
             tr.innerHTML = td;
             tbody.after(tr);
-            // if(data.length <= 10){
-            //     for (var i = 0; i < data.length; i ++) {
-            //         var tr = document.createElement("tr");
-            //         tr.setAttribute("id", "AssessmentTr");
-            //         if(PeAcc[i].score == ''){
-            //             PeAcc[i].score=0;
-            //         }
-            //         parseInt(PeAcc[i].score);
-            //         td += '<td>'+ PeAcc[i].score + '</td>';
-            //     }
-            // }
-            // if(data.length>10){
-            //     for (var i = 0; i <10; i ++) {
-            //         if(PeAcc[i].score == ''){
-            //             PeAcc[i].score=0;
-            //         }
-            //         parseInt(PeAcc[i].score)
-            //         td += '<td>'+ PeAcc[i].score + '</td>'
-            //     }
-            // }
-            // tr.innerHTML = td;
-            // tbody.after(tr);
         }
     })
 }

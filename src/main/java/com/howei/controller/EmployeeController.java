@@ -3,9 +3,9 @@ package com.howei.controller;
 import com.alibaba.fastjson.JSON;
 import com.howei.pojo.Employee;
 import com.howei.pojo.Users;
+import com.howei.service.EmployeeService;
 import com.howei.util.Page;
 import com.howei.util.Result;
-import com.howei.service.EmployeeService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -23,8 +23,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
 
 @Controller
 @RequestMapping("/wa/employee")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
-//@RequestMapping("/employee")
+//@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class EmployeeController {
 
     @Autowired
@@ -50,12 +49,7 @@ public class EmployeeController {
     public String getEmployeeInf(){
         Subject subject=SecurityUtils.getSubject();
         Users users=(Users)subject.getPrincipal();
-        Employee employee=null;
-        if(users!=null){
-            employee=employeeService.getEmployeeById(users.getEmployeeId()+"");
-        }else{
-            employee=employeeService.getEmployeeById("240");
-        }
+        Employee employee=employeeService.getEmployeeById(users.getEmployeeId()+"");
         return JSON.toJSONString(employee);
     }
 

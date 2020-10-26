@@ -1,9 +1,9 @@
 package com.howei.controller;
 
-import com.howei.util.EasyuiResult;
-import com.howei.util.Page;
 import com.howei.pojo.MaintenanceRecord;
 import com.howei.service.ExaminationService;
+import com.howei.util.EasyuiResult;
+import com.howei.util.Page;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
 
 @Controller
 @RequestMapping("/wa/attendance")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
+//@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class AttendanceController {
 
     @Autowired

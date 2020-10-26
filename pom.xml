@@ -130,21 +130,7 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.0</version>
         </dependency>
-        <!--解析浏览器-->
-        <dependency>
-            <groupId>cz.mallat.uasparser</groupId>
-            <artifactId>uasparser</artifactId>
-            <version>0.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.bitwalker</groupId>
-            <artifactId>UserAgentUtils</artifactId>
-            <version>1.20</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
+
         <!--session-->
         <dependency>
             <groupId>org.springframework.session</groupId>

@@ -1,4 +1,3 @@
-// var path = "http://192.168.1.26:8081/";
 var path = "";
 $(function(){
     var userId=$("#userId").val();

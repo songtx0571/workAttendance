@@ -2,8 +2,8 @@ package com.howei.controller;
 
 import com.howei.pojo.*;
 import com.howei.service.*;
-import com.howei.util.EasyuiResult;
 import com.howei.util.DateFormat;
+import com.howei.util.EasyuiResult;
 import com.howei.util.Page;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -24,7 +24,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
 
 @Controller
 @RequestMapping("/wa/kpi")
-@CrossOrigin(origins="http://192.168.1.27:8081",allowCredentials = "true")
+@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class KPIController {
 
     @Autowired
@@ -350,7 +350,7 @@ public class KPIController {
         return easyuiResult;
     }
 
-    public List<Map<String,String>> resultWorkHoursList(List<Users> users,List<MaintenanceRecord> list, String depart,String rows,int offset,String page){
+    public List<Map<String,String>> resultWorkHoursList(List<Users> users, List<MaintenanceRecord> list, String depart, String rows, int offset, String page){
         List<Map<String,String>> result=new ArrayList<>();
         double[] count=new double[users.size()];
         for(int i=0;i<users.size();i++){
