@@ -1,3 +1,5 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     $('#startTime').datebox({
         onShowPanel : function() {// 显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
@@ -46,7 +48,7 @@ function search() {
     //获取部门信息
     $.ajax({
         type:"post",
-        url:"/wa/department/getDepartmentList",
+        url:path + "/wa/department/getDepartmentList",
         dataType:"json",
         success:function(json){
             $("#depart").combobox({//往下拉框塞值
@@ -59,7 +61,7 @@ function search() {
                     //获取员工信息
                     $.ajax({
                         type:"post",
-                        url:"/getNameByProjectId",
+                        url:path +"/getNameByProjectId",
                         data:{'projectId':getValue},
                         dataType:"json",
                         success:function(json){
@@ -107,7 +109,7 @@ function showLaborAll(){
     var DayDateT= $('#endTime').combobox('getText');
 
     $('#attendance').datagrid({
-        url: '/wa/attendance/showLaborAll',
+        url: path + '/wa/attendance/showLaborAll',
         method: 'get',
         title: '设备创建',
         //width: 'auto',

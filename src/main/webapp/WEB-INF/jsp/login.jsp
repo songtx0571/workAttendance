@@ -6,7 +6,6 @@
     <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">
     <script type="text/javascript" src="js/easyui/jquery.min.js"></script>
     <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="js/week/login.js?version=1.01"></script>
     <style>
         body {
             margin: 0;
@@ -141,16 +140,15 @@
         </div>
         <div id="tab">
             <div id="secondPage" class="show">
-                <form action="loginPage" name="register2" method="post"
-                      id="loginlist">
-                    账号:<input type="text" name="UserName" placeholder="请输入账号"
-                              id="UserName" class="set"  onfocus="this.placeholder=''"
+                <form name="register2" id="loginlist" action="/loginPage" method="post">
+                    账号:<input type="text" name="userNumber" placeholder="请输入账号"
+                              id="userNumber" class="set"  onfocus="this.placeholder=''"
                               onblur="this.placeholder='请输入账号'"><br>
                     密码:<input
-                        type="password" name="Password" placeholder="请输入密码" id="Password"
+                        type="password" name="password" placeholder="请输入密码" id="password"
                         class="set"  onfocus="this.placeholder=''"
                         onblur="this.placeholder='请输入密码'"><br>
-                    <input type="submit" value="登录" onClick="javascript:loginPage();" class="button" style="text-align: center;" id="button02">
+                    <input type="submit" value="登录" class="button" style="text-align: center;" id="button02">
                 </form>
             </div>
         </div>

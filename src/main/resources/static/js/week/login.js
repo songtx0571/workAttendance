@@ -1,14 +1,12 @@
 function loginPage(){
+    var path = "";
     $.ajax({
         type: "GET",
-        url: "/loginPage",
-        data: {UserName:$("#UserName").val(), Password:$("#Password").val()},
+        url: path+"/loginPage",
         dataType: "json",
-        async: true,
+        data: {userNumber:$("#UserNumber").val(), password:$("#Password").val()},
         success: function(data){
-            $('#UserName').empty();//清空UserName里面的所有内容
-            $('#Password').empty();//清空Password里面的所有内容
+
         }
     });
 }
-

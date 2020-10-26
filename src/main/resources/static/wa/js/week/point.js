@@ -1,8 +1,10 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     var userId=$("#userId").val();
     var startTime= $('#startTime').val();
     $('#pointTable').datagrid({
-        url: '/wa/kpi/getPointList',
+        url: path + '/wa/kpi/getPointList',
         method: 'get',
         title: '巡检点数数据展示',
         //width: 'auto',

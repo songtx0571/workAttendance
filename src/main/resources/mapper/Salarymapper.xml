@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.workattendance.mapper.Projectmapper" >
-    <select id="getCoe" resultType="com.workattendance.pojo.Salary">
+<mapper namespace="com.howei.mapper.Projectmapper" >
+    <select id="getCoe" resultType="com.howei.pojo.Salary">
         SELECT * FROM  salary  WHERE cycle=#{param1};
     </select>
-    <select id="getCoe2" resultType="com.workattendance.pojo.Salary">
+    <select id="getCoe2" resultType="com.howei.pojo.Salary">
         SELECT canbuxishu,jiabanxishu FROM  employee;
     </select>
     <insert id="updateXishu">

@@ -1,9 +1,11 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     var userId=$("#userId").val();
     var startTime=$("#startTime").val();
     var depart=$("#depart").val();
     $('#selTable').datagrid({
-        url: '/wa/kpi/getSelWorkHoursList',
+        url: path +'/wa/kpi/getSelWorkHoursList',
         method: 'get',
         title: '查看通知数据展示',
         //width: 'auto',

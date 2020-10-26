@@ -1,8 +1,10 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     var userId=$("#userId").val();
     var startTime= $('#startTime').val();
     $('#createdTable').datagrid({
-        url: '/wa/kpi/getCreatedList',
+        url: path +'/wa/kpi/getCreatedList',
         method: 'get',
         title: '创建通知数据展示',
         //width: 'auto',
@@ -17,10 +19,10 @@ $(function(){
         queryParams: { 'userId': userId,'startTime':startTime }, //往后台传参数用的。
         columns: [[
             {field: 'id', title: '编号', width: 30, align: 'center',hidden:true},
-            {field: 'time', title: '通知时间', width: 30, align: 'center'},
+            {field: 'created', title: '通知时间', width: 30, align: 'center'},
             {field: 'title', title: '标题', width: 30, align: 'center'},
             {field: 'content', title: '内容',align: 'center', width: 30},
-            {field: 'name', title: '发起人', width: 30, align: 'center'},
+            {field: 'createdByName', title: '发起人', width: 30, align: 'center'},
         ]],
         onClickRow: function(rowIndex, rowData){
             $('#pointTable').datagrid('clearSelections');

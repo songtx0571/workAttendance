@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.LeaveMapper" >
+
+    <resultMap id="LeaveMap" type="com.howei.pojo.Leave">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="data" property="data"></result>
+        <result column="unit" property="unit"></result>
+        <result column="remark" property="remark"></result>
+        <result column="status" property="status"></result>
+        <result column="created" property="created"></result>
+        <result column="quota" property="quota"></result>
+    </resultMap>
+
+    <select id="getConfigureList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Leave">
+        select id,name,data,unit,created,status,quota,remark,IF(status=0,'开启','关闭') statusName from `leave`
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <select id="getConfigureMap" resultType="com.howei.pojo.Leave">
+        select id,name from `leave` where status=0
+    </select>
+
+    <insert id="addConfigure" parameterType="com.howei.pojo.Leave" keyProperty="id" useGeneratedKeys="true">
+        insert into `leave`(name,data,unit,status,created,quota) value(#{name},#{data},#{unit},#{status},#{created},#{quota})
+    </insert>
+
+    <select id="getLeave" parameterType="java.lang.String" resultType="com.howei.pojo.Leave">
+        select * from `leave` where id=#{id}
+    </select>
+
+    <update id="updateConfigure" parameterType="com.howei.pojo.Leave" useGeneratedKeys="true" keyProperty="id">
+        update `leave`
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            data=#{data},
+            <if test="quota!=null">
+                quota=#{quota},
+            </if>
+            <if test="unit!=null">
+                unit=#{unit},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            status=#{status},
+        </trim>
+        where id=#{id}
+    </update>
+
+    <select id="getLeaveDataList" parameterType="java.util.HashMap" resultType="com.howei.pojo.LeaveData">
+        select ld.id,ld.leaveId,l.name LeaveName, ld.employeeId,e1.name EmployeeName ,ld.startTime,ld.endTime,ld.intervalTime,
+                ld.createdBy,e.name createdName,ld.created,ld.status,ld.parent,ld.remark,e1.manager,ld.review,ld.reviewRemark,ld.reviewTime,ld.nextManager,ld.excess
+        from leave_data ld
+        left join employee e on e.id=ld.createdBy
+        left join employee e1 on e1.id=ld.employeeId
+        left join `leave` l on l.id=ld.leaveId
+        where 1=1
+        <if test="empManager!=null">
+            and e1.manager=#{empManager} or (e1.manager!=#{empManager} and ld.nextManager=#{empManager}) or ld.employeeId=#{empManager} or ld.status=2
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and DATE_FORMAT(ld.startTime,'%Y-%m') = DATE_FORMAT(#{startTime},'%Y-%m')
+        </if>
+        <if test="leaveId!=null and leaveId!=''">
+            and ld.leaveId=#{leaveId}
+        </if>
+        <if test="employeeId!=null and employeeId!=''">
+            and FIND_IN_SET(ld.employeeId,#{employeeId})
+        </if>
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <insert id="addLeaveData" parameterType="com.howei.pojo.LeaveData" useGeneratedKeys="true" keyProperty="id">
+        insert into leave_data(leaveId,employeeId,departmentId,startTime,endTime,intervalTime,createdBy,created,status,remark,nextManager,excess,review,reviewRemark,reviewTime) value
+        (#{leaveId},#{employeeId},#{departmentId},#{startTime},#{endTime},#{intervalTime},#{createdBy},#{created},#{status},#{remark},#{nextManager},#{excess},#{review},#{reviewRemark},#{reviewTime})
+    </insert>
+
+    <select id="getLeadData" parameterType="java.lang.String" resultType="com.howei.pojo.LeaveData">
+        select * from leave_data where id=#{id}
+    </select>
+
+    <update id="updateLeaveData" parameterType="com.howei.pojo.LeaveData" keyProperty="id" useGeneratedKeys="true">
+        update leave_data
+        <trim prefix="set" suffixOverrides=",">
+            <if test="leaveId!=null">
+                leaveId=#{leaveId},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="review!=null and review!=''">
+                review=#{review},
+            </if>
+            <if test="reviewRemark!=null and reviewRemark!=''">
+                reviewRemark=#{reviewRemark},
+            </if>
+            <if test="reviewTime!=null and reviewTime!=''">
+                reviewTime=#{reviewTime},
+            </if>
+            <if test="nextManager!=null">
+                nextManager=#{nextManager},
+            </if>
+            <if test="updated!=null and updated!=''">
+                updated=#{updated},
+            </if>
+            <if test="updatedBy!=null">
+                updatedBy=#{updatedBy},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <select id="getLeaveDataStatisticsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.LeaveData">
+        select e.id as employeeId,e.name as EmployeeName,l.name as leaveName,count(l.name) as total from leave_data ld
+        left join `leave` l on l.id=ld.leaveId
+        left join (select id,name,count(id) count from employee GROUP BY id) e on e.id=ld.employeeId
+        left join users u on u.employeeid=e.id
+        where u.state=1 and ld.`status`=2
+        <if test="companyId!=null">
+            and u.companyId=#{companyId}
+        </if>
+        <if test="month!=null">
+            and date_format(ld.startTime,'%Y-%m') = date_format(#{month},'%Y-%m')
+        </if>
+        <if test="empIdStr!=null and empIdStr!=''">
+            and FIND_IN_SET(e.id,#{empIdStr})
+        </if>
+        GROUP BY l.name,e.id,e.name
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <!--审核记录-->
+    <insert id="addReview" parameterType="com.howei.pojo.Review" keyProperty="id" useGeneratedKeys="true">
+        insert into review(leaveDataId,reviewer,leaveEmployeeId,result) value(#{leaveDataId},#{reviewer},#{leaveEmployeeId},#{result})
+    </insert>
+
+</mapper>

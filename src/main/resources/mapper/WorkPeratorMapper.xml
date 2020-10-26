@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.workattendance.mapper.WorkPeratorMapper" >
+<mapper namespace="com.howei.mapper.WorkPeratorMapper" >
 
-    <resultMap id="workPeratorMap" type="com.workattendance.pojo.WorkPerator">
+    <resultMap id="workPeratorMap" type="com.howei.pojo.WorkPerator">
         <result column="id" property="id"></result>
         <result column="userId" property="userId"></result>
         <result column="created" property="created"></result>
@@ -47,11 +47,11 @@
       select count(*) from workPerator where parent='0'
     </select>
 
-    <select id="selWorkperator" parameterType="java.lang.String" resultType="com.workattendance.pojo.WorkPerator" resultMap="workPeratorMap">
+    <select id="selWorkperator" parameterType="java.lang.String" resultType="com.howei.pojo.WorkPerator" resultMap="workPeratorMap">
       select * from workPerator where id=#{id}
     </select>
 
-    <insert id="addWorkPerator" parameterType="com.workattendance.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
+    <insert id="addWorkPerator" parameterType="com.howei.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
         insert into workPerator(userId,created,createdBy,patrolTask,aiNumber,planTime,status,cycle,priority,parent,equipment,measuringType,unit,projectDepartment) values (
           #{userId},#{created},#{createdBy},#{patrolTask},#{aiNumber},#{planTime},#{status},#{cycle},#{priority},#{parent},#{equipment},#{measuringType},#{unit},#{projectDepartment}
         )
@@ -80,7 +80,7 @@
         </if>
     </select>
 
-    <update id="updWorkperator" parameterType="com.workattendance.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
+    <update id="updWorkperator" parameterType="com.howei.pojo.WorkPerator" keyProperty="id" useGeneratedKeys="true">
         update workPerator
         <trim prefix="set" suffixOverrides=",">
           <if test="priority!=null and priority!=''">

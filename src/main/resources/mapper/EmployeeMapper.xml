@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.EmployeeMapper" >
+    <resultMap id="empMap" type="com.howei.pojo.Employee">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="userNumber" property="userNumber"></result>
+        <result column="idNumber" property="idNumber"></result>
+        <result column="bank" property="bank"></result>
+        <result column="card" property="card"></result>
+        <result column="phone" property="phone"></result>
+        <result column="closhe" property="closhe"></result>
+        <result column="hat" property="hat"></result>
+        <result column="laowupaiqian" property="laowupaiqian"></result>
+        <result column="education" property="education"></result>
+        <result column="credentials1" property="credentials1"></result>
+        <result column="credentials2" property="credentials2"></result>
+        <result column="credentials3" property="credentials3"></result>
+        <result column="emergency" property="emergency"></result>
+        <result column="emergencyTel" property="emergencyTel"></result>
+        <result column="remark" property="remark"></result>
+        <result column="wages" property="wages"></result>
+        <result column="basicwages" property="basicwages"></result>
+        <result column="meritpay" property="meritpay"></result>
+        <result column="address" property="address"></result>
+        <result column="created" property="created"></result>
+        <result column="createdBy" property="createdBy"></result>
+        <result column="manager" property="manager"></result>
+    </resultMap>
+
+    <select id="getEmployeeList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName
+        from employee e
+        LEFT JOIN users u on u.employeeId=e.id
+		LEFT JOIN employee e1 on e1.id=e.manager
+        LEFT JOIN company c on c.id=u.companyId
+        LEFT JOIN company c1 on c1.id=u.departmentId
+        LEFT JOIN post p on p.id=u.postId
+        where c.headQuarters=0 and c.parent=0 and u.state=1
+        <if test="empId!=null">
+            and FIND_IN_SET(e.id,#{empId})
+        </if>
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
+        e.idnumber,e.bank,e.card,u.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy
+        from employee e
+        LEFT JOIN users u on u.employeeId=e.id
+		LEFT JOIN employee e1 on e1.id=e.manager
+        LEFT JOIN company c on c.id=u.companyId
+        LEFT JOIN company c1 on c1.id=u.departmentId
+        LEFT JOIN post p on p.id=u.postId
+        where e.id=#{id}
+    </select>
+
+    <select id="searchEmployee" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName
+        from employee e
+        LEFT JOIN users u on u.employeeId=e.id
+		LEFT JOIN employee e1 on e1.id=e.manager
+        LEFT JOIN company c on c.id=u.companyId
+        LEFT JOIN company c1 on c1.id=u.departmentId
+        LEFT JOIN post p on p.id=u.postId
+        where c.headQuarters=0 and c.parent=0
+        and (
+            e.address like concat('%',#{search},'%') or
+			e.name like concat('%',#{search},'%') OR
+			e.userNumber like concat('%',#{search},'%')
+        )
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <update id="updateEmployee" parameterType="com.howei.pojo.Employee" keyProperty="id" useGeneratedKeys="true" >
+        update employee
+        <trim prefix="set" suffixOverrides=",">
+            <if test="idNumber!=null and idNumber!=''">
+                idNumber=#{idNumber},
+            </if>
+            <if test="bank!=null and bank!=''">
+                bank=#{bank},
+            </if>
+            <if test="card!=null and card!=''">
+                card=#{card},
+            </if>
+            <if test="closhe!=null and closhe!=''">
+                closhe=#{closhe},
+            </if>
+            <if test="hat!=null and hat!=''">
+                hat=#{hat},
+            </if>
+            <if test="laowupaiqian!=null and laowupaiqian!=''">
+                laowupaiqian=#{laowupaiqian},
+            </if>
+            <if test="education!=null and education!=''">
+                education=#{education},
+            </if>
+            <if test="credentials1!=null and credentials1!=''">
+                credentials1=#{credentials1},
+            </if>
+            <if test="credentials2!=null and credentials2!=''">
+                credentials2=#{credentials2},
+            </if>
+            <if test="credentials3!=null and credentials3!=''">
+                credentials3=#{credentials3},
+            </if>
+            <if test="entryDate!=null and entryDate!=''">
+                entryDate=#{entryDate},
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                emergency=#{emergency},
+            </if>
+            <if test="emergencyTel!=null and emergencyTel!=''">
+                emergencyTel=#{emergencyTel},
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark=#{remark},
+            </if>
+            <if test="wages!=null and wages!=''">
+                wages=#{wages},
+            </if>
+            <if test="basicwages!=null and basicwages!=''">
+                basicwages=#{basicwages},
+            </if>
+            <if test="meritpay!=null and meritpay!=''">
+                meritpay=#{meritpay},
+            </if>
+            <if test="address!=null and address!=''">
+                address=#{address},
+            </if>
+            <if test="manager!=null">
+                manager=#{manager},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <select id="getEmployeeNameMap" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
+        select e.id,e.name from employee e
+        join users u on u.employeeId=e.id
+        where u.state=1
+        <if test="employeeId!=null">
+            and e.id=#{employeeId}
+        </if>
+    </select>
+
+    <select id="getEmployeeNameMapByManager" parameterType="java.lang.String" resultMap="empMap">
+        select e.id,e.name from employee e
+        where FIND_IN_SET(e.id,#{empId})
+    </select>
+
+    <select id="getEmployeeByManager" parameterType="int" resultType="com.howei.pojo.Employee">
+        select e1.id as id,e1.name as name,e1.userNumber as userNumber,e1.manager as manager from employee e
+        join users u on u.employeeId=e.id
+        join employee e1 on e1.manager=e.id
+        where u.state=1
+        <if test="empId!=null and empId!=0">
+            and e.id=#{empId} or e.id=#{empId}
+        </if>
+    </select>
+
+    <select id="getEmployeeMap" resultType="com.howei.pojo.Employee">
+        select id,name from employee
+    </select>
+
+</mapper>

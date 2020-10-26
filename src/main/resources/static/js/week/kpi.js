@@ -1,3 +1,5 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     date();
     init();
@@ -49,7 +51,7 @@ function init(){
     //获取部门信息
     $.ajax({
         type:"post",
-        url:"/wa/department/getDepartmentList",
+        url:path + "/wa/department/getDepartmentList",
         dataType:"json",
         success:function(json){
             $("#depart").combobox({//往下拉框塞值
@@ -77,7 +79,7 @@ function showKpi(){
     }
 
     $('#KPITable').datagrid({
-        url: '/wa/kpi/getKPIList',
+        url: path + '/wa/kpi/getKPIList',
         method: 'get',
         title: 'kpi数据列表',
         width: 'auto',

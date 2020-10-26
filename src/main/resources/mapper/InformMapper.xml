@@ -1,53 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.workattendance.mapper.InformMapper" >
-    <resultMap id="informMap" type="com.workattendance.pojo.Inform">
+<mapper namespace="com.howei.mapper.InformMapper" >
+    <resultMap id="informMap" type="com.howei.pojo.Inform">
         <result column="id" property="id"></result>
-        <result column="Title" property="Title"></result>
-        <result column="Content" property="Content"></result>
-        <result column="Time" property="Time"></result>
-        <result column="Name" property="Name"></result>
-        <result column="filedir" property="filedir"></result>
-        <result column="type1" property="type1"></result>
-        <result column="type2" property="type2"></result>
-        <result column="type" property="type"></result>
+        <result column="name" property="name"></result>
+        <result column="created" property="created"></result>
+        <result column="parent" property="parent"></result>
+        <result column="companyId" property="companyId"></result>
     </resultMap>
 
     <select id="getInformKPIList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
-        select u.Id,u.Name,f.createdCount,uf.userName,uf.selCount from (
-          select count(*) as createdCount,f.Name from inform f
-          join users u on u.`Name`=f.Name
+        select u.Id,u.userName,f.createdCount,uf.selCount from (
+          select count(*) as createdCount,f.createdBy from inform f
+          join users u on u.`id`=f.createdBy
           where 1=1
           <if test="startTime!=null and startTime!=''">
-            and DATE_FORMAT(f.Time,'%Y-%m')=#{startTime}
+            and DATE_FORMAT(f.created,'%Y-%m')=#{startTime}
           </if>
-          group by f.Name
+          group by f.createdBy
         ) f
-        join users u on u.`Name`=f.`Name`
+        join users u on u.`id`=f.createdBy
         right join (
-          select ui.userName,count(*) as selCount from user_inform ui
-          GROUP BY ui.userName
-        ) uf on uf.userName=u.UserName
+          select ui.userId,count(*) as selCount from user_inform ui
+          GROUP BY ui.userId
+        ) uf on uf.userId=u.id
         order by uf.selCount desc
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}
         </if>
     </select>
 
-    <select id="getSelList" parameterType="java.util.HashMap" resultType="com.workattendance.pojo.Inform">
-        select i.* from user_inform ui
+    <select id="getSelList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Inform">
+        select i.id,u.userName as createdByName,i.content,i.title,i.filedir,i.created,i.informTypeId,i.companyId from user_inform ui
         left join inform i on ui.informId=i.id
-        where ui.userName=#{createdBy}
+        left join users u on u.id=i.createdBy
+        where ui.userId=#{createdBy}
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}
         </if>
     </select>
 
-    <select id="getCreatedList" parameterType="java.util.HashMap" resultType="com.workattendance.pojo.Inform">
-        select i.* from inform i
-        where i.Name=#{createdBy}
+    <select id="getCreatedList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Inform">
+        select i.id,u.userName as createdByName,i.content,i.title,i.filedir,i.created,i.informTypeId,i.companyId from inform i
+        left join users u on u.id=i.createdBy
+        where i.createdBy=#{createdBy}
         <if test="startTime!=null and startTime!=''">
-            and DATE_FORMAT(i.Time,'%Y-%m')=#{startTime}
+            and DATE_FORMAT(i.created,'%Y-%m')=#{startTime}
         </if>
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}

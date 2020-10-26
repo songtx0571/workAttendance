@@ -29,10 +29,10 @@
 <div region="center">
     <div class="easyui-tabs" fit="true" border="false" id="tabs">
         <div title="首页">
-            <table id="home" class="easyui-datagrid" title="模板列表"
+            <%--<table id="home" class="easyui-datagrid" title=""
                    fitColumns="true" pagination="true" rownumbers="true"
                    fit="true" toolbar="#tb" >
-            </table>
+            </table>--%>
         </div>
     </div>
 </div>

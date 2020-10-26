@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.PerformanceMapper" >
+    <select id="findAllAcc" parameterType="java.util.HashMap" resultType="com.howei.pojo.Performance">
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance  where employeeId=#{employeeId}
+        <if test="cycle!='' and cycle!=null">
+            and cycle=#{cycle}
+        </if>
+        limit 0,10
+    </select>
+    <select id="findPeAccByM" resultType="com.howei.pojo.Performance">
+        select a.id,a.workTasks,a.access,a.weights,a.score,a.cycle,a.employeeId,IFNULL(a.detail,"无") AS detail from performance a
+        RIGHT JOIN (SELECT a.id,a.UserName FROM employee a WHERE a.manager=#{performance.manager}) d ON a.employeeId=d.id
+        where a.employeeId=#{performance.employeeId}
+        <if test="performance.cycle!='' and performance.cycle!=null">
+            and a.cycle=#{performance.cycle}
+        </if>
+
+    </select>
+
+    <select id="getPeAcc" parameterType="java.lang.String" resultType="com.howei.pojo.Performance">
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail,employeeId from performance  where id=#{id}
+    </select>
+
+    <select id="selectCycle" resultType="java.lang.String">
+        SELECT cycle FROM performance where employeeId=#{employeeId} group by cycle order by cycle desc
+    </select>
+
+    <select id="findById" resultType="com.howei.pojo.Performance">
+        select * from performance where id=#{param1}
+    </select>
+
+    <delete id="deletePeAccById" parameterType="java.lang.String" >
+        delete from performance where id=#{id}
+    </delete>
+
+    <insert id="insert" >
+        insert ignore into performance (workTasks,access,weights,cycle,employeeId,cycle2)
+        value (#{workTasks},#{access},#{weights},#{cycle},#{employeeId},concat(#{cycle},'-01'))
+    </insert>
+
+    <update id="update" parameterType="com.howei.pojo.Performance" useGeneratedKeys="true" keyProperty="id">
+        update performance
+        <trim prefix="set" suffixOverrides=",">
+            <if test="workTasks!='' and workTasks!=null">
+                workTasks=#{workTasks},
+            </if>
+            <if test="access!='' and access!=null">
+                access=#{access},
+            </if>
+            <if test="weights!='' and weights!=null">
+                weights=#{weights},
+            </if>
+            <if test="score!='' and score!=null">
+                score=#{score},
+            </if>
+            <if test="detail!='' and detail!=null">
+                detail=#{detail},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+    <update id="setCanbu">
+         replace into salary(canbuxishu,cycle,jiabanxishu) values(#{param1},#{param2},#{param3})
+    </update>
+    <update id="setCanbuCopy">
+        update employee
+        <set>
+            canbuxishu=#{param1},jiabanxishu=#{param2}
+        </set>
+    </update>
+
+    <update id="setJbxs">
+         replace into salary(jiabanxishu,cycle,canbuxishu) values(#{param1},#{param2},#{param3})
+    </update>
+    <update id="setJbxsCopy">
+        update employee
+        <set>
+            jiabanxishu=#{param1},canbuxishu=#{param2}
+        </set>
+    </update>
+
+
+</mapper>

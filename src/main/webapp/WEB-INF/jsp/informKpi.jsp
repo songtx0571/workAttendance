@@ -52,12 +52,6 @@
 <body class="easyui-layout">
     <div class="bodyHeader">
         <ul>
-            <%--<li>
-                <div>
-                    <span>部门</span>&nbsp;&nbsp;
-                    <select id="depart" class="easyui-combobox" data-options="required:true" style="width:250px;height: 40px;line-height: 40px"></select>
-                </div>
-            </li>--%>
             <li>
                 <div>
                     <span>日期&nbsp;&nbsp;</span>&nbsp;&nbsp;

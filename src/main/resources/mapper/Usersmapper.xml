@@ -1,44 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.workattendance.mapper.UsersMapper" >
+<mapper namespace="com.howei.mapper.UsersMapper" >
 
-    <resultMap id="userMap" type="com.workattendance.pojo.Users">
-        <result column="Id" property="Id"></result>
-        <result column="Name" property="Name"></result>
-        <result column="UserName" property="UserName"></result>
-        <result column="Password" property="Password"></result>
-        <result column="Permissions" property="Permissions"></result>
-        <result column="projectId" property="projectId"></result>
-        <result column="roleId" property="roleId"></result>
-        <result column="Sex" property="Sex"></result>
-        <result column="Phone" property="Phone"></result>
-        <result column="EMail" property="EMail"></result>
+    <resultMap id="userMap" type="com.howei.pojo.Users">
+        <result column="id" property="id"></result>
+        <result column="userName" property="userName"></result>
+        <result column="password" property="password"></result>
+        <result column="employeeId" property="employeeId"></result>
+        <result column="state" property="state"></result>
+        <result column="sex" property="sex"></result>
+        <result column="phone" property="phone"></result>
+        <result column="email" property="email"></result>
+        <result column="companyId" property="companyId"></result>
+        <result column="departmentId" property="departmentId"></result>
+        <result column="postId" property="postId"></result>
+        <result column="userNumber" property="userNumber"></result>
+        <result column="manager" property="manager"></result>
+        <collection property="roles" resultMap="roleMap"></collection>
     </resultMap>
 
-    <select id="findUser" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String" resultMap="userMap">
-        select * from users where UserName=#{param1} and Password=#{param2}
+    <resultMap id="roleMap" type="com.howei.pojo.Role">
+        <result column="rid" property="id" />
+        <result column="roleName" property="roleName" />
+        <result column="description" property="description" />
+        <result column="englishName" property="englishName" />
+    </resultMap>
+
+    <select id="findUser" resultType="com.howei.pojo.Users" parameterType="java.lang.String" resultMap="userMap">
+        select * from users where userNumber=#{param1} and password=#{param2}
     </select>
 
-    <select id="findById" resultMap="userMap" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String">
+    <select id="loginUserNumber" resultType="com.howei.pojo.Users" parameterType="java.lang.String">
+        select * from users where userNumber=#{userNumber}
+    </select>
+
+    <select id="findById" resultMap="userMap" resultType="com.howei.pojo.Users" parameterType="java.lang.String">
         select * from users where id=#{id}
     </select>
 
-    <select id="getProjectIdS" resultType="com.workattendance.pojo.Users" parameterType="java.lang.String">
+    <select id="getProjectIdS" resultType="com.howei.pojo.Users" parameterType="java.lang.String">
         select a.Name,a.projectId from users a where UPPER(UserName)=UPPER(#{param1})
     </select>
 
-    <select id="getNameByProjectId" resultType="com.workattendance.pojo.Users" parameterType="java.lang.Integer">
+    <select id="getNameByProjectId" resultType="com.howei.pojo.Users" parameterType="java.lang.Integer">
         SELECT * FROM
         (
-        SELECT u.Id,a.Name,a.UserName,a.Department AS projectId FROM employee a
-        left JOIN users u on u.UserName=a.UserName
+        SELECT u.userNumber,u.`userName`,u.departmentId FROM employee a
+        RIGHT JOIN users u on u.UserNumber=a.UserNumber
         )b
         <if test="projectId!=null and projectId!=''">
-            WHERE b.projectId=#{projectId}
+            WHERE b.departmentId=#{projectId}
         </if>
     </select>
 
-    <select id="findByUserName" parameterType="java.lang.String" resultType="com.workattendance.pojo.Users">
+    <select id="findByUserName" parameterType="java.lang.String" resultType="com.howei.pojo.Users">
         select * from users where UserName=#{userName}
+    </select>
+
+    <select id="findAchievementsByUserName1" resultType="com.howei.pojo.Achievement">
+		SELECT a.id,UPPER(a.userName) userName ,a.week,a.result1,a.result2,a.result3,a.result4,a.cycle,a.times
+		FROM AchievementRecord a
+		JOIN employee b ON UPPER(a.userName) = UPPER(b.name)
+		WHERE b.id = #{behavior.employeeId} AND a.cycle = #{behavior.cycle}
+	</select>
+
+    <select id="getUserRolesByName" resultMap="userMap" parameterType="java.lang.String">
+        select u.*,r.id rid,r.roleName,r.description,r.englishName from users u
+        left join user_role ur on ur.userId=u.id
+        left join role r on r.id=ur.roleId
+        where 1=1
+        <if test="userNumber!=null and userNumber!=''">
+            and u.userNumber=#{userNumber}
+        </if>
+    </select>
+
+    <select id="getUserByEmpId" parameterType="java.lang.Integer" resultMap="userMap">
+        select * from users where employeeId=#{employeeId}
     </select>
 </mapper>

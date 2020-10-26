@@ -1,3 +1,5 @@
+// var path = "http://192.168.1.26:8081/";
+var path = "";
 $(function(){
     date();
     init();
@@ -49,7 +51,7 @@ function init(){
     //获取部门信息
     $.ajax({
         type:"post",
-        url:"/wa/department/getDepartmentList",
+        url:path + "/wa/department/getDepartmentList",
         dataType:"json",
         success:function(json){
             $("#depart").combobox({//往下拉框塞值
@@ -77,17 +79,17 @@ function showKpi(){
     }
 
     $('#KPITable').datagrid({
-        url: '/wa/kpi/getKPIList',
+        url: path + '/wa/kpi/getKPIList',
         method: 'get',
         title: 'kpi数据列表',
         width: 'auto',
         height: 'auto',
         //fitColumns: true,//自适应列
         loadMsg: '正在加载信息...',
+        pagination: true,//允许分页
         sortName:'frequency',		// 排序的字段
         sortOrder:'desc',			// 升序或者降序
         remoteSort:false,			// 定义从服务器对数据进行排序。
-        pagination: true,//允许分页
         //singleSelect: true,//单行选中。
         pageSize: 10,
         pageNumber: 1,
