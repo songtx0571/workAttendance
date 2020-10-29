@@ -24,6 +24,7 @@ import java.util.*;
 
 @Controller
 //@CrossOrigin(origins="http://test.hopeop.com",allowCredentials = "true")
+// 1.1.1showLaborAll，getKPIList、getWorkHoursList、getInformKPIList、toCreated、toSel、toFrequency、toPoint、toSelWorkHours接口分页格式转换为layui格式
 public class UserController {
 
     @Autowired
@@ -110,14 +111,14 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
-    // 获取员工所属项目部信息
+    /*// 获取员工所属项目部信息
     @ResponseBody
     @RequestMapping(value = "/getProjectIdS", produces = "text/json;charset=UTF-8")
     public String getProjectIdS(HttpServletRequest request) {
         String userName=request.getParameter("userName");
         String pageStr=request.getParameter("page");
         Integer page=Integer.parseInt(pageStr);
-        String limit=request.getParameter("rows");
+        String limit=request.getParameter("");
         Integer rows=Integer.parseInt(limit);
         List<Users> users = null;
         users = userService.getProjectIdS(userName);
@@ -140,7 +141,7 @@ public class UserController {
         map.put("data", users);
         return JSON.toJSONString(map);
     }
-
+*/
     //获取员工所属项目部信息
     @ResponseBody
     @RequestMapping("/getNameByProjectId")

@@ -133,7 +133,7 @@
                     </div>
                 </div>
             </div>
-            <div id="conentTable" style="display: none">
+            <div id="conentTable" style="display: none;padding: 0 10px;box-sizing: border-box;">
                 <table id="demo" lay-filter="test"></table>
                 <script type="text/html" id="barDemo11">
                     <a class="layui-btn layui-btn-xs" lay-event="showAchievement" id="showAchievement">工作业绩考核</a>

@@ -88,8 +88,8 @@ public class EmployeeController {
         Map map=new HashMap();
         map.put("empId",empIdStr);
         List<Employee> total=employeeService.getEmployeeList(map);
-        map.put("page",rows);
-        map.put("pageSize",pageSize);
+        /*map.put("page",rows);
+        map.put("pageSize",pageSize);*/
         List<Employee> list=employeeService.getEmployeeList(map);
         Result result=new Result();
         result.setCode(0);
@@ -176,8 +176,8 @@ public class EmployeeController {
         Map map=new HashMap();
         map.put("search",search);
         List<Employee> total=employeeService.searchEmployee(map);
-        map.put("page",rows);
-        map.put("pageSize",pageSize);
+        /*map.put("page",rows);
+        map.put("pageSize",pageSize);*/
         List<Employee> list=employeeService.searchEmployee(map);
 
         Result result=new Result();

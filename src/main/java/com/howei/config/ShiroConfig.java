@@ -88,7 +88,7 @@ public class ShiroConfig {
     @Bean(name="sessionManager")
     public DefaultWebSessionManager defaultWebSessionManager(RedisSessionDao redisSessionDao) {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setGlobalSessionTimeout(43200000); //12小时
+        sessionManager.setGlobalSessionTimeout(900000); //15分钟
         sessionManager.setDeleteInvalidSessions(true);
         sessionManager.setSessionDAO(redisSessionDao);
         sessionManager.setSessionValidationSchedulerEnabled(true);

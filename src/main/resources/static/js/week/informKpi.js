@@ -1,130 +1,132 @@
 var path = "";
 $(function(){
-    date();
+    showDate();
 });
-
-function date() {
-    $('#startTime').datebox({
-        onShowPanel : function() {// 显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
-            span.trigger('click'); // 触发click事件弹出月份层
-            if (!tds)
-                setTimeout(function() {// 延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
-                    tds = p.find('div.calendar-menu-month-inner td');
-                    tds.click(function(e) {
-                        e.stopPropagation(); // 禁止冒泡执行easyui给月份绑定的事件
-                        var year = /\d{4}/.exec(span.html())[0];
-                        var month = parseInt($(this).attr('abbr'), 10) ;
-                        if(month+1<10){
-                            $('#startTime').datebox('hidePanel')// 隐藏日期对象
-                                .datebox('setValue', year + '-0' + month); // 设置日期的值
-                        }else{
-                            $('#startTime').datebox('hidePanel')// 隐藏日期对象
-                                .datebox('setValue', year + '-' + month); // 设置日期的值
-                        }
-                    });
-                }, 0);
-        },
-        parser : function(s) {// 配置parser，返回选择的日期
-            if (!s)
-                return new Date();
-            var arr = s.split('-');
-            return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
-        },
-        formatter: function (d) {
-            if(d.getMonth()+1<10){
-                return d.getFullYear() + '-0' + (d.getMonth() + 1);
-            }else{
-                return d.getFullYear() + '-' + (d.getMonth() + 1);
+//显示时间
+function showDate() {
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //查询所有数据日期
+        //年月选择器
+        laydate.render({
+            elem: '#test15'
+            ,type: 'month'
+            , done: function (value) {
+                $("#selStartTime").val(value);
             }
-        }
-    });
-    var p = $('#startTime').datebox('panel'), // 日期选择对象
-        tds = false, // 日期选择对象中月份
-        span = p.find('span.calendar-text'); // 显示月份层的触发控件
+        });
+    })
 }
-
-/**
- * 查询通知数据
- */
-function showKpi(){
-    var startTime= $('#startTime').combobox('getText');
-
-    $('#KPITable').datagrid({
-        url: path + '/wa/kpi/getInformKPIList',
-        method: 'get',
-        title: 'kpi数据列表',
-        width: 'auto',
-        height: 'auto',
-        //fitColumns: true,//自适应列
-        loadMsg: '正在加载信息...',
-        pagination: true,//允许分页
-        //singleSelect: true,//单行选中。
-        pageSize: 10,
-        pageNumber: 1,
-        pageList: [10, 15, 20, 30, 50],
-        queryParams: {'startTime':startTime}, //往后台传参数用的。
-        columns: [[
-            {field: 'Id', title: '编号', align: 'center', hidden:true,width: 120},
-            {field: 'userName', title: '姓名', align: 'center',width: 750},
-            {field: 'createdCount', title: '创建数', align: 'center',width: 750,
-                formatter: function (value, row, index) {
-                    var html='<a href="javascript:toCreatedCount('+row.Id+')" style="text-decoration: none">'+row.createdCount+'</a>';
-                    return html;
-                }
-            },
-            {field: 'selCount', title: '查看数', align: 'center',width: 750,
-                formatter: function (value, row, index) {
-                    var html='<a href="javascript:toSelCount('+row.Id+')" style="text-decoration: none">'+row.selCount+'</a>';
-                    return html;
-                }
-            },
-        ]],
-        onClickRow: function(rowIndex, rowData){
-            $('#KPITable').datagrid('clearSelections');
-        },
-        onLoadSuccess: function (data) {
-            if (data.total == 0) {
-
+//查询工时数据
+function showKpi() {
+    if ( $("#startTime").val() == ""){
+        alert("请选择日期");
+        return;
+    }
+    var startTime = $("#selStartTime").val();
+    layui.use(['table',"form"], function() {
+        var table = layui.table;
+        table.render({
+            elem: '#demo'
+            , height: 500
+            , url: path + '/wa/kpi/getInformKPIList?startTime='+startTime //数据接口
+            , page: {
+                curr: 1
+            } //开启分页
+            , limit: 10
+            , limits: [10, 20, 30]
+            , cols: [[ //表头
+                {field: 'Id', title: '编号', align: 'center', hide:true,width: 120},
+                {field: 'userName', title: '员工', align: 'center'},
+                {field: 'createdCount', title: '创建数',sort :true, align: 'center',event: 'createdCount', style:'color: red;'},
+                {field: 'selCount', title: '查看数',sort :true, align: 'center',event: 'selCount', style:'color: red;'}
+            ]]
+            , done: function (res, curr, count) {}
+        });
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            var userId = data.id;
+            var startTime = $("#selDepartNameHidden").val();
+            if (obj.event == 'createdCount') {//创建数
+                layer.open({
+                    type: 1
+                    ,id: 'createdCountDiv' //防止重复弹出
+                    ,content: $(".createdCountDiv")
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0.5 //不显示遮罩
+                    ,area: ['100%', '100%']
+                    ,success: function () {
+                    }
+                    ,yes: function(){
+                    }
+                });
+                countCreate(userId,startTime)
+            } else if(obj.event == 'selCount'){//查看数
+                countSel(userId,startTime)
+                layer.open({
+                    type: 1
+                    ,id: 'selCountDiv' //防止重复弹出
+                    ,content: $(".selCountDiv")
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0.5 //不显示遮罩
+                    ,area: ['100%', '100%']
+                    ,success: function () {
+                    }
+                    ,yes: function(){
+                    }
+                });
             }
-            else $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
-        },
+        });
     });
 }
-
-/**
- * 查询当前数据具体类容
- * @param userId
- */
-function toCreatedCount(userId) {
-    var startTime= $('#startTime').combobox('getText');
-    var text="创建数-"+userId;
-    if (parent.$('#tabs').tabs('exists',text)){
-        parent.$('#tabs').tabs('select', text);
-    }else {
-        var content = '<iframe width="100%" height="100%" frameborder="0" src="/wa/kpi/toCreated?userId='+userId+',&startTime='+startTime+'" style="width:100%;height:100%;margin:0px 0px;"></iframe>';
-        parent.$('#tabs').tabs('add',{
-            title:text,
-            content:content,
-            closable:true
+function countCreate(userId,startTime) {
+    layui.use(['table',"form"], function() {
+        var table = layui.table;
+        table.render({
+            elem: '#demoCC'
+            , height: 500
+            , url: path + '/wa/kpi/getCreatedList?userId='+userId+'&startTime='+startTime //数据接口
+            , page: {
+                curr: 1
+            } //开启分页
+            , limit: 10
+            , limits: [10, 20, 30]
+            , cols: [[ //表头
+                {field: 'time', title: '通知时间', align: 'center'},
+                {field: '标题', title: 'title', align: 'center'},
+                {field: 'content', title: '内容',sort :true, align: 'center'},
+                {field: 'name', title: '发起人',sort :true, align: 'center'}
+            ]]
+            , done: function (res, curr, count) {}
         });
-    }
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+        })
+    });
 }
-
-/**
- * 查询当前数据具体类容
- * @param userId
- */
-function toSelCount(userId) {
-    var startTime= $('#startTime').combobox('getText');
-    var text="查看数-"+userId;
-    if (parent.$('#tabs').tabs('exists',text)){
-        parent.$('#tabs').tabs('select', text);
-    }else {
-        var content = '<iframe width="100%" height="100%" frameborder="0" src="/wa/kpi/toSel?userId='+userId+',&startTime='+startTime+'" style="width:100%;height:100%;margin:0px 0px;"></iframe>';
-        parent.$('#tabs').tabs('add',{
-            title:text,
-            content:content,
-            closable:true
+function countSel(userId,startTime) {
+    layui.use(['table',"form"], function() {
+        var table = layui.table;
+        table.render({
+            elem: '#demoSC'
+            , height: 500
+            , url: path + '/wa/kpi/getSelList?userId='+userId+'&startTime='+startTime //数据接口
+            , page: {
+                curr: 1
+            } //开启分页
+            , limit: 10
+            , limits: [10, 20, 30]
+            , cols: [[ //表头
+                {field: 'time', title: '通知时间', align: 'center'},
+                {field: '标题', title: 'title', align: 'center'},
+                {field: 'content', title: '内容',sort :true, align: 'center'},
+                {field: 'name', title: '发起人',sort :true, align: 'center'}
+            ]]
+            , done: function (res, curr, count) {}
         });
-    }
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+        })
+    });
 }

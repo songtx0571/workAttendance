@@ -1,3 +1,4 @@
+<%--
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -65,7 +66,7 @@
             </li>
         </ul>
     </div>
-    <%--内容主体--%>
+    &lt;%&ndash;内容主体&ndash;%&gt;
     <div class="bodyContent">
         <div id="bodyContentHead" class="bodyContentHead">
             <table id="KPITable" class="KPITable">
@@ -74,4 +75,59 @@
         </div>
     </div>
 </body>
+</html>--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<html>
+<head>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/layui/layui.js"></script>
+    <link rel="stylesheet" href="../js/layui/css/layui.css">
+    <script type="text/javascript" src="../js/week/informKpi.js?version=1.0"></script>
+</head>
+<style type="text/css">
+    .top{
+        width: 100%;
+        padding-top: 20px;
+        box-sizing: border-box;
+    }
+    .center{
+        width: 99%;
+        margin: 0 auto;
+    }
+    .createdCountDiv,.selCountDiv{
+        display: none;
+    }
+</style>
+<body>
+<div class="warp">
+    <div class="top">
+        <input type="hidden" id="selStartTime">
+        <div class="layui-inline" style="margin-bottom: 10px;">
+            <label class="layui-form-label">日期</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="test15" placeholder="年月">
+            </div>
+        </div>
+        <form class="layui-form" action="" style="display: inline-block;">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" onclick="showKpi()">查询</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <%--表格--%>
+    <div class="center">
+        <table id="demo" lay-filter="test"></table>
+    </div>
+    <%--月巡检次数--%>
+    <div class="createdCountDiv">
+        <table id="demoCC" lay-filter="test"></table>
+    </div>
+    <%--月巡检点数--%>
+    <div class="selCountDiv">
+        <table id="demoSC" lay-filter="test"></table>
+    </div>
+</div>
 </html>

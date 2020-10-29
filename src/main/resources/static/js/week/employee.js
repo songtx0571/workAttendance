@@ -4,6 +4,56 @@ $(function(){
     showEmployeeList();
     //显示绩效管理人
     showManagerName();
+    /*根据姓名搜索员工信息*/
+    $("#searchBtn").click(function(){
+        var searchName = $("#searchName").val();
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#demo'
+                ,height: 500
+                ,url: path + "/wa/employee/searchEmployee?search="+ searchName //数据接口
+                ,page: true //开启分页
+                ,limit: 10
+                ,limits: [10, 20, 30]
+                ,cols: [[ //表头
+                    {field: 'userNumber', title: '编号', width:80, sort: true}
+                    ,{field: 'name', title: '姓名', width:100}
+                    ,{field: 'sexName', title: '性别', width:80}// 1男
+                    ,{field: 'companyName', title: '公司'}
+                    ,{field: 'departmentName', title: '部门'}
+                    ,{field: 'postName', title: '岗位'}
+                    ,{field: 'managerName', title: '绩效管理人'}
+                    ,{field: 'stateName', title: '在职状态', width: 110, sort: true}// 1 在职
+                    ,{fixed: '', title:'操作', toolbar: '#barDemo11', width:70,align:'center '}
+                ]]
+                ,done: function(res, curr, count){}
+            });
+            //监听行工具事件
+            table.on('tool(test)', function(obj) {
+                var data = obj.data;
+                $("#userIdHidden").val(data.id)
+                shouInfo();
+                if (obj.event === 'edit') {
+                    index=layer.open({
+                        type: 1
+                        ,id: 'updateUser' //防止重复弹出
+                        ,content: $(".updateUser")
+                        ,btnAlign: 'c' //按钮居中
+                        ,shade: 0.5 //不显示遮罩
+                        ,area: ['700px', '500px']
+                        ,yes: function(){}
+                    });
+                }
+            });
+        });
+    });
+    $('#searchName').bind('keypress', function(event) {
+        if (event.keyCode == "13") {
+            $("#searchBtn").click();
+        }
+    })
+
 });
 //显示绩效管理人
 function showManagerName() {
@@ -11,10 +61,9 @@ function showManagerName() {
         var form = layui.form;
         $.ajax({
             type: "GET",
-            url: path + "/wa/employee/getEmployeeList",
+            url: path + "/wa/employee/getEmployeeNameMap",
             dataType: "json",
             success: function(data){
-                data = data.data;
                 $("#managerName").empty();
                 var option="<option value='0' >请选择绩效管理人</option>";
                 for (var i = 0; i < data.length; i ++) {
@@ -114,50 +163,7 @@ function shouInfo() {
         }
     });
 }
-/*根据姓名搜索员工信息*/
-function searchBtn() {
-    var searchName = $("#searchName").val();
-    layui.use('table', function(){
-        var table = layui.table;
-        table.render({
-            elem: '#demo'
-            ,height: 500
-            ,url: path + "/wa/employee/searchEmployee?search="+ searchName //数据接口
-            ,page: true //开启分页
-            ,limit: 10
-            ,limits: [10, 20, 30]
-            ,cols: [[ //表头
-                {field: 'userNumber', title: '编号', width:80, sort: true}
-                ,{field: 'name', title: '姓名', width:100}
-                ,{field: 'sexName', title: '性别', width:80}// 1男
-                ,{field: 'companyName', title: '公司'}
-                ,{field: 'departmentName', title: '部门'}
-                ,{field: 'postName', title: '岗位'}
-                ,{field: 'managerName', title: '绩效管理人'}
-                ,{field: 'stateName', title: '在职状态', width: 110, sort: true}// 1 在职
-                ,{fixed: '', title:'操作', toolbar: '#barDemo11', width:70,align:'center '}
-            ]]
-            ,done: function(res, curr, count){}
-        });
-        //监听行工具事件
-        table.on('tool(test)', function(obj) {
-            var data = obj.data;
-            $("#userIdHidden").val(data.id)
-            shouInfo();
-            if (obj.event === 'edit') {
-                index=layer.open({
-                    type: 1
-                    ,id: 'updateUser' //防止重复弹出
-                    ,content: $(".updateUser")
-                    ,btnAlign: 'c' //按钮居中
-                    ,shade: 0.5 //不显示遮罩
-                    ,area: ['700px', '500px']
-                    ,yes: function(){}
-                });
-            }
-        });
-    });
-}
+
 //修改员工信息
 function updUserInfo() {
     var employee = {};

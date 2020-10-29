@@ -5,6 +5,7 @@ import com.howei.service.*;
 import com.howei.util.DateFormat;
 import com.howei.util.EasyuiResult;
 import com.howei.util.Page;
+import com.howei.util.Result;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,12 +70,12 @@ public class KPIController {
     @RequiresPermissions(value = {"运行KPI查询"},logical = OR)
     @RequestMapping("/getKPIList")
     @ResponseBody
-    public EasyuiResult getKPIList(HttpServletRequest request){
+    public Result getKPIList(HttpServletRequest request){
         String depart=request.getParameter("depart");
         String startTime=request.getParameter("startTime");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         Map map=new HashMap();
         if(depart!=null&&!depart.equals("")){
             map.put("depart",depart);
@@ -86,13 +87,18 @@ public class KPIController {
         }
 
         List<Map> listTotal=postPeratorService.getKPIList(map);
-        map.put("page",offset);
-        map.put("pageSize",rows);
+        map.put("pageSize",limit);
+        map.put("page",rows);
         List<Map> list=postPeratorService.getKPIList(map);
-        EasyuiResult easyuiResult=new EasyuiResult();
+
+        Result result=new Result();
+        result.setCode(0);
+        result.setData(list);
+        result.setCount(listTotal.size());
+        /*EasyuiResult easyuiResult=new EasyuiResult();
         easyuiResult.setRows(list);
-        easyuiResult.setTotal(listTotal.size());
-        return easyuiResult;
+        easyuiResult.setTotal(listTotal.size());*/
+        return result;
     }
 
     /**
@@ -116,12 +122,12 @@ public class KPIController {
      */
     @RequestMapping("/getFrequencyList")
     @ResponseBody
-    public EasyuiResult getFrequencyList(HttpServletRequest request){
+    public Result getFrequencyList(HttpServletRequest request){
         String userId=request.getParameter("userId");
         String startTime=request.getParameter("startTime");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         List<PostPerator> result=new ArrayList<>();
         int count=0;
         if(userId!=null){
@@ -135,14 +141,15 @@ public class KPIController {
             result=postPeratorService.getFrequencyList(map);
             count=result.size();
             result.clear();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             result=postPeratorService.getFrequencyList(map);
         }
-        EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setRows(result);
-        easyuiResult.setTotal(count);
-        return easyuiResult;
+        Result result1=new Result();
+        result1.setData(result);
+        result1.setCount(count);
+        result1.setCode(0);
+        return result1;
     }
 
     /**
@@ -167,12 +174,12 @@ public class KPIController {
      */
     @RequestMapping("/getPointList")
     @ResponseBody
-    public EasyuiResult getPointList(HttpServletRequest request){
+    public Result getPointList(HttpServletRequest request){
         String userId=request.getParameter("userId");
         String startTime=request.getParameter("startTime");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         List<PostPeratorData> result=new ArrayList<>();
         int count=0;
         if(userId!=null){
@@ -186,24 +193,25 @@ public class KPIController {
             result=postPeratorDataService.getPointList(map);
             count=result.size();
             result.clear();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             result=postPeratorDataService.getPointList(map);
         }
-        EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setRows(result);
-        easyuiResult.setTotal(count);
-        return easyuiResult;
+        Result result1=new Result();
+        result1.setData(result);
+        result1.setCount(count);
+        result1.setCode(0);
+        return result1;
     }
 
     @RequiresPermissions(value = {"通知KPI查询"},logical = OR)
     @RequestMapping("/getInformKPIList")
     @ResponseBody
-    public EasyuiResult getInformKPIList(HttpServletRequest request) {
+    public Result getInformKPIList(HttpServletRequest request) {
         String startTime = request.getParameter("startTime");
-        String page = request.getParameter("page");
-        String rows = request.getParameter("rows");
-        int offset = Page.getOffSet(page, rows);
+        String page=request.getParameter("page");
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         Map map = new HashMap();
         if (startTime != null && !startTime.equals("")) {
             map.put("startTime", startTime);
@@ -212,8 +220,8 @@ public class KPIController {
         }
 
         List<Map> listTotal = informService.getInformKPIList(map);
-        map.put("page", offset);
-        map.put("pageSize", rows);
+        map.put("pageSize",limit);
+        map.put("page",rows);
         List<Map> list = informService.getInformKPIList(map);
         if(list!=null){
             for (int i=0;i<list.size();i++){
@@ -232,10 +240,14 @@ public class KPIController {
                 }
             }
         }
-        EasyuiResult easyuiResult = new EasyuiResult();
+        Result result=new Result();
+        result.setCode(0);
+        result.setData(list);
+        result.setCount(listTotal.size());
+        /*EasyuiResult easyuiResult = new EasyuiResult();
         easyuiResult.setRows(list);
-        easyuiResult.setTotal(listTotal.size());
-        return easyuiResult;
+        easyuiResult.setTotal(listTotal.size());*/
+        return result;
     }
 
     @RequestMapping("/toCreated")
@@ -257,11 +269,11 @@ public class KPIController {
 
     @RequestMapping("/getSelList")
     @ResponseBody
-    public EasyuiResult getSelList(HttpServletRequest request){
+    public Result getSelList(HttpServletRequest request){
         String userId=request.getParameter("userId");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         List<Inform> result=new ArrayList<>();
         int count=0;
         if(userId!=null){
@@ -270,25 +282,25 @@ public class KPIController {
             result=informService.getSelList(map);
             count=result.size();
             result.clear();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             result=informService.getSelList(map);
         }
-        EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setRows(result);
-        easyuiResult.setTotal(count);
-        return easyuiResult;
+        Result result1=new Result();
+        result1.setData(result);
+        result1.setCount(count);
+        return result1;
     }
 
 
     @RequestMapping("/getCreatedList")
     @ResponseBody
-    public EasyuiResult getCreatedList(HttpServletRequest request){
+    public Result getCreatedList(HttpServletRequest request){
         String userId=request.getParameter("userId");
         String startTime=request.getParameter("startTime");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         List<Inform> result=new ArrayList<>();
         int total=0;
         if(userId!=null){
@@ -300,8 +312,8 @@ public class KPIController {
             }
             map.put("createdBy",userId);
             total=informService.getCreatedList(map).size();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             result=informService.getCreatedList(map);
             if(result!=null){
                 for (Inform inf:result) {
@@ -309,21 +321,25 @@ public class KPIController {
                 }
             }
         }
-        EasyuiResult easyuiResult=new EasyuiResult();
+        Result result1=new Result();
+        result1.setCode(0);
+        result1.setData(result);
+        result1.setCount(total);
+        /*EasyuiResult easyuiResult=new EasyuiResult();
         easyuiResult.setRows(result);
-        easyuiResult.setTotal(total);
-        return easyuiResult;
+        easyuiResult.setTotal(total);*/
+        return result1;
     }
 
     @RequiresPermissions(value = {"检修KPI查询"},logical = OR)
     @RequestMapping("/getWorkHoursList")
     @ResponseBody
-    public EasyuiResult getWorkHoursList(HttpServletRequest request){
+    public Result getWorkHoursList(HttpServletRequest request){
         String startTime=request.getParameter("startTime");
         String depart=request.getParameter("depart");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         Map map=new HashMap();
         if(startTime!=null&&!startTime.equals("")){
             map.put("startTime",startTime);
@@ -335,19 +351,23 @@ public class KPIController {
         Integer size = users.size();
         //处理分页的users列表
         List<Users> users2 = new ArrayList<>();
-        for (int i = offset; i < Integer.parseInt(page) * (Integer.parseInt(rows)); i++) {
+        for (int i = rows; i < Integer.parseInt(page) * (Integer.parseInt(limit)); i++) {
             if (i < users.size()) {
                 users2.add(users.get(i));
             }
         }
         users = users2;
 
-        List<Map<String,String>> result=resultWorkHoursList(users,list,depart,rows,offset,page);
+        List<Map<String,String>> result=resultWorkHoursList(users,list,depart,limit,rows,page);
 
-        EasyuiResult easyuiResult=new EasyuiResult();
+        Result result1=new Result();
+        result1.setCode(0);
+        result1.setData(result);
+        result1.setCount(size);
+        /*EasyuiResult easyuiResult=new EasyuiResult();
         easyuiResult.setTotal(size);
-        easyuiResult.setRows(result);
-        return easyuiResult;
+        easyuiResult.setRows(result);*/
+        return result1;
     }
 
     public List<Map<String,String>> resultWorkHoursList(List<Users> users, List<MaintenanceRecord> list, String depart, String rows, int offset, String page){
@@ -433,9 +453,6 @@ public class KPIController {
                 result.add(mapMap);
             }
         }
-        EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setRows(result);
-        easyuiResult.setTotal(result.size());
         return result;
     }
 }

@@ -140,7 +140,7 @@
         </div>
         <div id="tab">
             <div id="secondPage" class="show">
-                <form name="register2" id="loginlist" action="/wa/loginPage" method="post">
+                <form name="register2" id="loginlist" action="/loginPage" method="post">
                     账号:<input type="text" name="userNumber" placeholder="请输入账号"
                               id="userNumber" class="set"  onfocus="this.placeholder=''"
                               onblur="this.placeholder='请输入账号'"><br>

@@ -4,6 +4,7 @@ import com.howei.pojo.MaintenanceRecord;
 import com.howei.service.ExaminationService;
 import com.howei.util.EasyuiResult;
 import com.howei.util.Page;
+import com.howei.util.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,12 +66,12 @@ public class AttendanceController {
     @RequiresPermissions(value = {"员工工时"},logical = OR)
     @ResponseBody
     @RequestMapping("/showLaborAll")
-    public EasyuiResult showLaborAll(HttpServletRequest request) {
+    public Result showLaborAll(HttpServletRequest request) {
         String userName=request.getParameter("userName");
         String MonthDate=request.getParameter("MonthDate");
         String DayDateT=request.getParameter("DayDateT");
         String page=request.getParameter("page");
-        String rows=request.getParameter("rows");
+        String rows=request.getParameter("limit");
         int offset=Page.getOffSet(page,rows);
         List<MaintenanceRecord> maintenanceRecords = null;
         int count=0;
@@ -100,10 +101,14 @@ public class AttendanceController {
             maintenanceRecords=examinationServive.showLaborAll(map);
         }
 
-        EasyuiResult easyuiResult=new EasyuiResult();
+        Result result=new Result();
+        result.setCode(0);
+        result.setData(maintenanceRecords);
+        result.setCount(count);
+       /* EasyuiResult easyuiResult=new EasyuiResult();
         easyuiResult.setTotal(count);
-        easyuiResult.setRows(maintenanceRecords);
-        return easyuiResult;
+        easyuiResult.setRows(maintenanceRecords);*/
+        return result;
     }
 
     public String getAttendanceType() {
