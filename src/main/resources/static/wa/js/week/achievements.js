@@ -16,6 +16,7 @@ function showCycleData() {
         laydate.render({
             elem: '#test3'
             , type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden").val(value);
                 $("#conentTable").css("display","block");
@@ -27,6 +28,7 @@ function showCycleData() {
         laydate.render({
             elem: '#test4'
             , type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden1").val(value);
             }
@@ -35,6 +37,7 @@ function showCycleData() {
         laydate.render({
             elem: '#test5'
             , type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#addCycleDataHidden").val(value);
             }
@@ -43,6 +46,7 @@ function showCycleData() {
         laydate.render({
             elem: '#test6'
             , type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden2").val(value)
             }

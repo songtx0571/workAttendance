@@ -47,6 +47,7 @@ function showDate() {
         laydate.render({
             elem: '#test15'
             ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
             }

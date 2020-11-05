@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.WagsMapper" >
+    <resultMap id="wagsMap" type="com.howei.pojo.Wages">
+        <result column="id" property="id"></result>
+        <result column="employeeId" property="employeeId"></result>
+        <result column="basePay" property="basePay"></result>
+        <result column="skillPay" property="skillPay"></result>
+        <result column="positionSalary" property="positionSalary"></result>
+        <result column="seniorityWage" property="seniorityWage"></result>
+        <result column="other" property="other"></result>
+        <result column="meritPay" property="meritPay"></result>
+        <result column="wageSubtotal" property="wageSubtotal"></result>
+        <result column="performanceCoefficient" property="performanceCoefficient"></result>
+        <result column="wagesPayable" property="wagesPayable"></result>
+        <result column="totalPayable" property="totalPayable"></result>
+        <result column="endowmentInsurance" property="endowmentInsurance"></result>
+        <result column="unemploymentBenefits" property="unemploymentBenefits"></result>
+        <result column="medicalInsurance" property="medicalInsurance"></result>
+        <result column="accumulationFund" property="accumulationFund"></result>
+        <result column="otherDeductions" property="otherDeductions"></result>
+        <result column="unionFees" property="unionFees"></result>
+        <result column="totalTax" property="totalTax"></result>
+        <result column="totalDeduction" property="totalDeduction"></result>
+        <result column="sixSpecialDeductions" property="sixSpecialDeductions"></result>
+        <result column="individualTaxAdjustment" property="individualTaxAdjustment"></result>
+        <result column="netSalary" property="netSalary"></result>
+        <result column="remark" property="remark"></result>
+        <result column="date" property="date"></result>
+        <result column="created" property="created"></result>
+    </resultMap>
+
+    <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
+        select * from wags
+        <where>
+            <if test="month!=null">
+                `date`=#{month}
+            </if>
+        </where>
+    </select>
+
+    <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into wags (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
+        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
+        individualTaxAdjustment,netSalary,remark,`date`,created) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.other},#{item.meritPay}
+              ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.totalPayable},#{item.endowmentInsurance}
+              ,#{item.unemploymentBenefits},#{item.medicalInsurance},#{item.accumulationFund},#{item.otherDeductions},#{item.unionFees},#{item.totalTax}
+              ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.remark},#{item.date},#{item.created})
+        </foreach>
+    </insert>
+
+    <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">
+        update wags
+        <set>
+            <if test="other!=null">
+                other=#{other},
+            </if>
+            <if test="wageSubtotal!=null">
+                wageSubtotal=#{wageSubtotal},
+            </if>
+            <if test="performanceCoefficient!=null">
+                performanceCoefficient=#{performanceCoefficient},
+            </if>
+            <if test="wagesPayable!=null">
+                wagesPayable=#{wagesPayable},
+            </if>
+            <if test="foodSupplement!=null">
+                foodSupplement=#{foodSupplement},
+            </if>
+            <if test="totalPayable!=null">
+                totalPayable=#{totalPayable},
+            </if>
+            <if test="otherDeductions!=null">
+                otherDeductions=#{otherDeductions},
+            </if>
+            <if test="totalDeduction!=null">
+                totalDeduction=#{totalDeduction},
+            </if>
+            <if test="totalTax!=null">
+                totalTax=#{totalTax},
+            </if>
+            <if test="sixSpecialDeductions!=null">
+                sixSpecialDeductions=#{sixSpecialDeductions},
+            </if>
+            <if test="individualTaxAdjustment!=null">
+                individualTaxAdjustment=#{individualTaxAdjustment},
+            </if>
+            <if test="netSalary!=null">
+                netSalary=#{netSalary},
+            </if>
+            <if test="highTemperatureSubsidy!=null">
+                highTemperatureSubsidy=#{highTemperatureSubsidy},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--获取税列表-->
+    <select id="getTaxList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Tax">
+        select * from tax
+        <where>
+            <if test="month!=null">
+                DATE_FORMAT(`date`,'%Y-%m-%d')&lt;DATE_FORMAT(`date`,'%Y-%m-%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="getWagsListById" parameterType="java.lang.String" resultType="com.howei.pojo.Wages">
+        select * from wages where id=#{id}
+    </select>
+
+</mapper>

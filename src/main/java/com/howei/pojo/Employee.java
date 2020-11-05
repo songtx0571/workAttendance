@@ -1,9 +1,10 @@
 package com.howei.pojo;
 
+import java.io.Serializable;
 import java.util.List;
 
 //员工信息
-public class Employee {
+public class Employee implements Serializable {
     private int id;
     private String name;//姓名
     private String userNumber;//编号
@@ -30,6 +31,16 @@ public class Employee {
     private Integer manager;//绩效管理人
     private String created;
     private int createdBy;
+
+    private Double skillPay;//技能工资
+    private Double positionSalary;//职务工资
+    private Double seniorityWage;//工龄工资
+    private Double foodSupplement;//餐补
+    private Double endowmentInsurance;//养老保险
+    private Double unemploymentBenefits;//失业金
+    private Double medicalInsurance;//医疗保险
+    private Double accumulationFund;//公积金
+    private Double unionFees;//工会费
 
     //虚字段
     private String stateName;
@@ -67,6 +78,15 @@ public class Employee {
                 ", basicwages='" + basicwages + '\'' +
                 ", meritpay='" + meritpay + '\'' +
                 ", address='" + address + '\'' +
+                ", skillPay='" + skillPay + '\'' +
+                ", positionSalary='" + positionSalary + '\'' +
+                ", seniorityWage='" + seniorityWage + '\'' +
+                ", foodSupplement='" + foodSupplement + '\'' +
+                ", endowmentInsurance='" + endowmentInsurance + '\'' +
+                ", unemploymentBenefits='" + unemploymentBenefits + '\'' +
+                ", medicalInsurance='" + medicalInsurance + '\'' +
+                ", accumulationFund='" + accumulationFund + '\'' +
+                ", unionFees='" + unionFees + '\'' +
                 ", created='" + created + '\'' +
                 ", createdBy=" + createdBy +
                 '}';
@@ -335,4 +355,77 @@ public class Employee {
     public void setManagerList(List<Employee> managerList) {
         this.managerList = managerList;
     }
+
+    public Double getSkillPay() {
+        return skillPay;
+    }
+
+    public void setSkillPay(Double skillPay) {
+        this.skillPay = skillPay;
+    }
+
+    public Double getPositionSalary() {
+        return positionSalary;
+    }
+
+    public void setPositionSalary(Double positionSalary) {
+        this.positionSalary = positionSalary;
+    }
+
+    public Double getSeniorityWage() {
+        return seniorityWage;
+    }
+
+    public void setSeniorityWage(Double seniorityWage) {
+        this.seniorityWage = seniorityWage;
+    }
+
+    public Double getFoodSupplement() {
+        return foodSupplement;
+    }
+
+    public void setFoodSupplement(Double foodSupplement) {
+        this.foodSupplement = foodSupplement;
+    }
+
+    public Double getEndowmentInsurance() {
+        return endowmentInsurance;
+    }
+
+    public void setEndowmentInsurance(Double endowmentInsurance) {
+        this.endowmentInsurance = endowmentInsurance;
+    }
+
+    public Double getUnemploymentBenefits() {
+        return unemploymentBenefits;
+    }
+
+    public void setUnemploymentBenefits(Double unemploymentBenefits) {
+        this.unemploymentBenefits = unemploymentBenefits;
+    }
+
+    public Double getMedicalInsurance() {
+        return medicalInsurance;
+    }
+
+    public void setMedicalInsurance(Double medicalInsurance) {
+        this.medicalInsurance = medicalInsurance;
+    }
+
+    public Double getAccumulationFund() {
+        return accumulationFund;
+    }
+
+    public void setAccumulationFund(Double accumulationFund) {
+        this.accumulationFund = accumulationFund;
+    }
+
+    public Double getUnionFees() {
+        return unionFees;
+    }
+
+    public void setUnionFees(Double unionFees) {
+        this.unionFees = unionFees;
+    }
+
 }

@@ -178,6 +178,7 @@ function showDate() {
         laydate.render({
             elem: '#test15'
             ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
             }
@@ -185,6 +186,8 @@ function showDate() {
         laydate.render({
             elem: '#test2'
             ,type: 'date'
+            ,trigger: 'click'//呼出事件改成click
+            ,showBottom: false
             , done: function (value) {
                 $("#addLeaveTimeHidden").val(value);
                 $("#addStartTimeSpan").css("display","none");
@@ -193,6 +196,7 @@ function showDate() {
         laydate.render({
             elem: '#test3'
             ,type: 'time'
+            ,trigger: 'click'//呼出事件改成click
             ,range: true
             ,min: '08:30:00'
             ,max: '17:00:00'
@@ -208,6 +212,7 @@ function showDate() {
             elem: '#test4'
             , format: 'yyyy-MM-dd HH:mm'
             ,type: 'datetime'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#updStartTimeHidden").val(value);
             }
@@ -216,6 +221,7 @@ function showDate() {
             elem: '#test5'
             , format: 'yyyy-MM-dd HH:mm'
             ,type: 'datetime'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#updEndTimeHidden").val(value);
             }

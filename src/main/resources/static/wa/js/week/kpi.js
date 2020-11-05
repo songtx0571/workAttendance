@@ -12,6 +12,7 @@ function showDate() {
         laydate.render({
             elem: '#test15'
             ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
             }
@@ -63,8 +64,8 @@ function showKpi() {
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide:true,width: 120},
                 {field: 'userName', title: '员工', align: 'center'},
-                {field: 'frequency', title: '月巡检次数',sort :true, align: 'center',event: 'monthNum', style:'color: red;'},
-                {field: 'point', title: '月巡检点数',sort :true, align: 'center',event: 'monthPoint', style:'color: red;'}
+                {field: 'frequency', title: '月巡检次数',sort :true, align: 'center', event: 'monthNum', style:'cursor: pointer;color: red;'},
+                {field: 'point', title: '月巡检点数',sort :true, align: 'center', event: 'monthPoint', style:'cursor: pointer;color: red;'}
             ]]
             , done: function (res, curr, count) {}
         });
@@ -72,8 +73,9 @@ function showKpi() {
         table.on('tool(test)', function (obj) {
             var data = obj.data;
             var userId = data.id;
-            var startTime = $("#selDepartNameHidden").val();
+            var startTime = $("#selStartTime").val();
             if (obj.event == 'monthNum') {//月巡检次数
+                num(userId,startTime);
                 layer.open({
                     type: 1
                     ,id: 'showMonthNum' //防止重复弹出
@@ -86,9 +88,8 @@ function showKpi() {
                     ,yes: function(){
                     }
                 });
-                num(userId,startTime)
             } else if(obj.event == 'monthPoint'){//月巡检点数
-                point(userId,startTime)
+                point(userId,startTime);
                 layer.open({
                     type: 1
                     ,id: 'showMonthPoint' //防止重复弹出
@@ -111,7 +112,7 @@ function num(userId,startTime) {
         table.render({
             elem: '#demoNum'
             , height: 500
-            , url: path + '/wa/kpi/toFrequency?userId='+userId+'&startTime='+startTime //数据接口
+            , url: path + '/wa/kpi/getFrequencyList?userId='+userId+'&startTime='+startTime //数据接口
             , page: {
                 curr: 1
             } //开启分页
@@ -120,12 +121,12 @@ function num(userId,startTime) {
             , cols: [[ //表头
                 {field: 'inspectionStaTime', title: '开始执行时间', align: 'center'},
                 {field: 'inspectionEndTime', title: '实际结束时间', align: 'center'},
-                {field: 'inspectionEndTheoryTime', title: '理论结束时间',sort :true, align: 'center',event: 'monthNum'}
+                {field: 'inspectionEndTheoryTime', title: '理论结束时间',sort :true, align: 'center'}
             ]]
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
-        table.on('tool(test)', function (obj) {
+        table.on('tool(test1)', function (obj) {
         })
     });
 }
@@ -135,7 +136,7 @@ function point(userId,startTime) {
         table.render({
             elem: '#demoPoint'
             , height: 500
-            , url: path + '/wa/kpi/toPoint?userId='+userId+'&startTime='+startTime //数据接口
+            , url: path + '/wa/kpi/getPointList?userId='+userId+'&startTime='+startTime //数据接口
             , page: {
                 curr: 1
             } //开启分页
@@ -151,7 +152,7 @@ function point(userId,startTime) {
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
-        table.on('tool(test)', function (obj) {
+        table.on('tool(test2)', function (obj) {
         })
     });
 }

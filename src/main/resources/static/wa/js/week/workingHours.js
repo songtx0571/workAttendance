@@ -12,6 +12,7 @@ function showDate() {
         laydate.render({
             elem: '#test15'
             ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
             }
@@ -97,7 +98,7 @@ function workHour(userId,startTime) {
         table.render({
             elem: '#demoWH'
             , height: 500
-            , url: path + '/wa/kpi/toSelWorkHours?userId='+userId+'&startTime='+startTime //数据接口
+            , url: path + '//wa/kpi/getSelWorkHoursList?userId='+userId+'&startTime='+startTime+'&depart='+$("#selDepartNameHidden").val() //数据接口
             , page: {
                 curr: 1
             } //开启分页
@@ -110,7 +111,7 @@ function workHour(userId,startTime) {
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
-        table.on('tool(test)', function (obj) {
+        table.on('tool(test1)', function (obj) {
         })
     });
 }

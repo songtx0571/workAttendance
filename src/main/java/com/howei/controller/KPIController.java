@@ -95,9 +95,6 @@ public class KPIController {
         result.setCode(0);
         result.setData(list);
         result.setCount(listTotal.size());
-        /*EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setRows(list);
-        easyuiResult.setTotal(listTotal.size());*/
         return result;
     }
 
@@ -244,9 +241,6 @@ public class KPIController {
         result.setCode(0);
         result.setData(list);
         result.setCount(listTotal.size());
-        /*EasyuiResult easyuiResult = new EasyuiResult();
-        easyuiResult.setRows(list);
-        easyuiResult.setTotal(listTotal.size());*/
         return result;
     }
 
@@ -364,9 +358,6 @@ public class KPIController {
         result1.setCode(0);
         result1.setData(result);
         result1.setCount(size);
-        /*EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setTotal(size);
-        easyuiResult.setRows(result);*/
         return result1;
     }
 

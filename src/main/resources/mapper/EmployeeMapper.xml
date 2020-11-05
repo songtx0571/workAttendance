@@ -26,17 +26,29 @@
         <result column="created" property="created"></result>
         <result column="createdBy" property="createdBy"></result>
         <result column="manager" property="manager"></result>
+
+        <result column="skillPay" property="skillPay"></result>
+        <result column="positionSalary" property="positionSalary"></result>
+        <result column="seniorityWage" property="seniorityWage"></result>
+        <result column="foodSupplement" property="foodSupplement"></result>
+        <result column="endowmentInsurance" property="endowmentInsurance"></result>
+        <result column="unemploymentBenefits" property="unemploymentBenefits"></result>
+        <result column="medicalInsurance" property="medicalInsurance"></result>
+        <result column="accumulationFund" property="accumulationFund"></result>
+        <result column="unionFees" property="unionFees"></result>
     </resultMap>
 
     <select id="getEmployeeList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
-        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,
+          p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
+          e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
         LEFT JOIN company c on c.id=u.companyId
         LEFT JOIN company c1 on c1.id=u.departmentId
         LEFT JOIN post p on p.id=u.postId
-        where c.headQuarters=0 and c.parent=0 and u.state=1
+        where c.id=1 and u.state=1
         <if test="empId!=null">
             and FIND_IN_SET(e.id,#{empId})
         </if>
@@ -47,7 +59,8 @@
 
     <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
-        e.idnumber,e.bank,e.card,u.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy
+        e.idnumber,e.bank,e.card,u.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
+        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
@@ -58,14 +71,15 @@
     </select>
 
     <select id="searchEmployee" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
-        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
+        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
         LEFT JOIN company c on c.id=u.companyId
         LEFT JOIN company c1 on c1.id=u.departmentId
         LEFT JOIN post p on p.id=u.postId
-        where c.headQuarters=0 and c.parent=0
+        where c.id=1
         and (
             e.address like concat('%',#{search},'%') or
 			e.name like concat('%',#{search},'%') OR
@@ -135,6 +149,37 @@
             </if>
             <if test="manager!=null">
                 manager=#{manager},
+            </if>
+            <if test="skillPay!=null">
+                skillPay=#{skillPay},
+            </if>
+            <if test="positionSalary!=null">
+                positionSalary=#{positionSalary},
+            </if>
+            <if test="seniorityWage!=null">
+                seniorityWage=#{seniorityWage},
+            </if>
+            <if test="foodSupplement!=null">
+                foodSupplement=#{foodSupplement},
+            </if>
+
+            <if test="endowmentInsurance!=null">
+                endowmentInsurance=#{endowmentInsurance},
+            </if>
+            <if test="unemploymentBenefits!=null">
+                unemploymentBenefits=#{unemploymentBenefits},
+            </if>
+            <if test="medicalInsurance!=null">
+                medicalInsurance=#{medicalInsurance},
+            </if>
+            <if test="accumulationFund!=null">
+                accumulationFund=#{accumulationFund},
+            </if>
+            <if test="unionFees!=null">
+                unionFees=#{unionFees},
+            </if>
+            <if test="paymentBase!=null">
+                paymentBase=#{paymentBase},
             </if>
         </trim>
         where id=#{id}

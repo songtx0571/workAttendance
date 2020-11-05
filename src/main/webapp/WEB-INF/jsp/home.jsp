@@ -4,13 +4,13 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
     <title>浩维管理平台</title>
 </head>
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/easyui/jquery.min.js"></script>
-<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
-<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css" />
 <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css?version=1.0" />
-<script type="text/javascript" src="js/week/home.js?version=1.11"></script>
+<script type="text/javascript" src="../js/week/home.js?version=1.11"></script>
 
 <script type="text/javascript">
 </script>

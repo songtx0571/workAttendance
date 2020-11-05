@@ -187,7 +187,7 @@ public class DateFormat {
     }
 
     /**
-     * 获取当前月份
+     * 获取当前月份:YYMM
      * @return
      */
     public static String ThisMonth(){
@@ -196,4 +196,26 @@ public class DateFormat {
         int month=calendar.get(Calendar.MONTH)+1;
         return month<10?year+"-0"+month:year+"-"+month;
     }
+
+    /**
+     * 获取当前月份:MM
+     * @return
+     */
+    public static String ThisMonthOnly(){
+        Calendar calendar=Calendar.getInstance();
+        int month=calendar.get(Calendar.MONTH)+1;
+        return month<10 ? "-0"+month : "-"+month;
+    }
+
+    /**
+     * 获取上一月份
+     * @return
+     */
+    public static String beforeMonth(){
+        Calendar calendar=Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month=calendar.get(Calendar.MONTH);
+        return month<10?year+"-0"+month:year+"-"+month;
+    }
+
 }

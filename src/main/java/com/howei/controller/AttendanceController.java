@@ -71,8 +71,8 @@ public class AttendanceController {
         String MonthDate=request.getParameter("MonthDate");
         String DayDateT=request.getParameter("DayDateT");
         String page=request.getParameter("page");
-        String rows=request.getParameter("limit");
-        int offset=Page.getOffSet(page,rows);
+        String limit=request.getParameter("limit");
+        int rows=Page.getOffSet(page,limit);
         List<MaintenanceRecord> maintenanceRecords = null;
         int count=0;
         Map map=new HashMap<>();
@@ -81,23 +81,23 @@ public class AttendanceController {
             map.put("DayDateT",DayDateT);
             List<MaintenanceRecord> listTotal= examinationServive.showLaborByDay(map);
             count=listTotal.size();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             maintenanceRecords = examinationServive.showLaborByDay(map);
         } else if (MonthDate != "" && DayDateT == "") {
             map.put("userName",userName);
             map.put("MonthDate",MonthDate);
             List<MaintenanceRecord> listTotal = examinationServive.showLaborByMonth(map);
             count=listTotal.size();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             maintenanceRecords= examinationServive.showLaborByMonth(map);
         } else if (MonthDate == "" && DayDateT == "") {
             map.put("userName",userName);
             List<MaintenanceRecord> listTotal = examinationServive.showLaborAll(map);
             count=listTotal.size();
-            map.put("page",offset);
-            map.put("pageSize",rows);
+            map.put("pageSize",limit);
+            map.put("page",rows);
             maintenanceRecords=examinationServive.showLaborAll(map);
         }
 
@@ -105,9 +105,6 @@ public class AttendanceController {
         result.setCode(0);
         result.setData(maintenanceRecords);
         result.setCount(count);
-       /* EasyuiResult easyuiResult=new EasyuiResult();
-        easyuiResult.setTotal(count);
-        easyuiResult.setRows(maintenanceRecords);*/
         return result;
     }
 

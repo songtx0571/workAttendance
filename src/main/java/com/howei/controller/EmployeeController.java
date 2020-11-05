@@ -62,11 +62,7 @@ public class EmployeeController {
     @RequestMapping("/getEmployeeList")
     @ResponseBody
     public String getEmployeeList(HttpServletRequest request){
-        String page=request.getParameter("page");
-        String pageSize=request.getParameter("limit");
-        int rows=Page.getOffSet(page,pageSize);
         Users users=this.getPrincipal();
-
         Integer employeeId=null;
         String empIdStr="";
         if(users!=null){
@@ -87,13 +83,10 @@ public class EmployeeController {
 
         Map map=new HashMap();
         map.put("empId",empIdStr);
-        List<Employee> total=employeeService.getEmployeeList(map);
-        /*map.put("page",rows);
-        map.put("pageSize",pageSize);*/
         List<Employee> list=employeeService.getEmployeeList(map);
         Result result=new Result();
         result.setCode(0);
-        result.setCount(total.size());
+        result.setCount(list.size());
         result.setData(list);
         return JSON.toJSONString(result);
     }
@@ -157,9 +150,8 @@ public class EmployeeController {
     @RequestMapping(value="/updateEmployee",method = RequestMethod.POST)
     @ResponseBody
     public String updateEmployee(@RequestBody Employee employee){
-        System.out.println(employee.getEmergencyTel());
         if(employee!=null&&employee.getId()!=-1){
-            int result=employeeService.updateEmployee(employee);
+            employeeService.updateEmployee(employee);
             return JSON.toJSONString("success");
         }
         return JSON.toJSONString("");
@@ -170,19 +162,13 @@ public class EmployeeController {
     @ResponseBody
     public String searchEmployee(HttpServletRequest request){
         String search=request.getParameter("search");
-        String page=request.getParameter("page");
-        String pageSize=request.getParameter("limit");
-        int rows=Page.getOffSet(page,pageSize);
         Map map=new HashMap();
         map.put("search",search);
-        List<Employee> total=employeeService.searchEmployee(map);
-        /*map.put("page",rows);
-        map.put("pageSize",pageSize);*/
         List<Employee> list=employeeService.searchEmployee(map);
 
         Result result=new Result();
         result.setCode(0);
-        result.setCount(total.size());
+        result.setCount(list.size());
         result.setData(list);
         return JSON.toJSONString(result);
     }

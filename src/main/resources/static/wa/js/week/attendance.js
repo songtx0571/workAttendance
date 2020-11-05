@@ -11,9 +11,21 @@ function showDate() {
         //年月选择器
         laydate.render({
             elem: '#test15'
-            ,type: 'date'
+            ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
+                $("#dayTime").css("display","inline-block");
+            }
+        });
+        laydate.render({
+            elem: '#test16'
+            ,trigger: 'click'//呼出事件改成click
+            ,format: 'dd'
+            , done: function (value) {
+                var day = $("#selStartTime").val()+"-"+value;
+                $("#selDayTime").val(day);
+                console.log(day)
             }
         });
     })
@@ -67,14 +79,19 @@ function selShowLaborList() {
         alert("请选择部门");
         return;
     }
+    if ( $("#selEmployeeNameHidden").val() == "" ||  $("#selEmployeeNameHidden").val() == "0"){
+        alert("请选择员工");
+        return;
+    }
     var userName= $("#selEmployeeNameHidden").val();
-    var DayDateT= $("#selStartTime").val();
+    var MonthDate= $("#selStartTime").val();
+    var DayDateT = $("#selDayTime").val();
     layui.use(['table',"form"], function() {
         var table = layui.table;
         table.render({
             elem: '#demo'
             , height: 500
-            , url: path + '/wa/attendance/showLaborAll?userName='+userName+'&DayDateT='+DayDateT //数据接口
+            , url: path + '/wa/attendance/showLaborAll?userName='+userName+'&MonthDate='+MonthDate+'&DayDateT='+DayDateT //数据接口
             , page: {
                 curr: 1
             } //开启分页

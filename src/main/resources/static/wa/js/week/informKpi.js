@@ -11,6 +11,7 @@ function showDate() {
         laydate.render({
             elem: '#test15'
             ,type: 'month'
+            ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#selStartTime").val(value);
             }
@@ -38,17 +39,18 @@ function showKpi() {
             , cols: [[ //表头
                 {field: 'Id', title: '编号', align: 'center', hide:true,width: 120},
                 {field: 'userName', title: '员工', align: 'center'},
-                {field: 'createdCount', title: '创建数',sort :true, align: 'center',event: 'createdCount', style:'color: red;'},
-                {field: 'selCount', title: '查看数',sort :true, align: 'center',event: 'selCount', style:'color: red;'}
+                {field: 'createdCount', title: '创建数',sort :true, align: 'center',event: 'createdCount', style:'cursor: pointer;color: red;'},
+                {field: 'selCount', title: '查看数',sort :true, align: 'center',event: 'selCount', style:'cursor: pointer;color: red;'}
             ]]
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
         table.on('tool(test)', function (obj) {
             var data = obj.data;
-            var userId = data.id;
-            var startTime = $("#selDepartNameHidden").val();
+            var userId = data.Id;
+            var startTime = $("#selStartTime").val();
             if (obj.event == 'createdCount') {//创建数
+                countCreate(userId,startTime);
                 layer.open({
                     type: 1
                     ,id: 'createdCountDiv' //防止重复弹出
@@ -61,9 +63,8 @@ function showKpi() {
                     ,yes: function(){
                     }
                 });
-                countCreate(userId,startTime)
             } else if(obj.event == 'selCount'){//查看数
-                countSel(userId,startTime)
+                countSel(userId,startTime);
                 layer.open({
                     type: 1
                     ,id: 'selCountDiv' //防止重复弹出
@@ -93,15 +94,15 @@ function countCreate(userId,startTime) {
             , limit: 10
             , limits: [10, 20, 30]
             , cols: [[ //表头
-                {field: 'time', title: '通知时间', align: 'center'},
-                {field: '标题', title: 'title', align: 'center'},
+                {field: 'created', title: '通知时间', align: 'center'},
+                {field: 'title', title: '标题', align: 'center'},
                 {field: 'content', title: '内容',sort :true, align: 'center'},
-                {field: 'name', title: '发起人',sort :true, align: 'center'}
+                {field: 'createdByName', title: '发起人',sort :true, align: 'center'}
             ]]
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
-        table.on('tool(test)', function (obj) {
+        table.on('tool(test1)', function (obj) {
         })
     });
 }
@@ -118,15 +119,15 @@ function countSel(userId,startTime) {
             , limit: 10
             , limits: [10, 20, 30]
             , cols: [[ //表头
-                {field: 'time', title: '通知时间', align: 'center'},
-                {field: '标题', title: 'title', align: 'center'},
+                {field: 'created', title: '通知时间', align: 'center'},
+                {field: 'title', title: '标题', align: 'center'},
                 {field: 'content', title: '内容',sort :true, align: 'center'},
-                {field: 'name', title: '发起人',sort :true, align: 'center'}
+                {field: 'createdByName', title: '查看人',sort :true, align: 'center'}
             ]]
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
-        table.on('tool(test)', function (obj) {
+        table.on('tool(test2)', function (obj) {
         })
     });
 }

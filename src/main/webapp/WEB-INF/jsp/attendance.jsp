@@ -6,6 +6,7 @@
     <script type="text/javascript" src="../js/layui/layui.js"></script>
     <link rel="stylesheet" href="../js/layui/css/layui.css">
     <script type="text/javascript" src="../js/week/attendance.js?version=1.0"></script>
+    <script type="text/javascript" src="../js/week/alert.js"></script>
 </head>
 <style type="text/css">
     .top{
@@ -46,10 +47,14 @@
             </div>
         </form>
         <input type="hidden" id="selStartTime">
+        <input type="hidden" id="selDayTime">
         <div class="layui-inline" style="margin-bottom: 10px;">
             <label class="layui-form-label">日期</label>
             <div class="layui-input-inline">
-                <input type="text" class="layui-input" id="test15" placeholder="年月日">
+                <input type="text" class="layui-input" id="test15" placeholder="年月">
+            </div>
+            <div class="layui-input-inline"  id="dayTime" style="display: none;">
+                <input type="text" class="layui-input" id="test16" placeholder="日">
             </div>
         </div>
         <form class="layui-form" action="" style="display: inline-block;">

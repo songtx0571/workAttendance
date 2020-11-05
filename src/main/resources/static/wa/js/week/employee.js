@@ -22,11 +22,11 @@ $(function(){
                     {field: 'userNumber', title: '编号', width:80, sort: true}
                     ,{field: 'name', title: '姓名', width:100}
                     ,{field: 'sexName', title: '性别', width:80}// 1男
-                    ,{field: 'companyName', title: '公司'}
-                    ,{field: 'departmentName', title: '部门'}
-                    ,{field: 'postName', title: '岗位'}
-                    ,{field: 'managerName', title: '绩效管理人'}
-                    ,{field: 'stateName', title: '在职状态', width: 110, sort: true}// 1 在职
+                    ,{field: 'companyName', title: '公司',hide:true}
+                    ,{field: 'departmentName', title: '部门', sort: true}
+                    ,{field: 'postName', title: '岗位', sort: true}
+                    ,{field: 'managerName', title: '绩效管理人', sort: true}
+                    ,{field: 'stateName', title: '在职状态', width: 110, sort: true,hide:true}// 1 在职
                     ,{fixed: '', title:'操作', toolbar: '#barDemo11', width:70,align:'center '}
                 ]]
                 ,done: function(res, curr, count){}
@@ -98,11 +98,11 @@ function showEmployeeList(){
                 {field: 'userNumber', title: '编号', width:80, sort: true}
                 ,{field: 'name', title: '姓名', width:100}
                 ,{field: 'sexName', title: '性别', width:80}// 1男
-                ,{field: 'companyName', title: '公司'}
-                ,{field: 'departmentName', title: '部门'}
-                ,{field: 'postName', title: '岗位'}
-                ,{field: 'managerName', title: '绩效管理人'}
-                ,{field: 'stateName', title: '在职状态', width: 110, sort: true}// 1 在职
+                ,{field: 'companyName', title: '公司',hide:true}
+                ,{field: 'departmentName', title: '部门', sort: true}
+                ,{field: 'postName', title: '岗位', sort: true}
+                ,{field: 'managerName', title: '绩效管理人', sort: true}
+                ,{field: 'stateName', title: '在职状态', width: 110, sort: true,hide:true}// 1 在职
                 ,{fixed: '', title:'操作', toolbar: '#barDemo11', width:70,align:'center '}
             ]]
             ,done: function(res, curr, count){}
@@ -159,6 +159,18 @@ function shouInfo() {
             $("#wages").val(data.wages);//待遇标准
             $("#basicwages").val(data.basicwages);//基本工资
             $("#meritpay").val(data.meritpay);//绩效工资
+            $("#skillPay").val(data.skillPay);//技能工资
+            $("#positionSalary").val(data.positionSalary);//职务工资
+            $("#seniorityWage").val(data.seniorityWage);//工龄工资
+            $("#foodSupplement").val(data.foodSupplement);//餐补
+            $("#subTotalOfSubsidies").val(data.subTotalOfSubsidies);//补贴小计
+            $("#endowmentInsurance").val(data.endowmentInsurance);//养老保险
+            $("#medicalInsurance").val(data.medicalInsurance);//医疗保险
+            $("#accumulationFund").val(data.accumulationFund);//公积金
+            $("#unemploymentBenefits").val(data.unemploymentBenefits);//失业金
+            $("#paymentBase").val(data.paymentBase);//缴费基数
+
+            $("#unionFees").val(data.unionFees);//工会费
             layui.use('form', function(){
                 var form = layui.form;
                 $("#managerName").val(data.manager);//绩效管理人
@@ -193,12 +205,23 @@ function updUserInfo() {
     employee.credentials2 = $("#credentials2").val();
     employee.credentials3 = $("#credentials3").val();
 
-    employee.bank = $("#bank").val();
-    employee.card = $("#card").val();
-    employee.wages = $("#wages").val();
-    employee.basicwages = $("#basicwages").val();
-    employee.meritpay = $("#meritpay").val();
-    employee.manager = $("#managerHidden").val();
+    employee.bank = $("#bank").val();//开户行
+    employee.card = $("#card").val();//银行卡号
+    employee.wages = $("#wages").val();//待遇标准
+    employee.basicwages = $("#basicwages").val();//基本工资
+    employee.meritpay = $("#meritpay").val();//绩效工资
+    employee.manager = $("#managerHidden").val();//绩效管理人
+    employee.skillPay = $("#skillPay").val();//技能工资
+    employee.positionSalary = $("#positionSalary").val();//职务工资
+    employee.seniorityWage = $("#seniorityWage").val();//工龄工资
+    employee.foodSupplement = $("#foodSupplement").val();//餐补
+    employee.subTotalOfSubsidies = $("#subTotalOfSubsidies").val();//补贴小计
+    employee.endowmentInsurance = $("#endowmentInsurance").val();//养老保险
+    employee.medicalInsurance = $("#medicalInsurance").val();//医疗保险
+    employee.accumulationFund = $("#accumulationFund").val();//公积金
+    employee.unemploymentBenefits = $("#unemploymentBenefits").val();//失业金
+    employee.unionFees = $("#unionFees").val();//工会费
+    employee.paymentBase = $("#paymentBase").val();//缴费基数
     $.ajax({
         type: "post",
         url: path + "/wa/employee/updateEmployee",

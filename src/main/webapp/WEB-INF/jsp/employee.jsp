@@ -50,7 +50,7 @@
     }
     .updateUser{
         width: 100%;
-        height: 90%;
+        height: 100%;
         padding: 5px;
         color: #333;
         overflow: scroll;
@@ -117,6 +117,9 @@
     }
     .bodyContent #testAdd .layui-layer-page #updateUser .layui-anim-upbit{
         height: 150px;
+    }
+    body::-webkit-scrollbar{
+        display: none;
     }
 </style>
 <body>
@@ -245,6 +248,40 @@
                         <td><input type="text" id="wages" name="wages"></td>
                         <td>基本工资：</td>
                         <td><input type="text" id="basicwages" name="basicwages"></td>
+                    </tr>
+                    <tr>
+                        <td>技能工资：</td>
+                        <td><input type="text" id="skillPay" name="skillPay"></td>
+                        <td>职务工资：</td>
+                        <td><input type="text" id="positionSalary" name="positionSalary"></td>
+                    </tr>
+                    <tr>
+                        <td>工龄工资：</td>
+                        <td><input type="text" id="seniorityWage" name="seniorityWage"></td>
+                        <td>餐补：</td>
+                        <td><input type="text" id="foodSupplement" name="foodSupplement"></td>
+                    </tr>
+                    <tr>
+                        <td>补贴小计：</td>
+                        <td><input type="text" id="subTotalOfSubsidies" name="subTotalOfSubsidies"></td>
+                        <td>工会费：</td>
+                        <td><input type="text" id="unionFees" name="unionFees"></td>
+                    </tr>
+                    <tr>
+                        <td>养老保险：</td>
+                        <td><input type="text" id="endowmentInsurance" name="endowmentInsurance"></td>
+                        <td>医疗保险：</td>
+                        <td><input type="text" id="medicalInsurance" name="medicalInsurance"></td>
+                    </tr>
+                    <tr>
+                        <td>公积金：</td>
+                        <td><input type="text" id="accumulationFund" name="accumulationFund"></td>
+                        <td>失业金：</td>
+                        <td><input type="text" id="unemploymentBenefits" name="unemploymentBenefits"></td>
+                    </tr>
+                    <tr>
+                        <td>缴费基数：</td>
+                        <td colspan="3"><input type="text" id="paymentBase" name="paymentBase"></td>
                     </tr>
                     </tbody>
                 </table>
