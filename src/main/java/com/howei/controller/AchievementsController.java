@@ -5,6 +5,7 @@ import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
 import com.howei.service.PerformanceService;
+import com.howei.util.DateFormat;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import com.howei.util.Type;
@@ -61,13 +62,20 @@ public class AchievementsController {
     @ResponseBody
     public String getAssessment(HttpServletRequest request){
         String cycle = request.getParameter("cycle");
-        String page = request.getParameter("page");
-        String pageSize = request.getParameter("limit");
-        int rows=Page.getOffSet(page,pageSize);
         String empIdStr="";
         Users users=this.getPrincipal();
         if(users!=null){
+            empIdStr+=users.getEmployeeId()+",";
             List<Employee> rootList=employeeService.getEmployeeByManager(users.getEmployeeId());
+            if(rootList!=null){
+                List<Employee> empList=employeeService.getEmployeeByManager(0);
+                for(Employee employee:rootList){
+                    empIdStr+=employee.getId()+",";
+                    empIdStr+=getUsersId(employee.getId(),empList);
+                }
+            }
+        }else{//当用户session为空，默认为管理员权限
+            List<Employee> rootList=employeeService.getEmployeeByManager(240);
             if(rootList!=null){
                 List<Employee> empList=employeeService.getEmployeeByManager(0);
                 for(Employee employee:rootList){
@@ -79,16 +87,16 @@ public class AchievementsController {
         if(empIdStr!=null&&!empIdStr.equals("")){
             empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
         }
+        if(cycle==null||cycle.equals("")){
+            cycle=DateFormat.beforeMonth();
+        }
         Map map=new HashMap();
         map.put("cycle",cycle);
         map.put("empId",empIdStr);
-        List<Assessment> total= behaviorService.getAssessment(map);
-        map.put("page",rows);
-        map.put("pageSize",pageSize);
         List<Assessment> list= behaviorService.getAssessment(map);
         Result result=new Result();
         result.setData(list);
-        result.setCount(total.size());
+        result.setCount(list.size());
         result.setCode(0);
         result.setMsg("success");
         return JSON.toJSONString(result);

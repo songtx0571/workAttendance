@@ -1,12 +1,11 @@
 var index = 0;
 var index1 = 0;
-// var path = "http://192.168.1.26:8081";
 var path = "";
 $(function(){
     //显示考核日期
     showCycleData();
     // 查询员工绩效信息
-    showAchievementsList();
+    showAchievementsList("");
 });
 /*显示考核日期*/
 function showCycleData() {
@@ -19,9 +18,8 @@ function showCycleData() {
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden").val(value);
-                $("#conentTable").css("display","block");
                 // 查询员工绩效信息
-                showAchievementsList();
+                showAchievementsList(value);
             }
         });
         //查询工作业绩日期
@@ -31,6 +29,7 @@ function showCycleData() {
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden1").val(value);
+                showAchievement();
             }
         });
         //添加工作业绩日期
@@ -48,33 +47,33 @@ function showCycleData() {
             , type: 'month'
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
-                $("#cycleDataHidden2").val(value)
+                $("#cycleDataHidden2").val(value);
+                showBehavior();
             }
         });
     });
 }
 /*******************************工作业绩**********************************************/
 /*查询员工绩效信息*/
-function showAchievementsList(){
-    var cycle = $("#cycleDataHidden").val();
+function showAchievementsList(cycle){
+    var win = $(window).height();
+    var height = win - 100;
     layui.use('table', function(){
         var table = layui.table;
         table.render({
             elem: '#demo'
-            ,height: 500
+            ,height: height
             ,url: path + '/wa/achievements/getAssessment?cycle='+  cycle //数据接口
-            ,page: true //开启分页
-            ,limit: 10
-            ,limits: [10, 20, 30]
+            ,toolbar: true
             ,cols: [[ //表头
                 {field: 'userNumber', title: '编号', width:80, sort: true}
                 ,{field: 'name', title: '姓名', width:100}
-                ,{field: 'score2', title: '业绩合计', event: 'setSign', style:'cursor: pointer;', sort: true}
+                ,{field: 'score2', title: '业绩合计', event: 'setSign', style:'cursor: pointer;color:red;', sort: true,align:'center'}
                 ,{field: 'zhiban', title: '值班天数', sort: true}
                 ,{field: 'kaoqin', title: '考勤天数', sort: true}// 1 在职
                 ,{field: 'netPerformance', title: '净绩效', sort: true}
                 ,{field: 'comprehensivePerformance', title: '综合绩效', sort: true}
-                ,{fixed: '', title:'操作', toolbar: '#barDemo11',align:'center ', width:250}
+                ,{fixed: '', title:'操作', toolbar: '#barDemo11',align:'center', width:250}
             ]]
             ,done: function(res, curr, count){
             }
@@ -96,6 +95,8 @@ function showAchievementsList(){
             $("#userNumber1").text(data.userNumber);
             $("#userName1").text(data.name);
             if (obj.event == 'showAchievement') {//工作业绩考核
+                $("#test4").val("");
+                $("#achievementTable").css("display","none");
                 index1=layer.open({
                     type: 1
                     ,id: 'showAchievementDiv' //防止重复弹出
@@ -109,6 +110,7 @@ function showAchievementsList(){
                     }
                 });
             } else if (obj.event == 'showBehavior') {//工作行为考核
+                $("#test6").val("");
                 index=layer.open({
                     type: 1
                     ,id: 'showBehaviorDiv' //防止重复弹出
@@ -123,6 +125,7 @@ function showAchievementsList(){
                 });
             }
             else if(obj.event == 'setSign'){
+                $("#employeeIdHidden").val(data.id);
                 index=layer.open({
                     type: 1
                     ,id: 'showSetSign' //防止重复弹出
@@ -139,7 +142,6 @@ function showAchievementsList(){
                 });
             }
         });
-
     });
 }
 //将字符串转变为对象
@@ -161,31 +163,24 @@ function showSetSign() {
     var id = $("#employeeIdHidden").val();
     $.ajax({
         url: path + '/wa/achievements/findPeAcc',//请求地址
-        datatype: "json",//数据格式
+        dataType: "json",//数据格式
         type: "get",//请求方式
         data: {"employeeId": id, "cycle": cycle},
-        success: function (res) {
-            var data = $("#showSetSignData").text().substring(0);
-            // 将字符串转换为json
-            function strToJson(str){
-                var json = eval('(' + str + ')');
-                data = json;
-            }
-            strToJson(res);
-            var PeAcc = data;
+        success: function (data) {
             var tbody = $(".showSetSignTbody");
+            tbody.html("");
+
+            tbody.html("<tr id='AssessmentTr'></tr>");
+            var tr = $("#AssessmentTr");
             var td = "";
             for (var i = 0; i < data.length; i ++) {
-                var tr = document.createElement("tr");
-                tr.setAttribute("id", "AssessmentTr");
-                if(PeAcc[i].score == ''){
-                    PeAcc[i].score=0;
+                if(data[i].score == ''){
+                    data[i].score=0;
                 }
-                parseInt(PeAcc[i].score);
-                td += '<td>'+ PeAcc[i].score + '</td>';
+                parseInt(data[i].score);
+                td += '<td>'+ data[i].score + '</td>';
             }
-            tr.innerHTML = td;
-            tbody.after(tr);
+            tr.html(td);
         }
     })
 }
@@ -195,7 +190,7 @@ function showAchievement() {
     var cycle = $("#cycleDataHidden1").val();
     if(cycle == "" || cycle.length <= 0){
         layer.close(index);
-        alert("请选择考核日期");
+        layer.alert("请选择考核日期");
         return;
     }
     $("#achievementTable").css("display","block");
@@ -205,8 +200,12 @@ function showAchievement() {
         url: path + '/wa/achievements/findPeAcc?cycle=' + cycle + '&employeeId=' + id,
         dataType: "json",
         success: function(data){
+            if (data == "" || data == null) {
+                layer.alert("无数据");
+                return;
+            }
             var tbody = document.getElementById("achievementTbody");
-            tbody.innerHTML = ""
+            tbody.innerHTML = "";
             for(var i=0;i<data.length;i++){
                 $("#achievementIdHidden").val(data[i].id);
                 var tr = document.createElement("tr");
@@ -267,7 +266,7 @@ function updAchievement(id) {
         success: function (data) {
             if (data =="SUCCESS"){
                 showAchievement();
-                alert("修改成功");
+                layer.alert("修改成功");
                 layer.close(index1)
             }
         }
@@ -310,12 +309,12 @@ function addAteAchievement() {
         contentType: "application/json; charset=utf-8",
         success: function (data) {
             if (data == "SUCCESS") {
-                alert("添加成功");
+                layer.alert("添加成功");
                 layer.close(index);
                 showAchievement();
                 clearVal();
             } else{
-                alert("添加失败")
+                layer.alert("添加失败")
             }
         }
     });
@@ -341,6 +340,10 @@ function showBehavior() {
         data:{'employeeId': id, "cycle": cycle},
         dataType:"json",
         success:function(data){
+            if (data == "" || data == null){
+                layer.alert("无数据");
+                return;
+            }
             $("#chidao").val("0");//迟到
             $("#chuchai").val("0");//出差
             $("#kuanggong").val("0");//矿工
@@ -526,7 +529,7 @@ function updBehavior() {
         contentType: "application/json; charset=utf-8",
         success: function (data) {
             if (data == "SUCCESS") {
-                alert("修改成功");
+                layer.alert("修改成功");
                 showBehavior();
             }
         }

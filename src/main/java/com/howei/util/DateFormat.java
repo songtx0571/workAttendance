@@ -215,6 +215,10 @@ public class DateFormat {
         Calendar calendar=Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month=calendar.get(Calendar.MONTH);
+        if(month==0){
+            year--;
+            month=12;
+        }
         return month<10?year+"-0"+month:year+"-"+month;
     }
 

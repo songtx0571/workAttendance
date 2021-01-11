@@ -4,7 +4,7 @@
     <title>Title</title>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/layui/layui.js"></script>
-    <script type="text/javascript" src="../js/week/alert.js"></script>
+    <%--<script type="text/javascript" src="../js/week/alert.js"></script>--%>
     <link rel="stylesheet" href="../js/layui/css/layui.css">
     <script type="text/javascript" src="../js/week/achievements.js"></script>
     <link rel="stylesheet" href="../js/font/css/font-awesome.css">
@@ -27,6 +27,8 @@
             height: 100%;
             position: absolute;
             display: none;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
         .showAchievementList,.showBehaviorList{
             height: 50px;
@@ -49,7 +51,7 @@
         }
         .achievementTable td textarea,.achievementTable td input[type=text]{
             width: 99%;
-            line-height: 40px;
+            line-height: 35px;
             border: none;
             text-align: center;
         }
@@ -84,6 +86,8 @@
             height: 100%;
             position: absolute;
             display: none;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
         .showSetSign{
             width: 100%;
@@ -133,7 +137,7 @@
                     </div>
                 </div>
             </div>
-            <div id="conentTable" style="display: none;padding: 0 10px;box-sizing: border-box;">
+            <div id="conentTable" style="padding: 0 10px;box-sizing: border-box;">
                 <table id="demo" lay-filter="test"></table>
                 <script type="text/html" id="barDemo11">
                     <a class="layui-btn layui-btn-xs" lay-event="showAchievement" id="showAchievement">工作业绩考核</a>
@@ -160,7 +164,7 @@
                         </div>
                     </div>
                 </li>
-                <li><button class="layui-btn" onclick="showAchievement()">查询</button></li>
+                <%--<li><button class="layui-btn" onclick="showAchievement()">查询</button></li>--%>
                 <li><button class="layui-btn" onclick="showAddateAchievement()" id="addBtnAchievementDiv" style="display: none;">添加考核项</button></li>
             </ul>
             <div id="achievementTable" style="display: none">
@@ -270,7 +274,7 @@
                         </div>
                     </div>
                 </li>
-                <li><button class="layui-btn" onclick="showBehavior()">查询</button></li>
+                <%--<li><button class="layui-btn" onclick="showBehavior()">查询</button></li>--%>
                 <%--<li><button class="layui-btn" onclick="showAddBehavior()" id="addBtnBehaviorDiv" style="display: none">添加考核项</button></li>--%>
             </ul>
             <div class="behaviorTable">
