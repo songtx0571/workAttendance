@@ -26,7 +26,7 @@
         <result column="created" property="created"></result>
         <result column="createdBy" property="createdBy"></result>
         <result column="manager" property="manager"></result>
-
+        <result column="sign" property="sign"></result>
         <result column="skillPay" property="skillPay"></result>
         <result column="positionSalary" property="positionSalary"></result>
         <result column="seniorityWage" property="seniorityWage"></result>
@@ -41,7 +41,7 @@
     <select id="getEmployeeList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,
           p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
-          e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
+          e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
@@ -56,11 +56,11 @@
             limit ${page},${pageSize}
         </if>
     </select>
-
+<!--,e.paymentBase-->
     <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
         e.idnumber,e.bank,e.card,u.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
-        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
+        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
@@ -72,7 +72,7 @@
 
     <select id="searchEmployee" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
-        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.paymentBase
+        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
@@ -178,8 +178,8 @@
             <if test="unionFees!=null">
                 unionFees=#{unionFees},
             </if>
-            <if test="paymentBase!=null">
-                paymentBase=#{paymentBase},
+            <if test="sign!=null">
+                sign=#{sign},
             </if>
         </trim>
         where id=#{id}

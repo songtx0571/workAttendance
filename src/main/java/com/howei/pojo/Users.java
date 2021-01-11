@@ -20,7 +20,7 @@ public class Users implements Serializable {
     private int postId;//岗位id
     private String userNumber;//编号
     private int manager;//绩效管理人
-
+    private String entryDate;//入职日期
     //虚字段
     private String stateName;
     private String departName;

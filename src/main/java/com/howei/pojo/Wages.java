@@ -15,7 +15,7 @@ public class Wages implements Serializable {
     private double other;//其他
     private double meritPay;//绩效工资
     private double wageSubtotal;//工资小记
-    private double performanceCoefficient;//绩效系数3
+    private double performanceCoefficient;//绩效系数:3位有效小数
     private double wagesPayable;//应发工资
     private double foodSupplement;//餐补
     private double totalPayable;//应发合计
@@ -35,11 +35,15 @@ public class Wages implements Serializable {
     private String created;//创建时间
     private Double highTemperatureSubsidy;//高温补贴
 
+    //虚字段
+    private String employeeName;//员工姓名
+    private String userNumber;//员工姓名
+
     @Override
     public String toString() {
         return "Wages{" +
                 "id=" + id +
-                "employeeId=" + employeeId +
+                ", employeeId=" + employeeId +
                 ", basePay=" + basePay +
                 ", skillPay=" + skillPay +
                 ", positionSalary=" + positionSalary +
@@ -65,6 +69,9 @@ public class Wages implements Serializable {
                 ", remark='" + remark + '\'' +
                 ", date='" + date + '\'' +
                 ", created='" + created + '\'' +
+                ", highTemperatureSubsidy=" + highTemperatureSubsidy +
+                ", employeeName='" + employeeName + '\'' +
+                ", userNumber='" + userNumber + '\'' +
                 '}';
     }
 
@@ -290,5 +297,21 @@ public class Wages implements Serializable {
 
     public void setHighTemperatureSubsidy(Double highTemperatureSubsidy) {
         this.highTemperatureSubsidy = highTemperatureSubsidy;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getUserNumber() {
+        return userNumber;
+    }
+
+    public void setUserNumber(String userNumber) {
+        this.userNumber = userNumber;
     }
 }

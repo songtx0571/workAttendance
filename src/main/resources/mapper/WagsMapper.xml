@@ -31,19 +31,25 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        select * from wags
+        select w.*,e.userNumber,e.name employeeName from wages w
+        left join employee e on e.id=w.employeeId
+        LEFT JOIN users u on u.employeeId=e.id
+        LEFT JOIN company c on c.id=u.companyId
         <where>
+            c.id=1 and u.state=1
             <if test="month!=null">
-                `date`=#{month}
+                and w.date=#{month}
+            </if>
+            <if test="empId!=null">
+                and FIND_IN_SET(e.id,#{empId})
             </if>
         </where>
     </select>
-
+    <!--subTotalOfSubsidies-->
     <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        insert into wags (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
-        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
-        individualTaxAdjustment,netSalary,remark,`date`,created) values
-        <foreach collection="list" item="item" index="index" separator="," >
+        insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
+        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created) values
+        <foreach collection="list" item="item" separator="," index="index">
             (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.other},#{item.meritPay}
               ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.totalPayable},#{item.endowmentInsurance}
               ,#{item.unemploymentBenefits},#{item.medicalInsurance},#{item.accumulationFund},#{item.otherDeductions},#{item.unionFees},#{item.totalTax}
@@ -51,61 +57,108 @@
         </foreach>
     </insert>
 
+    <insert id="addThisMonthWags" parameterType="com.howei.pojo.Wages" useGeneratedKeys="true" keyProperty="id">
+        insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
+        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created)
+        values
+        (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
+        ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.totalPayable},#{wages.endowmentInsurance}
+        ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
+        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created})
+    </insert>
+
     <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">
-        update wags
+        update wages
         <set>
-            <if test="other!=null">
+            <if test="basePay!=0.00">
+                basePay=#{basePay},
+            </if>
+            <if test="skillPay!=0.00">
+                skillPay=#{skillPay},
+            </if>
+            <if test="positionSalary!=0.00">
+                positionSalary=#{positionSalary},
+            </if>
+            <if test="seniorityWage!=0.00">
+                seniorityWage=#{seniorityWage},
+            </if>
+            <if test="meritPay!=0.00">
+                meritPay=#{meritPay},
+            </if>
+            <if test="endowmentInsurance!=0.00">
+                endowmentInsurance=#{endowmentInsurance},
+            </if>
+            <if test="medicalInsurance!=0.00">
+                medicalInsurance=#{medicalInsurance},
+            </if>
+            <if test="accumulationFund!=0.00">
+                accumulationFund=#{accumulationFund},
+            </if>
+            <if test="unemploymentBenefits!=0.00">
+                unemploymentBenefits=#{unemploymentBenefits},
+            </if>
+            <if test="unionFees!=0.00">
+                unionFees=#{unionFees},
+            </if>
+            <if test="other!=0.00">
                 other=#{other},
             </if>
-            <if test="wageSubtotal!=null">
+            <if test="wageSubtotal!=0.00">
                 wageSubtotal=#{wageSubtotal},
             </if>
-            <if test="performanceCoefficient!=null">
+            <if test="performanceCoefficient!=0.00">
                 performanceCoefficient=#{performanceCoefficient},
             </if>
-            <if test="wagesPayable!=null">
+            <if test="wagesPayable!=0.00">
                 wagesPayable=#{wagesPayable},
             </if>
-            <if test="foodSupplement!=null">
+            <if test="foodSupplement!=0.00">
                 foodSupplement=#{foodSupplement},
             </if>
-            <if test="totalPayable!=null">
+            <if test="totalPayable!=0.00">
                 totalPayable=#{totalPayable},
             </if>
-            <if test="otherDeductions!=null">
+            <if test="otherDeductions!=0.00">
                 otherDeductions=#{otherDeductions},
             </if>
-            <if test="totalDeduction!=null">
+            <if test="totalDeduction!=0.00">
                 totalDeduction=#{totalDeduction},
             </if>
-            <if test="totalTax!=null">
+            <if test="totalTax!=0.00">
                 totalTax=#{totalTax},
             </if>
-            <if test="sixSpecialDeductions!=null">
+            <if test="sixSpecialDeductions!=0.00">
                 sixSpecialDeductions=#{sixSpecialDeductions},
             </if>
-            <if test="individualTaxAdjustment!=null">
+            <if test="individualTaxAdjustment!=0.00">
                 individualTaxAdjustment=#{individualTaxAdjustment},
             </if>
-            <if test="netSalary!=null">
+            <if test="netSalary!=0.00">
                 netSalary=#{netSalary},
             </if>
-            <if test="highTemperatureSubsidy!=null">
+            <if test="highTemperatureSubsidy!=0.00">
                 highTemperatureSubsidy=#{highTemperatureSubsidy},
             </if>
-            <if test="remark!=null">
+            <if test="remark!=null and remark!=''">
                 remark=#{remark},
             </if>
         </set>
-        where id=#{id}
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+        </where>
     </update>
 
     <!--获取税列表-->
     <select id="getTaxList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Tax">
         select * from tax
         <where>
+            <if test="employeeId!=null">
+                and employeeId=#{employeeId}
+            </if>
             <if test="month!=null">
-                DATE_FORMAT(`date`,'%Y-%m-%d')&lt;DATE_FORMAT(`date`,'%Y-%m-%d')
+                and DATE_FORMAT(`date`,'%Y-%m-%d')&lt;DATE_FORMAT(#{month},'%Y-%m-%d')
             </if>
         </where>
     </select>

@@ -17,4 +17,6 @@ public interface WagsService {
     List<Tax> getTaxList(Map map);
 
     Wages getWagsListById(String id);
+
+    int addThisMonthWags(Wages wages);
 }

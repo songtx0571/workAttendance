@@ -31,6 +31,7 @@ public class Employee implements Serializable {
     private Integer manager;//绩效管理人
     private String created;
     private int createdBy;
+    private String sign;//个性签名
 
     private Double skillPay;//技能工资
     private Double positionSalary;//职务工资
@@ -428,4 +429,11 @@ public class Employee implements Serializable {
         this.unionFees = unionFees;
     }
 
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
 }

@@ -206,6 +206,10 @@
                         <td><input type="text" id="education" name="education"></td>
                     </tr>
                     <tr>
+                        <td>签名：</td>
+                        <td colspan="3"><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
+                    </tr>
+                    <tr>
                         <td>备注：</td>
                         <td colspan="3"><input type="text" id="remark" name="remark"></td>
                     </tr>
@@ -258,12 +262,6 @@
                     <tr>
                         <td>工龄工资：</td>
                         <td><input type="text" id="seniorityWage" name="seniorityWage"></td>
-                        <td>餐补：</td>
-                        <td><input type="text" id="foodSupplement" name="foodSupplement"></td>
-                    </tr>
-                    <tr>
-                        <td>补贴小计：</td>
-                        <td><input type="text" id="subTotalOfSubsidies" name="subTotalOfSubsidies"></td>
                         <td>工会费：</td>
                         <td><input type="text" id="unionFees" name="unionFees"></td>
                     </tr>

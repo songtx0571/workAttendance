@@ -17,6 +17,8 @@ $(function(){
             table.render({
                 elem: '#demo'
                 ,height: height
+                ,toolbar: true
+                ,totalRow: true
                 ,url: path + "/wa/employee/searchEmployee?search="+ searchName //数据接口
                 ,cols: [[ //表头
                     {field: 'userNumber', title: '编号', width:80, sort: true}
@@ -93,6 +95,8 @@ function showEmployeeList(){
         table.render({
             elem: '#demo'
             ,height: height
+            ,toolbar: true
+            ,totalRow: true
             ,url: path + '/wa/employee/getEmployeeList'  //数据接口
             ,cols: [[ //表头
                 {field: 'userNumber', title: '编号', width:80, sort: true}
@@ -140,6 +144,7 @@ function shouInfo() {
             $("#idNumber").val(data.idNumber); //身份证
             $("#address").val(data.address);//住址
             $("#remark").val(data.remark);//备注
+            $("#sign").val(data.sign);//备注
             $("#emergency").val(data.emergency);//应急联系人
             $("#emergencyTel").val(data.emergencyTel); //应急电话
             $("#closhe").val(data.closhe);//衣服尺寸
@@ -162,14 +167,11 @@ function shouInfo() {
             $("#skillPay").val(data.skillPay);//技能工资
             $("#positionSalary").val(data.positionSalary);//职务工资
             $("#seniorityWage").val(data.seniorityWage);//工龄工资
-            $("#foodSupplement").val(data.foodSupplement);//餐补
-            $("#subTotalOfSubsidies").val(data.subTotalOfSubsidies);//补贴小计
             $("#endowmentInsurance").val(data.endowmentInsurance);//养老保险
             $("#medicalInsurance").val(data.medicalInsurance);//医疗保险
             $("#accumulationFund").val(data.accumulationFund);//公积金
             $("#unemploymentBenefits").val(data.unemploymentBenefits);//失业金
             $("#paymentBase").val(data.paymentBase);//缴费基数
-
             $("#unionFees").val(data.unionFees);//工会费
             layui.use('form', function(){
                 var form = layui.form;
@@ -190,6 +192,7 @@ function updUserInfo() {
     employee.phone = $("#phone").val();
     employee.idnumber = $("#idNumber").val();
     employee.address = $("#address").val();
+    employee.sign = $("#sign").val();
     employee.remark = $("#remark").val();
     employee.emergency = $("#emergency").val();
     employee.emergencyTel = $("#emergencyTel").val();
@@ -214,14 +217,16 @@ function updUserInfo() {
     employee.skillPay = $("#skillPay").val();//技能工资
     employee.positionSalary = $("#positionSalary").val();//职务工资
     employee.seniorityWage = $("#seniorityWage").val();//工龄工资
-    employee.foodSupplement = $("#foodSupplement").val();//餐补
-    employee.subTotalOfSubsidies = $("#subTotalOfSubsidies").val();//补贴小计
     employee.endowmentInsurance = $("#endowmentInsurance").val();//养老保险
     employee.medicalInsurance = $("#medicalInsurance").val();//医疗保险
     employee.accumulationFund = $("#accumulationFund").val();//公积金
     employee.unemploymentBenefits = $("#unemploymentBenefits").val();//失业金
     employee.unionFees = $("#unionFees").val();//工会费
     employee.paymentBase = $("#paymentBase").val();//缴费基数
+    if (employee.sign.length > 30) {
+        layer.alert("签名输入过长；");
+        return;
+    }
     $.ajax({
         type: "post",
         url: path + "/wa/employee/updateEmployee",

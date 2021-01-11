@@ -16,6 +16,7 @@
         <result column="postId" property="postId"></result>
         <result column="userNumber" property="userNumber"></result>
         <result column="manager" property="manager"></result>
+        <result column="entryDate" property="entryDate"></result>
         <collection property="roles" resultMap="roleMap"></collection>
     </resultMap>
 

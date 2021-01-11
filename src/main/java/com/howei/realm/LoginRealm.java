@@ -30,7 +30,7 @@ public class LoginRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         //获取登录用户名
         Users users=(Users) principalCollection.getPrimaryPrincipal();
-        String userNumber= users.getUserNumber()                                                                             ;
+        String userNumber= users.getUserNumber();                                                                         ;
         //查询用户名称
         Users user= userService.getUserRolesByName(userNumber);
         for (Role role:user.getRoles()) {

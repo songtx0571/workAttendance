@@ -37,7 +37,7 @@ public class ShiroConfig {
     @DependsOn(value="lifecycleBeanPostProcessor")
     public LoginRealm loginRealm(){
         LoginRealm userRealm = new LoginRealm();
-        userRealm.setCredentialsMatcher(credentialsMatcher());
+        //userRealm.setCredentialsMatcher(credentialsMatcher());
         return userRealm;
     }
 
@@ -120,10 +120,10 @@ public class ShiroConfig {
         return simpleCookie;
     }
 
-    @Bean(name="credentialsMatcher")
+    /*@Bean(name="credentialsMatcher")
     public CredentialsMatcher credentialsMatcher() {
         return new RetryLimitHashedCredentialsMatcher();
-    }
+    }*/
 
     /**
      * 该类如果不设置为static，@Value注解就无效，原因未知

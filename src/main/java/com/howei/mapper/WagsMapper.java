@@ -13,11 +13,13 @@ public interface WagsMapper {
 
     List<Wages> getWagsList(Map map);
 
-    int copyToThisMonthWags(List<Wages> list);
+    int copyToThisMonthWags(@Param("list") List<Wages> list);
 
     int updWags(Wages wages);
 
     List<Tax> getTaxList(Map map);
 
     Wages getWagsListById(@Param("id") String id);
+
+    int addThisMonthWags(@Param("wages") Wages wages);
 }

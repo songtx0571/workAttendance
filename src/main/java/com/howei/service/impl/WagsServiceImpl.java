@@ -40,4 +40,9 @@ public class WagsServiceImpl implements WagsService {
     public Wages getWagsListById(String id) {
         return wagsMapper.getWagsListById(id);
     }
+
+    @Override
+    public int addThisMonthWags(Wages wages) {
+        return wagsMapper.addThisMonthWags(wages);
+    }
 }

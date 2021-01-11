@@ -12,6 +12,7 @@ import com.howei.util.DateFormat;
 import com.howei.util.Result;
 import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DecimalFormat;
 import java.util.*;
+
+import static org.apache.shiro.authz.annotation.Logical.OR;
 
 @Controller
 @RequestMapping("/wa/wags")
@@ -52,11 +56,36 @@ public class WagsComtroller {
     @ResponseBody
     public Result getWagsList(HttpServletRequest request){
         String month=request.getParameter("month");
+        Users users=this.getPrincipal();
+        String empIdStr="";
+        Integer employeeId=null;
         if(month==null||month.equals("")){
             month=DateFormat.ThisMonth();
         }
+        if(users!=null){
+            employeeId=users.getEmployeeId();
+        }
         Map map=new HashMap<>();
-        map.put("month",month);
+        map.put("month",month+"-01");
+        //判断是否存在以下角色，
+        Subject subject=SecurityUtils.getSubject();
+        if(subject.hasRole("财务")||subject.hasRole("总部管理员")){
+            empIdStr=null;
+        }else{
+            List<Employee> rootList=employeeService.getEmployeeByManager(employeeId);
+            if(rootList!=null){
+                empIdStr+=employeeId+",";
+                List<Employee> empList=employeeService.getEmployeeByManager(0);
+                for(Employee employee:rootList){
+                    empIdStr+=employee.getId()+",";
+                    empIdStr+=getUsersId(employee.getId(),empList);
+                }
+            }
+            if(empIdStr!=null&&!empIdStr.equals("")){
+                empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
+            }
+        }
+        map.put("empId",empIdStr);
         List<Wages> list=wagsService.getWagsList(map);
         Result result=new Result();
         result.setCode(0);
@@ -67,6 +96,30 @@ public class WagsComtroller {
         return result;
     }
 
+    public String getUsersId(Integer empId,List<Employee> empList){
+        List<String> result=new ArrayList<>();
+        String userId="";
+        String usersId="";
+        for(Employee employee:empList){
+            if(employee.getManager()!=null||employee.getManager()!=0){
+                if(employee.getManager().equals(empId)){
+                    usersId+=employee.getId()+",";
+                    result.add(employee.getId()+"");
+                }
+            }
+        }
+        for(String str:result){
+            String userId1=getUsersId(Integer.parseInt(str),empList);
+            if(userId1!=null&&!userId1.equals("")){
+                userId+=userId1;
+            }
+        }
+        if(userId!=null&&!userId.equals("null")){
+            usersId+=userId;
+        }
+        return usersId;
+    }
+
     /**
      * 生成本月工资信息
      * 工资小计=基本工资+技能工资+职务工资+工龄工资+其他+绩效工资
@@ -74,7 +127,6 @@ public class WagsComtroller {
      * 应发合计=工资小计+补贴小记
      * 扣款合计=养老保险+失业金+医疗保险+公积金+其他扣款+工会费
      * 计税合计=应发合计-扣款合计
-     *
      * @return
      */
     @RequestMapping("/copyToThisMonthWags")
@@ -83,7 +135,7 @@ public class WagsComtroller {
         String monthStart=request.getParameter("monthStart");
         String monthEnd=request.getParameter("monthEnd");
         Map map=new HashMap<>();
-        map.put("month",monthStart);
+        map.put("month",monthStart+"-01");
         List<Wages> list=wagsService.getWagsList(map);
         if(list!=null){
             List<Wages> wagesList=new ArrayList<>();
@@ -92,8 +144,16 @@ public class WagsComtroller {
                 Integer empId=wages.getEmployeeId();
                 Users user=userService.getUserByEmpId(empId);
                 if(user!=null&&user.getState()==1){
-                    wages.setDate(monthEnd);
-                    wages.setCreated(monthEnd);
+                    wages.setDate(monthEnd+"-01");
+                    wages.setCreated(monthEnd+"-01");
+                    wages.setPerformanceCoefficient(1.00);//设置绩效系数
+                    wages.setFoodSupplement(0.00);//餐补
+                    wages.setHighTemperatureSubsidy(0.00);//高温补贴
+                    wages.setTotalPayable(0.00);//应发合计
+                    wages.setTotalDeduction(0.00);//扣款合计
+                    wages.setOtherDeductions(0.00);//其他扣款
+                    wages.setIndividualTaxAdjustment(0.00);//个调税
+                    wages.setNetSalary(0.00);
                     wagesList.add(wages);
                 }
             }
@@ -118,27 +178,28 @@ public class WagsComtroller {
      */
     @RequestMapping("/taxation")
     @ResponseBody
-    public String a(HttpServletRequest request){
+    public String taxation(HttpServletRequest request){
         String month=request.getParameter("month");
-        String id=request.getParameter("id");
+        String employeeId=request.getParameter("employeeId");
         String currentIncomeTax=request.getParameter("currentIncomeTax");//本期收入
         String fiveInsurancesAndOneFund=request.getParameter("fiveInsurancesAndOneFund");//五险一金
         String other=request.getParameter("other");//其他
         String specialAdditionalDeduction=request.getParameter("specialAdditionalDeduction");//专项扣除
         String totalTax=request.getParameter("totalTax");//计税合计
-        Wages wages=wagsService.getWagsListById(id);
         //************************************ 个调税计算 *****************************************
-        Double tax=this.taxCalculator(month,Double.valueOf(currentIncomeTax),Double.valueOf(fiveInsurancesAndOneFund),Double.valueOf(specialAdditionalDeduction),5000.00,Double.valueOf(other));
+        Double tax=this.taxCalculator(employeeId,month,Double.valueOf(currentIncomeTax),Double.valueOf(fiveInsurancesAndOneFund),Double.valueOf(specialAdditionalDeduction),5000.00,Double.valueOf(0.00));
         //************************************ 实发工资 *****************************************
-        Double netSalary=Double.valueOf(totalTax)-wages.getIndividualTaxAdjustment();//实发工资
+        Double netSalary=Double.valueOf(totalTax)-tax;//实发工资
         Map map=new HashMap();
-        map.put("tax",tax);
-        map.put("netSalary",netSalary);
+        DecimalFormat df=new DecimalFormat("0.00");
+        map.put("tax",df.format(tax));
+        map.put("netSalary",df.format(netSalary));
         return JSON.toJSONString(map);
     }
 
     /**
      * 个税计算
+     * @param employeeId 员工id
      * @param month 月份
      * @param totalPable 本期收入
      * @param totalDeduction 五险一金
@@ -147,20 +208,19 @@ public class WagsComtroller {
      * @param other 其他
      * @return wages
      */
-    public Double taxCalculator(String month,Double totalPable,Double totalDeduction,Double sixSpecialDeductions,Double deductionOfExpenses,Double other){
-        Double taxRate=0.00;//预扣税率
-        Double quickCalculationDeduction=0.00;//速算扣除数
+    public Double taxCalculator(String employeeId,String month,Double totalPable,Double totalDeduction,Double sixSpecialDeductions,Double deductionOfExpenses,Double other){
         //累计值
         Double taxableIncome=0.00;//累计应纳税所得额
-        Double currentIncomeTaxTotal=totalPable;//累计收入
-        Double deductionOfExpensesTaxTotal=deductionOfExpenses;//累计减除费用
-        Double fiveInsurancesAndOneFundTaxTotal=totalDeduction;//累计五险一金
-        Double otherTaxTotal=other;//累计其他
-        Double specialAdditionalDeductionTaxTotal=sixSpecialDeductions;//累计专项扣除
+        Double currentIncomeTaxTotal=0.00;//累计收入
+        Double deductionOfExpensesTaxTotal=0.00;//累计减除费用
+        Double fiveInsurancesAndOneFundTaxTotal=0.00;//累计五险一金
+        Double otherTaxTotal=0.00;//累计其他
+        Double specialAdditionalDeductionTaxTotal=0.00;//累计专项扣除
         Double personalIncomeTotalTax=0.00;//累计个税
 
         Map map=new HashMap();
         map.put("month",month+"-01");
+        map.put("employeeId",employeeId);
         List<Tax> listTax=wagsService.getTaxList(map);
         if(listTax!=null){
             for(Tax tax:listTax){
@@ -169,14 +229,34 @@ public class WagsComtroller {
                 fiveInsurancesAndOneFundTaxTotal+=tax.getFiveInsurancesAndOneFund();
                 otherTaxTotal+=tax.getOther();
                 specialAdditionalDeductionTaxTotal+=tax.getSpecialAdditionalDeduction();
-                personalIncomeTotalTax+=tax.getPersonalIncomeTax();
+                //计算累计应纳税所得额
+                taxableIncome=currentIncomeTaxTotal-fiveInsurancesAndOneFundTaxTotal-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal-otherTaxTotal;
+                if(taxableIncome<0){
+                    taxableIncome=0.00;
+                }
+                personalIncomeTotalTax+=taxableIncome(taxableIncome,personalIncomeTotalTax);
             }
         }
-        //计算累计应纳税所得额
+        currentIncomeTaxTotal+=totalPable;
+        deductionOfExpensesTaxTotal+=deductionOfExpenses;
+        fiveInsurancesAndOneFundTaxTotal+=totalDeduction;
+        otherTaxTotal+=other;
+        specialAdditionalDeductionTaxTotal+=sixSpecialDeductions;
         taxableIncome=currentIncomeTaxTotal-fiveInsurancesAndOneFundTaxTotal-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal-otherTaxTotal;
         if(taxableIncome<0){
             taxableIncome=0.00;
         }
+        Double tax=taxableIncome(taxableIncome,personalIncomeTotalTax);
+        return tax;
+    }
+
+    /**
+     * 根据应纳税所得额计算个税
+     * @param taxableIncome
+     */
+    public Double taxableIncome(Double taxableIncome,Double personalIncomeTotalTax){
+        Double taxRate=0.00;//预扣税率
+        Double quickCalculationDeduction=0.00;//速算扣除数
         //根据`累计应纳税所得额` 判断 `预扣税率`,`速算扣除数`
         if(taxableIncome<=36000.00){
             taxRate=0.03;
@@ -204,17 +284,23 @@ public class WagsComtroller {
         Double accumulatedPersonalIncomeTax=taxableIncome*taxRate-quickCalculationDeduction;
         //当月个税
         Double tax=accumulatedPersonalIncomeTax-personalIncomeTotalTax;
+        if(tax<0){
+            tax=0.00;
+        }
         return tax;
     }
+
 
     /**
      * 修改工资信息
      * @param wages
      * @return
      */
-    @RequestMapping(value = "/updWags",method = {RequestMethod.POST})
+    //@RequiresPermissions(value = {"工资修改"},logical = OR)
+    @RequestMapping(value = "/updWages",method = {RequestMethod. POST})
     @ResponseBody
     public String updWags(@RequestBody Wages wages){
+        System.out.println(wages.toString());
         int result=wagsService.updWags(wages);
         if(result>0){
             return JSON.toJSONString(Type.SUCCESS);
@@ -222,65 +308,5 @@ public class WagsComtroller {
             return JSON.toJSONString(Type.CANCEL);
         }
     }
-
-    /*public void a(){
-        //************************************ 工资小计 *****************************************
-        //工资小计=基本工资+技能工资+职务工资+工龄工资+其他+绩效工资
-        String baseicWages=employee.getBasicwages();//基本工资
-        Double baseicWagesDouble=0.00;
-        String meritpay=employee.getMeritpay();//绩效工资
-        Double meritpayDouble=0.00;
-        if(baseicWages!=null&&!baseicWages.equals("")){
-            baseicWagesDouble=Double.valueOf(baseicWages);
-        }
-        wages.setBasePay(Double.valueOf(baseicWagesDouble));//绩效工资
-        if(meritpay!=null&&!meritpay.equals("")){
-            meritpayDouble=Double.valueOf(meritpay);
-        }
-        wages.setMeritPay(meritpayDouble);
-        Double postitionSalary=employee.getPositionSalary()==null ?0.00:employee.getPositionSalary();//职务工资
-        wages.setPositionSalary(postitionSalary);
-        Double seniorityWage=employee.getSeniorityWage()==null ?0.00:employee.getSeniorityWage();//工龄工资
-        wages.setSeniorityWage(seniorityWage);
-        Double skillPay=employee.getSkillPay()==null ?0.00:employee.getSkillPay();//技能工资
-        wages.setSkillPay(skillPay);
-        Double wageSubtotal=baseicWagesDouble+skillPay+postitionSalary+seniorityWage+meritpayDouble;
-        wages.setWageSubtotal(wageSubtotal);//工资小计
-
-        //************************************ 扣款合计 *****************************************
-        //扣款合计=养老保险+失业金+医疗保险+公积金+其他扣款+工会费
-        Double accumulationFund=employee.getAccumulationFund()==null?0.00:employee.getAccumulationFund();//公积金
-        wages.setAccumulationFund(accumulationFund);
-        Double endowmentInsurance=employee.getEndowmentInsurance()==null?0.00:employee.getEndowmentInsurance();//养老保险
-        wages.setEndowmentInsurance(endowmentInsurance);
-        Double medicalInsurance=employee.getMedicalInsurance()==null?0.00:employee.getMedicalInsurance();//医疗保险
-        wages.setMedicalInsurance(medicalInsurance);
-        Double unemploymentBenefits=employee.getMedicalInsurance()==null?0.00:employee.getMedicalInsurance();//失业金
-        wages.setUnemploymentBenefits(unemploymentBenefits);
-        Double unionFees=employee.getUnionFees()==null?0.00:employee.getUnionFees();//工会费
-        wages.setUnionFees(unionFees);
-        Double totalDeduction=endowmentInsurance+unemploymentBenefits+medicalInsurance+accumulationFund+unionFees;//扣款合计
-        wages.setTotalDeduction(totalDeduction);//扣款合计
-
-        //************************************ 应发工资 *****************************************
-        //(基本工资+技能工资+职务工资+工龄工资+其他)+绩效工资*绩效系数
-        Double wagesPayable=(baseicWagesDouble+skillPay+postitionSalary+seniorityWage)+meritpayDouble*performanceCoefficient;//应发工资
-        wages.setWagesPayable(wagesPayable);
-
-        //************************************ 应发合计 *****************************************
-        //应发合计=工资小计+补贴小记
-        Double foodSupplement=employee.getFoodSupplement()==null?0.00:employee.getFoodSupplement();//餐补
-        wages.setFoodSupplement(foodSupplement);
-        Double highTemperatureSubsidy=0.00;//高温补贴
-        wages.setHighTemperatureSubsidy(highTemperatureSubsidy);
-        Double totalPable=wageSubtotal+foodSupplement+highTemperatureSubsidy;
-        wages.setTotalPayable(totalPable);//应发合计
-
-        //************************************ 计税合计 *****************************************
-        //计税合计=应发合计-扣款合计
-        Double totalTax=totalPable-totalDeduction;
-        wages.setTotalTax(totalTax);//计税合计
-
-    }*/
 
 }
