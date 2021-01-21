@@ -38,6 +38,7 @@ public class Wages implements Serializable {
     //虚字段
     private String employeeName;//员工姓名
     private String userNumber;//员工姓名
+    private String laowupaiqian;//劳务派遣
 
     @Override
     public String toString() {
@@ -313,5 +314,13 @@ public class Wages implements Serializable {
 
     public void setUserNumber(String userNumber) {
         this.userNumber = userNumber;
+    }
+
+    public String getLaowupaiqian() {
+        return laowupaiqian;
+    }
+
+    public void setLaowupaiqian(String laowupaiqian) {
+        this.laowupaiqian = laowupaiqian;
     }
 }
