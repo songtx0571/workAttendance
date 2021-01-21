@@ -31,4 +31,6 @@ public interface LeaveService {
     List<LeaveData> getLeaveDataStatisticsList(Map map);
 
     int addReview(Review reviewObject);
+
+    List<LeaveData> getLeaveDataToAchievements(Map map);
 }

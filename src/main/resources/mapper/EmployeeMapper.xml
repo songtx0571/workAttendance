@@ -40,15 +40,16 @@
 
     <select id="getEmployeeList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,
-          p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
-          e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
+        p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
+        e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
-		LEFT JOIN employee e1 on e1.id=e.manager
+        LEFT JOIN employee e1 on e1.id=e.manager
         LEFT JOIN company c on c.id=u.companyId
         LEFT JOIN company c1 on c1.id=u.departmentId
         LEFT JOIN post p on p.id=u.postId
-        where c.id=1 and u.state=1
+        where
+        u.state=1
         <if test="empId!=null">
             and FIND_IN_SET(e.id,#{empId})
         </if>
@@ -59,7 +60,7 @@
 <!--,e.paymentBase-->
     <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
-        e.idnumber,e.bank,e.card,u.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
+        e.idnumber,e.bank,e.card,e.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
         e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
@@ -75,16 +76,18 @@
         e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
-		LEFT JOIN employee e1 on e1.id=e.manager
+        LEFT JOIN employee e1 on e1.id=e.manager
         LEFT JOIN company c on c.id=u.companyId
         LEFT JOIN company c1 on c1.id=u.departmentId
         LEFT JOIN post p on p.id=u.postId
-        where c.id=1
-        and (
-            e.address like concat('%',#{search},'%') or
-			e.name like concat('%',#{search},'%') OR
-			e.userNumber like concat('%',#{search},'%')
+        where   (
+        e.address like concat('%',#{search},'%') or
+        e.name like concat('%',#{search},'%') OR
+        e.userNumber like concat('%',#{search},'%')
         )
+        <if test="empId!=null and flag ==1" >
+            and FIND_IN_SET(e.id,#{empId})
+        </if>
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}
         </if>

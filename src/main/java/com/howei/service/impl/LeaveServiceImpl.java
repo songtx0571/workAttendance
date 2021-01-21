@@ -117,4 +117,9 @@ public class LeaveServiceImpl implements LeaveService {
     public int addReview(Review reviewObject) {
         return leaveMapper.addReview(reviewObject);
     }
+
+    @Override
+    public List<LeaveData> getLeaveDataToAchievements(Map map) {
+        return leaveMapper.getLeaveDataToAchievements(map);
+    }
 }

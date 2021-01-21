@@ -21,4 +21,6 @@ public interface PerformanceMapper {
     Performance getPeAcc(@Param("id") String id);
 
     void deletePeAccById(@Param("id") String id);
+
+    List<Performance> findPeAcc(Performance performance);
 }

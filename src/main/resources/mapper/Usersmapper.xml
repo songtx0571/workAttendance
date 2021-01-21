@@ -61,7 +61,7 @@
     <select id="findAchievementsByUserName1" resultType="com.howei.pojo.Achievement">
 		SELECT a.id,UPPER(a.userName) userName ,a.week,a.result1,a.result2,a.result3,a.result4,a.cycle,a.times
 		FROM AchievementRecord a
-		JOIN employee b ON UPPER(a.userName) = UPPER(b.name)
+		JOIN employee b ON UPPER(a.userName) = UPPER(b.userNumber)
 		WHERE b.id = #{behavior.employeeId} AND a.cycle = #{behavior.cycle}
 	</select>
 

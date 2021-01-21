@@ -7,7 +7,19 @@ var upBtnYear = year;
 var upBtnMonth = mouth;
 $(function(){
     showMonth();
-    showWagsList();
+    if (mouth == 12) {
+        mouth = 1;
+        year = year + 1;
+    }
+    if (mouth == 0) {
+        mouth = 12;
+        year = year - 1;
+    }
+    if (mouth < 10) {
+        mouth = "0"+mouth;
+    }
+    console.log(year+"-"+mouth)
+    showWagsList(year+"-"+mouth);
 });
 //点击查看上个月数据
 function monthUpBtn() {
@@ -21,7 +33,7 @@ function monthUpBtn() {
     }
     var monthUp = upBtnYear + "-" + upBtnMonth;
     $("#monthStart").val(monthUp);
-    showWagsList();
+    showWagsList(monthUp);
     layui.use('form', function(){
         var form = layui.form;
         $("#test15").val(monthUp);
@@ -49,7 +61,7 @@ function monthDownBtn() {
     }
     var monthDown = upBtnYear + "-" + upBtnMonth;
     $("#monthStart").val(monthDown);
-    showWagsList();
+    showWagsList(monthDown);
     layui.use('form', function(){
         var form = layui.form;
         $("#test15").val(monthDown);
@@ -68,13 +80,12 @@ function showMonth() {
         laydate.render({
             elem: '#test15'
             , type: 'month'
-            , value: initial
             , trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#monthStart").val(value);
                 upBtnYear = value.substring(0,4);
                 upBtnMonth = value.substr(5,2);
-                showWagsList();
+                showWagsList(value);
             }
         });
         laydate.render({
@@ -174,14 +185,13 @@ function sumWages() {
     });
 }
 //查询数据
-function showWagsList(){
-    var m =$("#monthStart").val();
-    var hideM = m.substr(5,7);
+function showWagsList(m){
     var top = $(".top").css("height");
     var win = $(window).height();
     var tp = top.indexOf("p");
     var topHeight = top.substring(0,tp);
     var height = (win-topHeight-20)-20;
+    $("#test15").val(m)
     layui.use('table', function(){
         var table = layui.table;
         table.render({
@@ -354,7 +364,7 @@ function updFinance() {
         dataType: "json",
         success: function(data){
             layer.closeAll();
-            showWagsList();
+            showWagsList( $("#monthStart").val());
         }
     });
 }

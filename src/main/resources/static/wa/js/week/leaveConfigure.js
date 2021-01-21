@@ -17,7 +17,8 @@ function getConfigureList() {
         var form = layui.form;
         table.render({
             elem: '#demo'
-            , height: 500
+            , height: 600
+            ,toolbar: true
             , url: path + '/wa/leave/getConfigureList' //数据接口
             , page: true //开启分页
             , limit: 10

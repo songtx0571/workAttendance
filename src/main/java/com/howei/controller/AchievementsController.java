@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,19 @@ public class AchievementsController {
         Subject subject=SecurityUtils.getSubject();
         Users users=(Users) subject.getPrincipal();
         return users;
+    }
+
+    @RequestMapping("/getUserInform")
+    @ResponseBody
+    public Map getUserInform(){
+        Subject subject=SecurityUtils.getSubject();
+        Users users=(Users) subject.getPrincipal();
+        Map map=new HashMap();
+        if (users!=null){
+            map.put("userName",users.getUserName());
+            map.put("userNumber",users.getUserNumber());
+        }
+        return map;
     }
 
     /**
@@ -94,6 +108,31 @@ public class AchievementsController {
         map.put("cycle",cycle);
         map.put("empId",empIdStr);
         List<Assessment> list= behaviorService.getAssessment(map);
+        if(list!=null){
+            for(int i=0;i<list.size();i++){
+                Assessment assessment=list.get(i);
+                //计算综合绩效与净绩效
+                double score1=assessment.getScore1();
+                double score2=assessment.getScore2();
+                double jianban=assessment.getJiaban();
+                //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+                BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+                double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                assessment.setNetPerformance(netPerformance);
+                //综合绩效=净绩效+加班*0.01
+                bd = new BigDecimal(netPerformance+jianban*0.01);
+                double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                assessment.setComprehensivePerformance(comprehensivePerformance);
+                if(users==null){
+
+                }else{
+                    if(assessment.getUserNumber().equals(users.getUserNumber())){
+                        list.remove(i);
+                        list.add(0,assessment);
+                    }
+                }
+            }
+        }
         Result result=new Result();
         result.setData(list);
         result.setCount(list.size());
@@ -271,7 +310,7 @@ public class AchievementsController {
     }
 
     /**
-     * 行为表查询
+     * 行为表查询：获取考试成绩
      * @param request
      * @return
      */
@@ -293,6 +332,11 @@ public class AchievementsController {
         return JSON.toJSONString(list);
     }
 
+    /**
+     * 获取净绩效与综合绩效
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/getAssessmentByEmployeeId")
     public String getAssessmentByEmployeeId(HttpServletRequest request) {
@@ -306,7 +350,58 @@ public class AchievementsController {
             map.put("employeeId",employeeId);
         }
         Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        if(assessment!=null){
+            double score1=assessment.getScore1();
+            double score2=assessment.getScore2();
+            double jianban=assessment.getJiaban();
+            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            assessment.setNetPerformance(netPerformance);
+            //综合绩效=净绩效+加班*0.01
+            bd = new BigDecimal(netPerformance+jianban*0.01);
+            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            assessment.setComprehensivePerformance(comprehensivePerformance);
+        }
         return JSON.toJSONString(assessment);
+    }
+
+    /**
+     * 根据加班计算综合绩效与净绩效
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getAssessmentByJiaban")
+    public String getAssessmentByJiaban(HttpServletRequest request){
+        String cycle=request.getParameter("cycle");
+        String employeeId=request.getParameter("employeeId");
+        String jiaban=request.getParameter("jiaban");
+        double jiabanDouble=0.00;
+        if(jiaban!=null&&!jiaban.equals("")){
+            jiabanDouble=Double.parseDouble(jiaban);
+        }
+        Map map=new HashMap();
+        if(cycle!=null&&!cycle.equals("")){
+            map.put("cycle",cycle);
+        }
+        if(employeeId!=null&&!employeeId.equals("")){
+            map.put("employeeId",employeeId);
+        }
+        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        if(assessment!=null){
+            map.clear();
+            double score1=assessment.getScore1();
+            double score2=assessment.getScore2();
+            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            //综合绩效=净绩效+加班*0.01
+            bd = new BigDecimal(netPerformance+jiabanDouble*0.01);
+            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            map.put("comprehensivePerformance",comprehensivePerformance);
+            map.put("netPerformance",netPerformance);
+        }
+        return JSON.toJSONString(map);
     }
 
     @RequestMapping(value = "/copyPeAccMonth",method = {RequestMethod.POST})
@@ -316,5 +411,27 @@ public class AchievementsController {
 
         }
         return JSON.toJSONString("");
+    }
+
+    /**
+     * 复制考核周期
+     * @param employeeId
+     * @param cycle
+     * @param lastcycle
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/copyPeAcc")
+    public String copyPeAcc(Integer employeeId, String cycle, String lastcycle) {
+        Performance performance = new Performance();
+        performance.setemployeeId(employeeId);
+        performance.setCycle(cycle);
+        List<Performance> p = performanceService.findPeAcc(performance);
+        for (int i = 0; i < p.size(); i++) {
+            Performance performance1 = p.get(i);
+            performance1.setCycle(lastcycle);
+            performanceService.insert(performance1);
+        }
+        return "success";
     }
 }

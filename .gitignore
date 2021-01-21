@@ -1,6 +1,2 @@
-#忽略gitignore文件
-#.gitignore
-#忽略workAttendance.xml文件
-#.workAttendance.xml
 #忽略.idea目录下的所有文件
-#.idea/
+.idea/

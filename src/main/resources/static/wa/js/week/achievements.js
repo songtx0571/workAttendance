@@ -1,11 +1,12 @@
-var index = 0;
-var index1 = 0;
 var path = "";
+var userNumber = "";
+var classUserNumber = "";
 $(function(){
     //显示考核日期
     showCycleData();
     // 查询员工绩效信息
     showAchievementsList("");
+    getUser();
 });
 /*显示考核日期*/
 function showCycleData() {
@@ -29,7 +30,7 @@ function showCycleData() {
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden1").val(value);
-                showAchievement();
+                showAchievement(value);
             }
         });
         //添加工作业绩日期
@@ -48,16 +49,50 @@ function showCycleData() {
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
                 $("#cycleDataHidden2").val(value);
-                showBehavior();
+                showBehavior(value);
+            }
+        });
+        //复制标准月份
+        laydate.render({
+            elem: '#test7'
+            , type: 'month'
+            ,trigger: 'click'//呼出事件改成click
+            ,done: function(value){
+                $("#copyTimeHidden").val(value);
+                $("#copyTimeBtn").css("display","block");
             }
         });
     });
+}
+/*查看当前登陆人*/
+function getUser() {
+    $.ajax({
+        type: "GET",
+        url: path + '/wa/achievements/getUserInform',
+        dataType: "json",
+        success: function(data){
+            classUserNumber = data.userNumber;
+        }
+    })
 }
 /*******************************工作业绩**********************************************/
 /*查询员工绩效信息*/
 function showAchievementsList(cycle){
     var win = $(window).height();
     var height = win - 100;
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    if (cycle == "") {
+        if (month == 1){
+            month = 12;
+            year = year - 1;
+        }
+        if (month < 10 && month >= 1) {
+            month = "0"+month;
+        }
+        $("#test3").val(year+"-"+month);
+    }
     layui.use('table', function(){
         var table = layui.table;
         table.render({
@@ -69,7 +104,7 @@ function showAchievementsList(cycle){
                 {field: 'userNumber', title: '编号', width:80, sort: true}
                 ,{field: 'name', title: '姓名', width:100}
                 ,{field: 'score2', title: '业绩合计', event: 'setSign', style:'cursor: pointer;color:red;', sort: true,align:'center'}
-                ,{field: 'zhiban', title: '值班天数', sort: true}
+                ,{field: 'zhiban', title: '值班天数', sort: true,hide:true}
                 ,{field: 'kaoqin', title: '考勤天数', sort: true}// 1 在职
                 ,{field: 'netPerformance', title: '净绩效', sort: true}
                 ,{field: 'comprehensivePerformance', title: '综合绩效', sort: true}
@@ -81,6 +116,7 @@ function showAchievementsList(cycle){
         //监听行工具事件
         table.on('tool(test)', function(obj) {
             var data = obj.data;
+            userNumber = data.userNumber;
             // 将data转为字符串
             var jStr = "{ ";
             for(var item in data){
@@ -95,9 +131,9 @@ function showAchievementsList(cycle){
             $("#userNumber1").text(data.userNumber);
             $("#userName1").text(data.name);
             if (obj.event == 'showAchievement') {//工作业绩考核
-                $("#test4").val("");
-                $("#achievementTable").css("display","none");
-                index1=layer.open({
+                $("#test4").val($("#test3").val());
+                showAchievement($("#test3").val());
+                layer.open({
                     type: 1
                     ,id: 'showAchievementDiv' //防止重复弹出
                     ,content: $(".showAchievementDiv")
@@ -110,8 +146,9 @@ function showAchievementsList(cycle){
                     }
                 });
             } else if (obj.event == 'showBehavior') {//工作行为考核
-                $("#test6").val("");
-                index=layer.open({
+                $("#test6").val($("#test3").val());
+                showBehavior($("#test3").val());
+                layer.open({
                     type: 1
                     ,id: 'showBehaviorDiv' //防止重复弹出
                     ,content: $(".showBehaviorDiv")
@@ -126,7 +163,7 @@ function showAchievementsList(cycle){
             }
             else if(obj.event == 'setSign'){
                 $("#employeeIdHidden").val(data.id);
-                index=layer.open({
+                layer.open({
                     type: 1
                     ,id: 'showSetSign' //防止重复弹出
                     ,content: $(".showSetSign")
@@ -185,15 +222,22 @@ function showSetSign() {
     })
 }
 //查询考核数据
-function showAchievement() {
+function showAchievement(cycle) {
     jsonHtml();
-    var cycle = $("#cycleDataHidden1").val();
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
     if(cycle == "" || cycle.length <= 0){
-        layer.close(index);
-        layer.alert("请选择考核日期");
-        return;
+        if (month == 1){
+            month = 12;
+            year = year - 1;
+        }
+        if (month < 10 && month >= 1) {
+            month = "0"+month;
+        }
+        cycle = year+"-"+month;
+        $("#test4").val(cycle)
     }
-    $("#achievementTable").css("display","block");
     var id = $("#employeeIdHidden").val();
     $.ajax({
         type: "GET",
@@ -201,27 +245,31 @@ function showAchievement() {
         dataType: "json",
         success: function(data){
             if (data == "" || data == null) {
-                layer.alert("无数据");
+                $("#achievementTbody").css("display","none");
                 return;
             }
+            $("#achievementTbody").css("display","contents");
             var tbody = document.getElementById("achievementTbody");
             tbody.innerHTML = "";
             for(var i=0;i<data.length;i++){
                 $("#achievementIdHidden").val(data[i].id);
                 var tr = document.createElement("tr");
                 tr.setAttribute("class","achievementTr");
-                var td = "<td><textarea rows='3' class='readonly1 workTasks"+data[i].id+"'>"+data[i].workTasks+"</textarea></td>" +
-                    "<td><textarea rows='3' class='readonly1 access"+data[i].id+"'>"+data[i].access+"</textarea></td>" +
-                    "<td><input type='text'  class='readonly1 detail"+data[i].id+"' value='"+data[i].detail+"' /></td>" +
+                var td = "<td><textarea rows='2' class='readonly1 workTasks"+data[i].id+"'>"+data[i].workTasks+"</textarea></td>" +
+                    "<td><textarea rows='2' class='readonly1 access"+data[i].id+"'>"+data[i].access+"</textarea></td>" +
+                    "<td><textarea rows='2' class='readonly1 detail"+data[i].id+"'>"+data[i].detail+"</textarea></td>" +
+                    // "<td><input type='text'  class='readonly1 detail"+data[i].id+"' value='"+data[i].detail+"' /></td>" +
                     "<td><input type='text'  class='readonly1 score"+data[i].id+"' value='"+data[i].score+"' /></td>" +
                     "<td><input type='text'  class='readonly1 weights"+data[i].id+"' value='"+data[i].weights+"'/></td>" +
-                    "<td><input type='button' value='修改' class='layui-btn' onclick='updAchievement("+data[i].id+")' />" +
+                    "<td class='hideTd"+userNumber+"'><input type='button' value='修改' class='layui-btn' onclick='updAchievement("+data[i].id+")' />" +
                     "<input type='button' value='删除' class='layui-btn' onclick='delectAchievement("+data[i].id+")' /></td>";
                 tr.innerHTML = td;
                 tbody.appendChild(tr);
             }
-            $("#addBtnAchievementDiv").css("display","block");
-            //获取当前月份
+            if (userNumber == classUserNumber) {
+                $(".hideTd"+userNumber).html("无操作！");
+            }
+            /*//获取当前月份
             var cycleMouth = Number(cycle.substring(5));
             //获取当前时间
             var time = new Date();
@@ -233,6 +281,30 @@ function showAchievement() {
                 $('.readonly1').removeAttr("readonly");//取消只读的设置
             } else{
                 $('.readonly1').attr("readonly","readonly");//设为只读
+            }*/
+        }
+    });
+}
+//打开复制考核
+function showCopyTime() {
+    $("#hideTimeDiv").css("display","block")
+}
+//确定复制
+function copyTimeOk() {
+    var startTime = $("#test4").val();
+    var endTime = $("#test7").val();
+    var employeeId = $("#employeeIdHidden").val();
+    $.ajax({
+         url: path+"/wa/achievements/copyPeAcc",//请求地址
+        //url: "http://192.168.1.89:8081/wa/achievements/copyPeAcc",//请求地址
+        dataType: "json",//数据格式
+        data: {"cycle": startTime,"lastcycle": endTime,"employeeId":employeeId},
+        type: "get",//请求方式
+        success: function (data) {
+            if (data == "success") {
+                layer.alert("周期已复制");
+            } else if(data=='fail'){
+                layer.alert("周期已存在");
             }
         }
     });
@@ -246,7 +318,7 @@ function delectAchievement(id) {
         data: {"id": id},
         success: function (data) {
             if (data =="SUCCESS"){
-                showAchievement();
+                showAchievement("");
             }
         }
     });
@@ -258,6 +330,10 @@ function updAchievement(id) {
     var detail =$(".detail"+id).val();//考核详情
     var score =$(".score"+id).val();//考核分
     var weights =$(".weights"+id).val();//权重
+    if (Number(score) > Number(weights)) {
+        layer.alert("考核分不能大于权重！");
+        return;
+    }
     $.ajax({
         url: path + '/wa/achievements/updatePeAcc',//请求地址
         dataType: "json",//数据格式
@@ -265,9 +341,9 @@ function updAchievement(id) {
         data: {"id": id, "workTasks": workTasks, "access": access, "detail": detail, "score": score, "weights": weights},
         success: function (data) {
             if (data =="SUCCESS"){
-                showAchievement();
+                // showAchievement("");
                 layer.alert("修改成功");
-                layer.close(index1)
+                // layer.closeAll()
             }
         }
     });
@@ -276,7 +352,7 @@ function updAchievement(id) {
 function showAddateAchievement() {
     layui.use('layer', function(){ //独立版的layer无需执行这一句
         var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
-        index=layer.open({
+        layer.open({
             type: 1
             ,id: 'addateAchievement' //防止重复弹出
             ,content: $(".addateAchievement")
@@ -310,8 +386,8 @@ function addAteAchievement() {
         success: function (data) {
             if (data == "SUCCESS") {
                 layer.alert("添加成功");
-                layer.close(index);
-                showAchievement();
+                layer.closeAll();
+                showAchievement("");
                 clearVal();
             } else{
                 layer.alert("添加失败")
@@ -330,26 +406,63 @@ function clearVal() {
 }
 /*******************************工作行为**********************************************/
 //查询工作行为
-function showBehavior() {
+function showBehavior(cycle) {
     jsonHtml();
     var id = $("#employeeIdHidden2").val();
-    var cycle = $("#cycleDataHidden2").val();
+    if (userNumber == classUserNumber) {
+        $(".hideBtn").css("display","none");
+    } else {
+        $(".hideBtn").css("display","inline");
+    }
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    if(cycle == "" || cycle.length <= 0){
+        if (month == 1){
+            month = 12;
+            year = year - 1;
+        }
+        if (month < 10 && month >= 1) {
+            month = "0"+month;
+        }
+        cycle = year+"-"+month;
+        $("#test6").val(cycle)
+    }
+    var cycleM = cycle.substring(5,cycle.length);
+    var cycleY = cycle.substring(0,4);
+    if (cycleM > month && year == cycleY){
+        $(".hideBtn").css("display", "none");
+        $('.week1').val("");
+        $('.week2').val("");
+        $('.week3').val("");
+        $('.week4').val("");
+        $('#sum').val("");
+        $('#remark').val("");
+        $('#jiaban').val('0');
+        $('#kaoqin').val('0');
+        $('#netPerformance').val('0');
+        $('#comprehensivePerformance').val('0');
+        return;
+    }
     $.ajax({
         type:"post",
         url: path + '/wa/achievements/findBehavior',
         data:{'employeeId': id, "cycle": cycle},
         dataType:"json",
         success:function(data){
+            $("#leaveConfig").html("");
             if (data == "" || data == null){
-                layer.alert("无数据");
                 return;
             }
-            $("#chidao").val("0");//迟到
-            $("#chuchai").val("0");//出差
-            $("#kuanggong").val("0");//矿工
-            $("#lunxiu").val("0");//轮休
-            $("#qingjia").val("0");//请假
-            $("#tiaoxiu").val("0");//调休
+            var leaveData = data[0].leaveData;
+            if (leaveData != "" || leaveData != null){
+                var leaveConfig = $("#leaveConfig");
+                var tr = '<tr><td rowspan="'+(leaveData.length+1)+'" style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
+                for (var i = 0; i < leaveData.length; i ++) {
+                    tr += '<tr><td ><input value="'+leaveData[i].leaveCount+'" readonly name="tiaoxiu" class="inputCount tiaoxiu'+leaveData[i].employeeId+'"></td><td>'+leaveData[i].leaveUnitName+'</td><td colspan="7">'+leaveData[i].leaveName+'</td><td><input class="ftiaoxiu'+leaveData[i].employeeId+'" name="fResult" readonly value="'+leaveData[i].leaveResult+'"></tr>';
+                }
+                leaveConfig.html(tr);
+            }
             if (data[0].week1 == "") {
                 data[0].week1 = 0;
             }
@@ -362,41 +475,16 @@ function showBehavior() {
             if (data[0].week4 == "") {
                 data[0].week4 = 0;
             }
-            if (data[0].chidao == "") {
-                data[0].chidao = 0;
-            }
-            if (data[0].chuchai == "") {
-                data[0].chuchai = 0;
-            }
-            if (data[0].kuanggong == "") {
-                data[0].kuanggong = 0;
-            }
-            if (data[0].lunxiu == "") {
-                data[0].lunxiu = 0;
-            }
-            if (data[0].qingjia == "") {
-                data[0].qingjia = 0;
-            }
-            if (data[0].tiaoxiu == "") {
-                data[0].tiaoxiu = 0;
-            }
             $("#BeId").val(data[0].id);
             $(".week1").val(data[0].week1);
             $(".week2").val(data[0].week2);
             $(".week3").val(data[0].week3);
             $(".week4").val(data[0].week4);
-            $("#chidao").val(data[0].chidao);//迟到
-            $("#chuchai").val(data[0].chuchai);//出差
-            $("#kuanggong").val(data[0].kuanggong);//矿工
-            $("#lunxiu").val(data[0].lunxiu);//轮休
-            $("#qingjia").val(data[0].qingjia);//请假
-            $("#tiaoxiu").val(data[0].tiaoxiu);//调休
-            $("#sum").val(data[0].sum);//合计
+            $(".period").val('10');
             $("#jiaban").val(data[0].jiaban);//加班
             $("#kaoqin").val(data[0].kaoqin);//考勤
-            $("#zhiban").val(data[0].zhiban);//值班
             $("#remark").val(data[0].remark);//备注
-            $("#period").val(data[0].period);//课时
+
             //计算数值
             calculateAttendance();
             $.ajax({
@@ -417,6 +505,11 @@ function showBehavior() {
             });
         }
     });
+    if ((cycleM == 12 && month == 1 && cycleY == year - 1) || (cycleM == month - 1 && cycleY == year) || (cycleM == month && cycleY == year)) {
+        $(".hideBtn").css("display", "revert");
+    } else  {
+        $(".hideBtn").css("display", "none");
+    }
 }
 //增加
 function addCount(id) {
@@ -430,6 +523,7 @@ function addCount(id) {
     }
     span.style.display = "none";
     $("#" + id).val(day);
+    addReducePerformance(id,day);
 }
 //减少
 function reduceCount(id) {
@@ -444,83 +538,72 @@ function reduceCount(id) {
         day = day * 1 - 0.5;
     }
     $("#" + id).val(day);
+    addReducePerformance(id,day);
 }
-//计算调休，请假，轮休，迟到，出差和出勤
+//增加减少改变绩效
+function addReducePerformance(id, day) {
+    var employeeId = $("#employeeIdHidden2").val();
+    var cycle = $("#test6").val();
+    if (id == "jiaban"){
+        $.ajax({
+            url: path + '/wa/achievements/getAssessmentByJiaban',//请求地址
+            dataType: "json",//数据格式
+            type: "post",//请求方式
+            data: {cycle: cycle,employeeId:employeeId,jiaban:day},
+            success: function (data) {
+                $("#comprehensivePerformance").val(data.comprehensivePerformance);//综合绩效
+            }
+        })
+    }
+}
+//计算考勤、合计
 function calculateAttendance() {
     //考试成绩
     var week1 = $('.week1').val();
     var week2 = $('.week2').val();
     var week3 = $('.week3').val();
     var week4 = $('.week4').val();
-    var period = $('#period').val();
-    //按钮
-    var tiaoxiu = $('#tiaoxiu').val();
-    var qingjia = $('#qingjia').val();
-    var kuanggong = $('#kuanggong').val();
-    var chidao = $('#chidao').val();
-    var lunxiu = $('#lunxiu').val();
-    var chuchai = $('#chuchai').val();
-    //文本
-    $('#ftiaoxiu').val((1.0) * tiaoxiu);
-    $('#fqingjia').val((6.0) * qingjia);
-    $('#fkuanggong').val((20.0) * kuanggong);
-    $('#fchidao').val((1.0) * chidao);
-    $('#flunxiu').val((1.0) * lunxiu);
-    $('#fchuchai').val(2.0 * chuchai);
+    var period = 10;
+    //考勤
+    var fResult = $("input[name='fResult']");
+    var fResultArr = [];
+    for (var i = 0; i < fResult.length; i ++) {
+        fResultArr.push(Number(fResult[i].value));
+    }
+    var fResultSum = 0;
+    for (var j = 0 ; j < fResultArr.length; j ++) {
+        fResultSum += fResultArr[j];
+    }
+    $("#fchuqing").val(50 - fResultSum);
     //成绩
     var week = Number(week1) + Number(week2) + Number(week3) + Number(week4) + Number(period) ;
-    //出勤文本
-    var chuqing = 50.0 - Number($('#ftiaoxiu').val()) * 1 - Number($('#fqingjia').val()) * 1 - Number($('#fkuanggong').val()) * 1 - Number($('#fchidao').val()) * 1 - Number($('#flunxiu').val()) * 1;
-    $("#fchuqing").val(chuqing);
     //合计
-    var sum = Number(week) + Number(chuqing) + Number($('#fchuchai').val());
+    var sum = Number(week) + Number($("#fchuqing").val());
     $("#sum").val(sum);
 }
 //修改工作行为
 function updBehavior() {
     jsonHtml();
+    var id=$("#BeId").val();
     var employeeId = $("#employeeIdHidden2").val();
-    var week1 = $('.week1').val();
-    var week2 = $('.week2').val();
-    var week3 = $('.week3').val();
-    var week4 = $('.week4').val();
-    var period = $('#period').val();
     var remark = $('#remark').val();
     var jiaban = $('#jiaban').val();
-    var zhiban = $('#zhiban').val();
     var kaoqin = $('#kaoqin').val();
-
-    var tiaoxiu = $('#tiaoxiu').val();
-    var qingjia = $('#qingjia').val();
-    var kuanggong = $('#kuanggong').val();
-    var chidao = $('#chidao').val();
-    var lunxiu = $('#lunxiu').val();
-    var chuchai = $('#chuchai').val();
-    var id=$("#BeId").val();
-    var cycle = $("#cycleDataHidden2").val();
+    var cycle = $("#test6").val();
     var sum = $("#sum").val();
-    calculateAttendance();
+    var netPerformance = $("#netPerformance").val();//净绩效
+    var comprehensivePerformance = $("#comprehensivePerformance").val();//综合绩效
 
     var performance = {};
     performance.id = id;
-    performance.week1 = week1;
-    performance.week2 = week2;
-    performance.week3 = week3;
-    performance.week4 = week4;
-    performance.period = period;
-    performance.tiaoxiu = tiaoxiu;
-    performance.qingjia = qingjia;
-    performance.kuanggong = kuanggong;
-    performance.chidao = chidao;
-    performance.lunxiu = lunxiu;
-    performance.chuchai = chuchai;
     performance.remark = remark;
     performance.cycle = cycle;
     performance.kaoqin = kaoqin;
-    performance.zhiban = zhiban;
     performance.jiaban = jiaban;
     performance.employeeId = employeeId;
     performance.sum = sum;
+    performance.netPerformance = netPerformance;
+    performance.comprehensivePerformance = comprehensivePerformance;
     $.ajax({
         url: path + '/wa/achievements/updateBehavior',//请求地址
         dataType: "json",//数据格式
@@ -530,14 +613,113 @@ function updBehavior() {
         success: function (data) {
             if (data == "SUCCESS") {
                 layer.alert("修改成功");
-                showBehavior();
+                showBehavior("");
+                // layer.closeAll();
             }
         }
     })
 
 }
+//上个月
+function monthUpBtn(type) {
+    var time = $("#test4").val();
+    var time1 = $("#test6").val();
+    var time2 = $("#test3").val();
+    if (type == "yeji"){
+        var y = time.substring(0,4);
+        var m = time.substring(5,7);
+        m --;
+        if (m == 0) {
+            m = 12;
+            y = y - 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test4").val(y+"-"+m);
+        var a1 = y+"-"+m;
+        showAchievement(a1)
+    } else if (type == "xingwei") {
+        var y = time1.substring(0,4);
+        var m = time1.substring(5,7);
+        m --;
+        if (m == 0) {
+            m = 12;
+            y = y - 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test6").val(y+"-"+m);
+        var b1 = y+"-"+m;
+        showBehavior(b1);
+    } else if (type == "zong") {
+        var y = time2.substring(0,4);
+        var m = time2.substring(5,7);
+        m --;
+        if (m == 0) {
+            m = 12;
+            y = y - 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test3").val(y+"-"+m);
+        var c1 = y+"-"+m;
+        showAchievementsList(c1);
+    }
+}
+//下个月
+function monthDownBtn(type) {
+    var time = $("#test4").val();
+    var time1 = $("#test6").val();
+    var time2 = $("#test3").val();
+    if (type == "yeji"){
+        var y = time.substring(0,4);
+        var m = time.substring(5,7);
+        m ++;
+        if (m == 13){
+            m = 1;
+            y = Number(y) + 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test4").val(y+"-"+m);
+        var a2 = y+"-"+m;
+        showAchievement(a2)
+    } else if (type == "xingwei") {
+        var y = time1.substring(0,4);
+        var m = time1.substring(5,7);
+        m ++;
+        if (m == 13){
+            m = 1;
+            y = Number(y) + 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test6").val(y+"-"+m);
+        var b2 = y+"-"+m;
+        showBehavior(b2);
+    } else if (type == "zong") {
+        var y = time2.substring(0,4);
+        var m = time2.substring(5,7);
+        m ++;
+        if (m == 13){
+            m = 1;
+            y = Number(y) + 1;
+        }
+        if (m > 0 && m < 10){
+            m = "0" + m;
+        }
+        $("#test3").val(y+"-"+m);
+        var c2 = y+"-"+m;
+        showAchievementsList(c2);
+    }
+}
 //取消
 function cancel() {
-    layer.close(index);
+    layer.closeAll();
     clearVal();
 }

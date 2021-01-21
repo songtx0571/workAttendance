@@ -80,5 +80,12 @@
         </set>
     </update>
 
+    <select id="findPeAcc" resultType="com.howei.pojo.Performance">
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance  where employeeId=#{employeeId}
+        <if test="cycle!='' and cycle!=null">
+            and cycle=#{cycle}
+        </if>
+
+    </select>
 
 </mapper>

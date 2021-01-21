@@ -32,4 +32,6 @@ public interface LeaveMapper {
     List<LeaveData> getLeaveDataStatisticsList(Map map);
 
     int addReview(Review reviewObject);
+
+    List<LeaveData> getLeaveDataToAchievements(Map map);
 }

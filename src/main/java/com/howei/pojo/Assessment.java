@@ -10,8 +10,8 @@ public class Assessment {
     private int jiaban;
     private int zhiban;
     private int kaoqin;
-    private int score1;
-    private int score2;
+    private int score1;//合计
+    private int score2;//业绩考核分数
     //净绩效
     private double netPerformance;
     //综合绩效
@@ -109,19 +109,18 @@ public class Assessment {
     public void setScore2(int score2) {
         this.score2 = score2;
     }
-
-    public double getNetPerformance() {
+    //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+    /*public double getNetPerformance() {
         netPerformance = (score1 * 0.5 + score2 * 0.5) / 90;
         BigDecimal bd = new BigDecimal(netPerformance);
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public void setNetPerformance(double netPerformance) {
-
         this.netPerformance = netPerformance;
-    }
-
-    public double getComprehensivePerformance() {
+    }*/
+    //综合绩效=净绩效+加班*0.01
+    /*public double getComprehensivePerformance() {
         comprehensivePerformance = netPerformance + jiaban * 0.01;
         BigDecimal bd = new BigDecimal(comprehensivePerformance);
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -129,7 +128,7 @@ public class Assessment {
 
     public void setComprehensivePerformance(double comprehensivePerformance) {
         this.comprehensivePerformance = comprehensivePerformance;
-    }
+    }*/
 
     public String getDepartment() {
         return department;
@@ -154,7 +153,7 @@ public class Assessment {
     public void setBasicwages(int basicwages) {
         this.basicwages = basicwages;
     }
-
+    //绩效基数=绩效基数*综合绩效
     public double getMeritpay() {
         BigDecimal bd1 = new BigDecimal(comprehensivePerformance);
         BigDecimal bd = new BigDecimal(meritpay * bd1.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -164,9 +163,10 @@ public class Assessment {
     public void setMeritpay(int meritpay) {
         this.meritpay = meritpay;
     }
-
+    //餐补=20*考勤
     public int getMealSupplement() {
-        mealSupplement = 20 * kaoqin + 10 * zhiban;
+        //mealSupplement = 20 * kaoqin + 10 * zhiban;
+        mealSupplement = 20 * kaoqin;
         return mealSupplement;
     }
 
@@ -181,16 +181,33 @@ public class Assessment {
     public void setPhoneAllowance(int phoneAllowance) {
         this.phoneAllowance = phoneAllowance;
     }
-
+    //应付工资：绩效基数*综合绩效+餐补+基本工资
     public double getWagePayable() {
         BigDecimal bd1 = new BigDecimal(comprehensivePerformance);
         double aa = bd1.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        wagePayable = basicwages + phoneAllowance + mealSupplement + meritpay * aa;
+        //wagePayable = basicwages + phoneAllowance + mealSupplement + meritpay * aa;
+        wagePayable = basicwages + mealSupplement + meritpay * aa;
         BigDecimal bd = new BigDecimal(wagePayable);
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public void setWagePayable(double wagePayable) {
         this.wagePayable = wagePayable;
+    }
+
+    public double getNetPerformance() {
+        return netPerformance;
+    }
+
+    public void setNetPerformance(double netPerformance) {
+        this.netPerformance = netPerformance;
+    }
+
+    public double getComprehensivePerformance() {
+        return comprehensivePerformance;
+    }
+
+    public void setComprehensivePerformance(double comprehensivePerformance) {
+        this.comprehensivePerformance = comprehensivePerformance;
     }
 }

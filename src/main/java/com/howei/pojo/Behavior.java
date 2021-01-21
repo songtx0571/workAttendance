@@ -1,5 +1,7 @@
 package com.howei.pojo;
 
+import java.util.List;
+
 public class Behavior {
     private int id;
     private String week1;
@@ -21,6 +23,8 @@ public class Behavior {
     private int jiaban;
     private int kaoqin;
     private int zhiban;
+
+    private List<LeaveData> leaveData;
 
     public int getId() {
         return id;
@@ -172,6 +176,14 @@ public class Behavior {
 
     public void setZhiban(int zhiban) {
         this.zhiban = zhiban;
+    }
+
+    public List<LeaveData> getLeaveData() {
+        return leaveData;
+    }
+
+    public void setLeaveData(List<LeaveData> leaveData) {
+        this.leaveData = leaveData;
     }
 
     @Override

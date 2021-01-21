@@ -18,4 +18,6 @@ public interface PerformanceService {
     Performance getPeAcc(String id);
 
     void deletePeAccById(String id);
+
+    List<Performance> findPeAcc(Performance performance);
 }

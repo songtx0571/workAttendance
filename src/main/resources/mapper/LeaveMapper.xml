@@ -144,4 +144,19 @@
         insert into review(leaveDataId,reviewer,leaveEmployeeId,result) value(#{leaveDataId},#{reviewer},#{leaveEmployeeId},#{result})
     </insert>
 
+    <select id="getLeaveDataToAchievements" parameterType="com.howei.pojo.LeaveData" resultType="com.howei.pojo.LeaveData">
+        select l.`name` as LeaveName,l.`data` as numValue,l.unit as leaveUnit,l.remark as leaveRemark,count(*) as leaveCount from leave_data ld
+        left join `leave` l on l.id=ld.leaveId
+        <where>
+            ld.status=2
+            <if test="startTime!=null">
+                and DATE_FORMAT(ld.startTime,'%Y-%m') = DATE_FORMAT(#{startTime},'%Y-%m')
+            </if>
+            <if test="employeeId!=null">
+                and ld.employeeId=#{employeeId}
+            </if>
+        </where>
+        GROUP BY l.id
+    </select>
+
 </mapper>

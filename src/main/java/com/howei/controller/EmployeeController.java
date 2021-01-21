@@ -55,36 +55,60 @@ public class EmployeeController {
 
     /**
      * 获取员工列表
+     *
      * @param request
      * @return result
      */
-    @RequiresPermissions(value = {"员工信息"},logical = OR)
+    @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/getEmployeeList")
     @ResponseBody
-    public String getEmployeeList(HttpServletRequest request){
-        Users users=this.getPrincipal();
-        Integer employeeId=null;
-        String empIdStr="";
-        if(users!=null){
-            employeeId=users.getEmployeeId();
+    public String getEmployeeList(HttpServletRequest request) {
+        Users users = this.getPrincipal();
+        Subject subject = SecurityUtils.getSubject();
+        boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
+        List<Employee> list = null;
+        Integer employeeId = null;
+        String empIdStr = "";
+        if (users != null) {
+            employeeId = users.getEmployeeId();
         }
-        List<Employee> rootList=employeeService.getEmployeeByManager(employeeId);
-        if(rootList!=null){
-            empIdStr+=employeeId+",";
-            List<Employee> empList=employeeService.getEmployeeByManager(0);
-            for(Employee employee:rootList){
-                empIdStr+=employee.getId()+",";
-                empIdStr+=getUsersId(employee.getId(),empList);
+        if (selectAllFlag) {
+            List<Employee> rootList = employeeService.getEmployeeByManager(0);
+            if (rootList != null) {
+                empIdStr += employeeId + ",";
+                List<Employee> empList = employeeService.getEmployeeByManager(0);
+                System.out.println("empList::" + empList.size() + ";;" + empList);
+                for (Employee employee : rootList) {
+                    empIdStr += employee.getId() + ",";
+                    empIdStr += getUsersId(employee.getId(), empList);
+                }
             }
-        }
-        if(empIdStr!=null&&!empIdStr.equals("")){
-            empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
-        }
+            if (empIdStr != null && !empIdStr.equals("")) {
+                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+            }
+            Map map = new HashMap();
+            map.put("empId", empIdStr);
+            list = employeeService.getEmployeeList(map);
+        } else {
+            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
+            if (rootList != null) {
+                empIdStr += employeeId + ",";
+                List<Employee> empList = employeeService.getEmployeeByManager(0);
+                for (Employee employee : rootList) {
+                    empIdStr += employee.getId() + ",";
+                    empIdStr += getUsersId(employee.getId(), empList);
+                }
+            }
+            if (empIdStr != null && !empIdStr.equals("")) {
+                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+            }
+            Map map = new HashMap();
+            map.put("empId", empIdStr);
+            list = employeeService.getEmployeeList(map);
 
-        Map map=new HashMap();
-        map.put("empId",empIdStr);
-        List<Employee> list=employeeService.getEmployeeList(map);
-        Result result=new Result();
+
+        }
+        Result result = new Result();
         result.setCode(0);
         result.setCount(list.size());
         result.setData(list);
@@ -157,16 +181,34 @@ public class EmployeeController {
         return JSON.toJSONString("");
     }
 
-    @RequiresPermissions(value = {"员工信息"},logical = OR)
+    @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/searchEmployee")
     @ResponseBody
-    public String searchEmployee(HttpServletRequest request){
-        String search=request.getParameter("search");
-        Map map=new HashMap();
-        map.put("search",search);
-        List<Employee> list=employeeService.searchEmployee(map);
-
-        Result result=new Result();
+    public String searchEmployee(HttpServletRequest request) {
+        Users users = this.getPrincipal();
+        Integer employeeId = null;
+        String empIdStr = "";
+        if (users != null) {
+            employeeId = users.getEmployeeId();
+        }
+        List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
+        if (rootList != null) {
+            empIdStr += employeeId + ",";
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            for (Employee employee : rootList) {
+                empIdStr += employee.getId() + ",";
+                empIdStr += getUsersId(employee.getId(), empList);
+            }
+        }
+        if (empIdStr != null && !empIdStr.equals("")) {
+            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+        }
+        String search = request.getParameter("search");
+        Map map = new HashMap();
+        map.put("empId", empIdStr);
+        map.put("search", search);
+        List<Employee> list = employeeService.searchEmployee(map);
+        Result result = new Result();
         result.setCode(0);
         result.setCount(list.size());
         result.setData(list);

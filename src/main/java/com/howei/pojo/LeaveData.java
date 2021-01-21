@@ -31,6 +31,13 @@ public class LeaveData {
     private String statusName;
     private String reviewResult;
     private String bothTime;//两个日期之间间隔
+    private int numValue;//请假类型设定的数值
+    private String leaveRemark;//请假类型说明
+    private int leaveCount;//根据请假类型
+    private Double leaveResult;//请假考核分
+    private int leaveUnit;//请假类型单位
+    private String leaveUnitName;
+
 
     public Integer getId() {
         return id;
@@ -246,5 +253,53 @@ public class LeaveData {
 
     public void setBothTime(String bothTime) {
         this.bothTime = bothTime;
+    }
+
+    public void setNumValue(int numValue) {
+        this.numValue = numValue;
+    }
+
+    public String getLeaveRemark() {
+        return leaveRemark;
+    }
+
+    public int getNumValue() {
+        return numValue;
+    }
+
+    public void setLeaveRemark(String leaveRemark) {
+        this.leaveRemark = leaveRemark;
+    }
+
+    public int getLeaveCount() {
+        return leaveCount;
+    }
+
+    public void setLeaveCount(int leaveCount) {
+        this.leaveCount = leaveCount;
+    }
+
+    public Double getLeaveResult() {
+        return leaveResult;
+    }
+
+    public void setLeaveResult(Double leaveResult) {
+        this.leaveResult = leaveResult;
+    }
+
+    public int getLeaveUnit() {
+        return leaveUnit;
+    }
+
+    public void setLeaveUnit(int leaveUnit) {
+        this.leaveUnit = leaveUnit;
+    }
+
+    public String getLeaveUnitName() {
+        return leaveUnitName;
+    }
+
+    public void setLeaveUnitName(String leaveUnitName) {
+        this.leaveUnitName = leaveUnitName;
     }
 }

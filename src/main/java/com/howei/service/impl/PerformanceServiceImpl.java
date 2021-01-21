@@ -45,4 +45,9 @@ public class PerformanceServiceImpl implements PerformanceService {
     public void deletePeAccById(String id) {
         performanceMapper.deletePeAccById(id);
     }
+
+    @Override
+    public List<Performance> findPeAcc(Performance performance) {
+        return performanceMapper.findPeAcc(performance);
+    }
 }
