@@ -50,7 +50,6 @@
     }
     .updateUser{
         width: 100%;
-        height: 100%;
         padding: 5px;
         color: #333;
         overflow: scroll;
@@ -145,8 +144,8 @@
                     <thead>
                     <tr>
                         <th colspan="4">员工信息
-                            <span style="display: inline-block;margin-left: 15px" class="doubleUpBtn1" onclick="doubleUp1()"><i class='fa fa-arrow-up fa-lg'></i></span>
-                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn1" onclick="doubleDown1()"><i class='fa fa-arrow-down  fa-lg'></i></span>
+                            <%--<span style="display: inline-block;margin-left: 15px" class="doubleUpBtn1" onclick="doubleUp1()"><i class='fa fa-arrow-up fa-lg'></i></span>
+                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn1" onclick="doubleDown1()"><i class='fa fa-arrow-down  fa-lg'></i></span>--%>
                         </th>
                     </tr>
                     </thead>
@@ -172,62 +171,54 @@
                     <tr>
                         <td>电话号码：</td>
                         <td><input type="tel" id="phone" name="phone" disabled></td>
+                        <td>邮箱：</td>
+                        <td><input type="text" id="email" name="email"></td>
+                    </tr>
+                    <tr>
                         <td>证书1：</td>
                         <td><input type="text" id="credentials1" name="credentials1"></td>
-                    </tr>
-                    <tr>
                         <td>证书2：</td>
                         <td><input type="text" id="credentials2" name="credentials2"></td>
+                    </tr>
+                    <tr>
                         <td>证书3：</td>
                         <td><input type="text" id="credentials3" name="credentials3"></td>
-                    </tr>
-                    <tr>
                         <td>身份证：</td>
                         <td><input type="text" id="idNumber" name="idNumber"></td>
+                    </tr>
+                    <tr>
                         <td>住址：</td>
                         <td><input type="text" id="address" name="address"></td>
-                    </tr>
-                    <tr>
                         <td>应急联系人：</td>
                         <td><input type="text" id="emergency" name="emergency"></td>
+                    </tr>
+                    <tr>
                         <td>应急电话：</td>
                         <td><input type="number" id="emergencyTel" name="emergencyTel"></td>
-                    </tr>
-                    <tr>
                         <td>衣服尺寸：</td>
                         <td><input type="text" id="closhe" name="closhe"></td>
+                    </tr>
+                    <tr>
                         <td>安全帽编号：</td>
                         <td><input type="text" id="hat" name="hat"></td>
+                        <td>劳务派遣：</td>
+                        <td>
+                            <div class="layui-form-item" style="margin-bottom: 0px">
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <select name="laowupaiqian" lay-verify="required" lay-filter="laowupaiqian" lay-search="" id="laowupaiqian">
+                                            <option value="是">是</option>
+                                            <option value="否">否</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="laowupaiqianHidden" name="laowupaiqianHidden">
+                        </td>
                     </tr>
                     <tr>
-                        <td>劳务派遣：</td>
-                        <td><input type="text" id="laowupaiqian" name="laowupaiqian"></td>
                         <td>学历：</td>
                         <td><input type="text" id="education" name="education"></td>
-                    </tr>
-                    <tr>
-                        <td>签名：</td>
-                        <td colspan="3"><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
-                    </tr>
-                    <tr>
-                        <td>备注：</td>
-                        <td colspan="3"><input type="text" id="remark" name="remark"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                <table style="margin-top: 20px;">
-                    <thead>
-                    <tr>
-                        <th colspan="4">工资信息
-                            <span style="display: inline-block;margin-left: 15px" class="doubleUpBtn2" onclick="doubleUp2()"><i class='fa fa-arrow-up fa-lg'></i></span>
-                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn2" onclick="doubleDown2()"><i class='fa fa-arrow-down  fa-lg'></i></span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody class="payTbody">
-                    <tr>
-                        <td style="width: 16%;">绩效工资：</td>
-                        <td><input type="text" id="meritpay" name="meritpay"></td>
                         <td>绩效管理：</td>
                         <td>
                             <div class="layui-form-item" style="margin-bottom: 0px">
@@ -248,12 +239,40 @@
                         <td><input type="number" id="card" name="card"></td>
                     </tr>
                     <tr>
-                        <td>待遇标准：</td>
-                        <td><input type="text" id="wages" name="wages"></td>
-                        <td>基本工资：</td>
-                        <td><input type="text" id="basicwages" name="basicwages"></td>
+                        <td>签名：</td>
+                        <td colspan="3"><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
                     </tr>
                     <tr>
+                        <td>备注：</td>
+                        <td colspan="3"><input type="text" id="remark" name="remark"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <%--<table style="margin-top: 20px;">
+                    <thead>
+                    <tr>
+                        <th colspan="4">工资信息
+                            <span style="display: inline-block;margin-left: 15px" class="doubleUpBtn2" onclick="doubleUp2()"><i class='fa fa-arrow-up fa-lg'></i></span>
+                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn2" onclick="doubleDown2()"><i class='fa fa-arrow-down  fa-lg'></i></span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="payTbody">
+                    <tr>
+                        <td style="width: 16%;">绩效工资：</td>
+                        <td><input type="text" id="meritpay" name="meritpay"></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>待遇标准：</td>
+                        <td><input type="text" id="wages" name="wages"></td>
+                        <td>缴费基数：</td>
+                        <td><input type="text" id="paymentBase" name="paymentBase"></td>
+                        <td>基本工资：</td>
+                        <td><input type="text" id="basicwages" name="basicwages"></td>
+                    </tr>--%>
+                    <%--<tr>
                         <td>技能工资：</td>
                         <td><input type="text" id="skillPay" name="skillPay"></td>
                         <td>职务工资：</td>
@@ -280,9 +299,9 @@
                     <tr>
                         <td>缴费基数：</td>
                         <td colspan="3"><input type="text" id="paymentBase" name="paymentBase"></td>
-                    </tr>
-                    </tbody>
-                </table>
+                    </tr>--%>
+                    <%--</tbody>
+                </table>--%>
                 <div style="text-align: center;margin: 15px 0px;">
                     <input type="button" value="确定" onclick="updUserInfo()">
                     <input  style="margin-left: 5%" type="button" value="取消" onclick="cancel()">

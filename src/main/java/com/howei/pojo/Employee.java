@@ -32,6 +32,7 @@ public class Employee implements Serializable {
     private String created;
     private int createdBy;
     private String sign;//个性签名
+    private String email;//邮箱
 
     private Double skillPay;//技能工资
     private Double positionSalary;//职务工资
@@ -311,6 +312,14 @@ public class Employee implements Serializable {
 
     public String getCreated() {
         return created;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setCreated(String created) {

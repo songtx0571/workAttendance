@@ -59,7 +59,7 @@
     </select>
 <!--,e.paymentBase-->
     <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
-        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
+        select u.email,e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
         e.idnumber,e.bank,e.card,e.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
         e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign
         from employee e
@@ -94,98 +94,101 @@
     </select>
 
     <update id="updateEmployee" parameterType="com.howei.pojo.Employee" keyProperty="id" useGeneratedKeys="true" >
-        update employee
+        update employee e join users u on u.employeeId=e.id
         <trim prefix="set" suffixOverrides=",">
+            <if test="email!=null and email!=''">
+                u.email=#{email},
+            </if>
             <if test="idNumber!=null and idNumber!=''">
-                idNumber=#{idNumber},
+                e.idNumber=#{idNumber},
             </if>
             <if test="bank!=null and bank!=''">
-                bank=#{bank},
+                e.bank=#{bank},
             </if>
             <if test="card!=null and card!=''">
-                card=#{card},
+                e.card=#{card},
             </if>
             <if test="closhe!=null and closhe!=''">
-                closhe=#{closhe},
+                e.closhe=#{closhe},
             </if>
             <if test="hat!=null and hat!=''">
-                hat=#{hat},
+                e.hat=#{hat},
             </if>
             <if test="laowupaiqian!=null and laowupaiqian!=''">
-                laowupaiqian=#{laowupaiqian},
+                e.laowupaiqian=#{laowupaiqian},
             </if>
             <if test="education!=null and education!=''">
-                education=#{education},
+                e.education=#{education},
             </if>
             <if test="credentials1!=null and credentials1!=''">
-                credentials1=#{credentials1},
+                e.credentials1=#{credentials1},
             </if>
             <if test="credentials2!=null and credentials2!=''">
-                credentials2=#{credentials2},
+                e.credentials2=#{credentials2},
             </if>
             <if test="credentials3!=null and credentials3!=''">
-                credentials3=#{credentials3},
+                e.credentials3=#{credentials3},
             </if>
             <if test="entryDate!=null and entryDate!=''">
-                entryDate=#{entryDate},
+                e.entryDate=#{entryDate},
             </if>
             <if test="emergency!=null and emergency!=''">
-                emergency=#{emergency},
+                e.emergency=#{emergency},
             </if>
             <if test="emergencyTel!=null and emergencyTel!=''">
-                emergencyTel=#{emergencyTel},
+                e.emergencyTel=#{emergencyTel},
             </if>
             <if test="remark!=null and remark!=''">
-                remark=#{remark},
+                e.remark=#{remark},
             </if>
             <if test="wages!=null and wages!=''">
-                wages=#{wages},
+                e.wages=#{wages},
             </if>
             <if test="basicwages!=null and basicwages!=''">
-                basicwages=#{basicwages},
+                e.basicwages=#{basicwages},
             </if>
             <if test="meritpay!=null and meritpay!=''">
-                meritpay=#{meritpay},
+                e.meritpay=#{meritpay},
             </if>
             <if test="address!=null and address!=''">
-                address=#{address},
+                e.address=#{address},
             </if>
             <if test="manager!=null">
-                manager=#{manager},
+                e.manager=#{manager},
             </if>
             <if test="skillPay!=null">
-                skillPay=#{skillPay},
+                e.skillPay=#{skillPay},
             </if>
             <if test="positionSalary!=null">
-                positionSalary=#{positionSalary},
+                e.positionSalary=#{positionSalary},
             </if>
             <if test="seniorityWage!=null">
-                seniorityWage=#{seniorityWage},
+                e.seniorityWage=#{seniorityWage},
             </if>
             <if test="foodSupplement!=null">
-                foodSupplement=#{foodSupplement},
+                e.foodSupplement=#{foodSupplement},
             </if>
 
             <if test="endowmentInsurance!=null">
-                endowmentInsurance=#{endowmentInsurance},
+                e.endowmentInsurance=#{endowmentInsurance},
             </if>
             <if test="unemploymentBenefits!=null">
-                unemploymentBenefits=#{unemploymentBenefits},
+                e.unemploymentBenefits=#{unemploymentBenefits},
             </if>
             <if test="medicalInsurance!=null">
-                medicalInsurance=#{medicalInsurance},
+                e.medicalInsurance=#{medicalInsurance},
             </if>
             <if test="accumulationFund!=null">
-                accumulationFund=#{accumulationFund},
+                e.accumulationFund=#{accumulationFund},
             </if>
             <if test="unionFees!=null">
-                unionFees=#{unionFees},
+                e.unionFees=#{unionFees},
             </if>
             <if test="sign!=null">
-                sign=#{sign},
+                e.sign=#{sign},
             </if>
         </trim>
-        where id=#{id}
+        where e.id=#{id}
     </update>
 
     <select id="getEmployeeNameMap" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">

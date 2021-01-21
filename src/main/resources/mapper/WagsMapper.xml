@@ -31,7 +31,7 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        select w.*,e.userNumber,e.name employeeName from wages w
+        select w.*,e.userNumber,e.name employeeName,e.laowupaiqian from wages w
         left join employee e on e.id=w.employeeId
         LEFT JOIN users u on u.employeeId=e.id
         LEFT JOIN company c on c.id=u.companyId
@@ -44,6 +44,7 @@
                 and FIND_IN_SET(e.id,#{empId})
             </if>
         </where>
+        order by e.laowupaiqian
     </select>
     <!--subTotalOfSubsidies-->
     <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">

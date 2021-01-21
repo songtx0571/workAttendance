@@ -59,7 +59,7 @@ $(function(){
     })
 
 });
-//显示绩效管理人
+//显示绩效管理人  、 劳务派遣
 function showManagerName() {
     layui.use(['form'], function(){
         var form = layui.form;
@@ -80,6 +80,9 @@ function showManagerName() {
         });
         form.on('select(managerName)', function(data){
             $("#managerHidden").val(data.value);//得到被选中的值
+        });
+        form.on('select(laowupaiqian)', function(data){
+            $("#laowupaiqianHidden").val(data.value);//得到被选中的值
         });
     });
 }
@@ -114,7 +117,7 @@ function showEmployeeList(){
         //监听行工具事件
         table.on('tool(test)', function(obj) {
             var data = obj.data;
-            $("#userIdHidden").val(data.id)
+            $("#userIdHidden").val(data.id);
             shouInfo();
             if (obj.event === 'edit') {
                 index=layer.open({
@@ -144,12 +147,13 @@ function shouInfo() {
             $("#idNumber").val(data.idNumber); //身份证
             $("#address").val(data.address);//住址
             $("#remark").val(data.remark);//备注
-            $("#sign").val(data.sign);//备注
+            $("#sign").val(data.sign);//签名
+            $("#email").val(data.email);//邮箱
             $("#emergency").val(data.emergency);//应急联系人
             $("#emergencyTel").val(data.emergencyTel); //应急电话
             $("#closhe").val(data.closhe);//衣服尺寸
             $("#hat").val(data.hat);//安全帽编号
-            $("#laowupaiqian").val(data.laowupaiqian);//劳务派遣
+            $("#laowupaiqianHidden").val(data.laowupaiqian);//劳务派遣
             $("#education").val(data.education);//学历
             $("#entryDate").val(data.entryDate);//入职日期
             $("#departmentName").val(data.departmentName); //部门
@@ -161,21 +165,10 @@ function shouInfo() {
 
             $("#bank").val(data.bank); //开户行
             $("#card").val(data.card);//银行卡号
-            $("#wages").val(data.wages);//待遇标准
-            $("#basicwages").val(data.basicwages);//基本工资
-            $("#meritpay").val(data.meritpay);//绩效工资
-            $("#skillPay").val(data.skillPay);//技能工资
-            $("#positionSalary").val(data.positionSalary);//职务工资
-            $("#seniorityWage").val(data.seniorityWage);//工龄工资
-            $("#endowmentInsurance").val(data.endowmentInsurance);//养老保险
-            $("#medicalInsurance").val(data.medicalInsurance);//医疗保险
-            $("#accumulationFund").val(data.accumulationFund);//公积金
-            $("#unemploymentBenefits").val(data.unemploymentBenefits);//失业金
-            $("#paymentBase").val(data.paymentBase);//缴费基数
-            $("#unionFees").val(data.unionFees);//工会费
             layui.use('form', function(){
                 var form = layui.form;
                 $("#managerName").val(data.manager);//绩效管理人
+                $("#laowupaiqian").val(data.laowupaiqian);//绩效管理人
                 form.render('select');
                 form.render(); //更新全部
             });
@@ -193,12 +186,13 @@ function updUserInfo() {
     employee.idnumber = $("#idNumber").val();
     employee.address = $("#address").val();
     employee.sign = $("#sign").val();
+    employee.email = $("#email").val();
     employee.remark = $("#remark").val();
     employee.emergency = $("#emergency").val();
     employee.emergencyTel = $("#emergencyTel").val();
     employee.closhe = $("#closhe").val();
     employee.hat = $("#hat").val();
-    employee.laowupaiqian = $("#laowupaiqian").val();
+    employee.laowupaiqian = $("#laowupaiqianHidden").val();
     employee.education = $("#education").val();
     employee.entryDate = $("#entryDate").val();
     employee.departmentName = $("#departmentName").val();
@@ -210,19 +204,6 @@ function updUserInfo() {
 
     employee.bank = $("#bank").val();//开户行
     employee.card = $("#card").val();//银行卡号
-    employee.wages = $("#wages").val();//待遇标准
-    employee.basicwages = $("#basicwages").val();//基本工资
-    employee.meritpay = $("#meritpay").val();//绩效工资
-    employee.manager = $("#managerHidden").val();//绩效管理人
-    employee.skillPay = $("#skillPay").val();//技能工资
-    employee.positionSalary = $("#positionSalary").val();//职务工资
-    employee.seniorityWage = $("#seniorityWage").val();//工龄工资
-    employee.endowmentInsurance = $("#endowmentInsurance").val();//养老保险
-    employee.medicalInsurance = $("#medicalInsurance").val();//医疗保险
-    employee.accumulationFund = $("#accumulationFund").val();//公积金
-    employee.unemploymentBenefits = $("#unemploymentBenefits").val();//失业金
-    employee.unionFees = $("#unionFees").val();//工会费
-    employee.paymentBase = $("#paymentBase").val();//缴费基数
     if (employee.sign.length > 30) {
         layer.alert("签名输入过长；");
         return;
@@ -239,7 +220,7 @@ function updUserInfo() {
         }
     });
 }
-function doubleUp1() {
+/*function doubleUp1() {
     $(".doubleUpBtn1").css("display", "none");
     $(".userTbody").css("display","none");
     $(".doubleDownBtn1").css("display","inline-block");
@@ -258,7 +239,7 @@ function doubleDown2() {
     $(".doubleUpBtn2").css("display", "inline-block");
     $(".doubleDownBtn2").css("display","none");
     $(".payTbody").css("display","block");
-}
+}*/
 //取消
 function cancel() {
     $(".updateUser").css("display","none");
