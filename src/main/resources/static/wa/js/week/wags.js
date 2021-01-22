@@ -228,6 +228,7 @@ function showWagsList(m){
         //监听行工具事件
         table.on('tool(test)', function(obj) {
             var data = obj.data;
+            $("#dateHidden").val(data.date);
             $("#wagsId").val(data.id);
             $("#userId").val(data.employeeId);
             $(".userNumber").val(data.userNumber);
@@ -261,7 +262,6 @@ function showWagsList(m){
             setInterval(function () {
                 $("#totalTax").val(Number($('#totalPayable').val())-Number($("#totalDeduction").val()));
             },1000);
-            //刷新红色字体部分
             sumWages();
             if(obj.event === 'edit'){//修改
                 layer.open({
@@ -328,6 +328,11 @@ function copyOk() {
 function updFinance() {
     var wages = {};
     wages.id = $("#wagsId").val();
+    if ($("#dateHidden").val() == "" || $("#dateHidden").val() == null) {
+        wages.date = $("#test15").val();
+    } else {
+        wages.date = $("#dateHidden").val();
+    }
     wages.employeeId = $("#userId").val();
     wages.employeeName = $("#employeeName").val();
     wages.userNumber = $("#userNumber").val();
@@ -356,8 +361,9 @@ function updFinance() {
     wages.netSalary = $("#netSalary").val();//实发工资
     wages.other = $("#other").val();//其他
     wages.remark = $("#remark").val();
-    wages.month = $("#monthStart").val();
+    wages.month = $("#test15").val();
     wages.deductionOfExpenses = '5000.00';//减除费用
+    console.log(wages)
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",
@@ -366,7 +372,7 @@ function updFinance() {
         dataType: "json",
         success: function(data){
             layer.closeAll();
-            showWagsList( $("#monthStart").val());
+            showWagsList( $("#test15").val());
         }
     });
 }

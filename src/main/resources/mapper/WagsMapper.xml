@@ -31,7 +31,7 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        SELECT w.*, e.userNumber,e.name employeeName,e.laowupaiqian
+        SELECT u.employeeId, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
         FROM employee e
         LEFT JOIN (
         SELECT * FROM wages
