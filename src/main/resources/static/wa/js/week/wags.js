@@ -261,6 +261,8 @@ function showWagsList(m){
             setInterval(function () {
                 $("#totalTax").val(Number($('#totalPayable').val())-Number($("#totalDeduction").val()));
             },1000);
+            //刷新红色字体部分
+            sumWages();
             if(obj.event === 'edit'){//修改
                 layer.open({
                     type: 1

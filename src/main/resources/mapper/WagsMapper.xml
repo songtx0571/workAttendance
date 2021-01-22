@@ -31,20 +31,21 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        select w.*,e.userNumber,e.name employeeName,e.laowupaiqian from wages w
-        left join employee e on e.id=w.employeeId
-        LEFT JOIN users u on u.employeeId=e.id
-        LEFT JOIN company c on c.id=u.companyId
-        <where>
-            c.id=1 and u.state=1
-            <if test="month!=null">
-                and w.date=#{month}
-            </if>
-            <if test="empId!=null">
-                and FIND_IN_SET(e.id,#{empId})
-            </if>
-        </where>
-        order by e.laowupaiqian
+        SELECT w.*, e.userNumber,e.name employeeName,e.laowupaiqian
+        FROM employee e
+        LEFT JOIN (
+        SELECT * FROM wages
+        <if test="month!=null">
+            WHERE
+            date = #{month}
+        </if>
+        ) w ON e.id = w.employeeId
+        LEFT JOIN users u ON u.employeeId = e.id
+        where u.state=1 and u.companyId=1
+        <if test="empId!=null">
+            and FIND_IN_SET(e.id,#{empId})
+        </if>
+        order by e.laowupaiqian desc
     </select>
     <!--subTotalOfSubsidies-->
     <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
@@ -71,73 +72,73 @@
     <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">
         update wages
         <set>
-            <if test="basePay!=0.00">
+            <if test="basePay!=null">
                 basePay=#{basePay},
             </if>
-            <if test="skillPay!=0.00">
+            <if test="skillPay!=null">
                 skillPay=#{skillPay},
             </if>
-            <if test="positionSalary!=0.00">
+            <if test="positionSalary!=null">
                 positionSalary=#{positionSalary},
             </if>
-            <if test="seniorityWage!=0.00">
+            <if test="seniorityWage!=null">
                 seniorityWage=#{seniorityWage},
             </if>
-            <if test="meritPay!=0.00">
+            <if test="meritPay!=null">
                 meritPay=#{meritPay},
             </if>
-            <if test="endowmentInsurance!=0.00">
+            <if test="endowmentInsurance!=null">
                 endowmentInsurance=#{endowmentInsurance},
             </if>
-            <if test="medicalInsurance!=0.00">
+            <if test="medicalInsurance!=null">
                 medicalInsurance=#{medicalInsurance},
             </if>
-            <if test="accumulationFund!=0.00">
+            <if test="accumulationFund!=null">
                 accumulationFund=#{accumulationFund},
             </if>
-            <if test="unemploymentBenefits!=0.00">
+            <if test="unemploymentBenefits!=null">
                 unemploymentBenefits=#{unemploymentBenefits},
             </if>
-            <if test="unionFees!=0.00">
+            <if test="unionFees!=null">
                 unionFees=#{unionFees},
             </if>
-            <if test="other!=0.00">
+            <if test="other!=null">
                 other=#{other},
             </if>
-            <if test="wageSubtotal!=0.00">
+            <if test="wageSubtotal!=null">
                 wageSubtotal=#{wageSubtotal},
             </if>
-            <if test="performanceCoefficient!=0.00">
+            <if test="performanceCoefficient!=null">
                 performanceCoefficient=#{performanceCoefficient},
             </if>
-            <if test="wagesPayable!=0.00">
+            <if test="wagesPayable!=null">
                 wagesPayable=#{wagesPayable},
             </if>
-            <if test="foodSupplement!=0.00">
+            <if test="foodSupplement!=null">
                 foodSupplement=#{foodSupplement},
             </if>
-            <if test="totalPayable!=0.00">
+            <if test="totalPayable!=null">
                 totalPayable=#{totalPayable},
             </if>
-            <if test="otherDeductions!=0.00">
+            <if test="otherDeductions!=null">
                 otherDeductions=#{otherDeductions},
             </if>
-            <if test="totalDeduction!=0.00">
+            <if test="totalDeduction!=null">
                 totalDeduction=#{totalDeduction},
             </if>
-            <if test="totalTax!=0.00">
+            <if test="totalTax!=null">
                 totalTax=#{totalTax},
             </if>
-            <if test="sixSpecialDeductions!=0.00">
+            <if test="sixSpecialDeductions!=null">
                 sixSpecialDeductions=#{sixSpecialDeductions},
             </if>
-            <if test="individualTaxAdjustment!=0.00">
+            <if test="individualTaxAdjustment!=null">
                 individualTaxAdjustment=#{individualTaxAdjustment},
             </if>
-            <if test="netSalary!=0.00">
+            <if test="netSalary!=null">
                 netSalary=#{netSalary},
             </if>
-            <if test="highTemperatureSubsidy!=0.00">
+            <if test="highTemperatureSubsidy!=null">
                 highTemperatureSubsidy=#{highTemperatureSubsidy},
             </if>
             <if test="remark!=null and remark!=''">

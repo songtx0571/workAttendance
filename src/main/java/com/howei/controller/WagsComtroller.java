@@ -57,6 +57,7 @@ public class WagsComtroller {
     public Result getWagsList(HttpServletRequest request){
         String month=request.getParameter("month");
         Users users=this.getPrincipal();
+
         String empIdStr="";
         Integer employeeId=null;
         if(month==null||month.equals("")){
@@ -146,7 +147,7 @@ public class WagsComtroller {
                 if(user!=null&&user.getState()==1){
                     wages.setDate(monthEnd+"-01");
                     wages.setCreated(monthEnd+"-01");
-                    wages.setPerformanceCoefficient(1.00);//设置绩效系数
+                    wages.setPerformanceCoefficient(0.00);//设置绩效系数
                     wages.setFoodSupplement(0.00);//餐补
                     wages.setHighTemperatureSubsidy(0.00);//高温补贴
                     wages.setTotalPayable(0.00);//应发合计

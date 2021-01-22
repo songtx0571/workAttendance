@@ -201,7 +201,7 @@ function updUserInfo() {
     employee.credentials1 = $("#credentials1").val();
     employee.credentials2 = $("#credentials2").val();
     employee.credentials3 = $("#credentials3").val();
-
+    employee.manager = $("#managerHidden").val();
     employee.bank = $("#bank").val();//开户行
     employee.card = $("#card").val();//银行卡号
     if (employee.sign.length > 30) {
