@@ -308,10 +308,13 @@ public class WagsComtroller {
         System.out.println(wages.toString());
         Integer wagesId = wages.getId();
         int result = 0;
-        if (wagesId != null&&!"".equals(wagesId)) {
+        if (wagesId != null && !"".equals(wagesId)) {
             result = wagsService.updWags(wages);
         } else {
-            wages.setDate(wages.getDate()+"-01");
+            String dateTime = wages.getDate() + "-01";
+            wages.setDate(dateTime);
+            wages.setCreated(dateTime);
+            wages.setHighTemperatureSubsidy(0.00);
             result = wagsService.addThisMonthWags(wages);
         }
         if (result > 0) {
