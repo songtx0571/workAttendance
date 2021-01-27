@@ -1,10 +1,8 @@
 package com.howei.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.howei.pojo.Employee;
-import com.howei.pojo.Tax;
-import com.howei.pojo.Users;
-import com.howei.pojo.Wages;
+import com.howei.pojo.*;
+import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
 import com.howei.service.UserService;
 import com.howei.service.WagsService;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -40,6 +39,9 @@ public class WagsComtroller {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BehaviorService behaviorService;
 
     public Users getPrincipal() {
         Subject subject = SecurityUtils.getSubject();
@@ -88,6 +90,11 @@ public class WagsComtroller {
         }
         map.put("empId", empIdStr);
         List<Wages> list = wagsService.getWagsList(map);
+        if(list!=null){
+            for (Wages wages:list) {
+                wages.setPerformanceCoefficient(getAssessmentByEmployeeId(month,wages.getEmployeeId()+""));
+            }
+        }
         Result result = new Result();
         result.setCode(0);
         if (list != null) {
@@ -95,6 +102,37 @@ public class WagsComtroller {
             result.setData(list);
         }
         return result;
+    }
+
+    /**
+     * 计算净绩效与综合绩效
+     * @param cycle
+     * @param employeeId
+     * @return
+     */
+    public double getAssessmentByEmployeeId(String cycle,String employeeId) {
+        Map map=new HashMap();
+        if(cycle!=null&&!cycle.equals("")){
+            map.put("cycle",cycle);
+        }
+        if(employeeId!=null&&!employeeId.equals("")){
+            map.put("employeeId",employeeId);
+        }
+        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        if(assessment!=null){
+            double score1=assessment.getScore1();
+            double score2=assessment.getScore2();
+            double jianban=assessment.getJiaban();
+            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            assessment.setNetPerformance(netPerformance);
+            //综合绩效=净绩效+加班*0.01
+            bd = new BigDecimal(netPerformance+jianban*0.01);
+            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            return comprehensivePerformance;
+        }
+        return 0.0;
     }
 
     public String getUsersId(Integer empId, List<Employee> empList) {
@@ -167,6 +205,25 @@ public class WagsComtroller {
         }
         return JSON.toJSONString(Type.CANCEL);
     }
+
+    /**
+     * 获取考勤
+     * @param cycle
+     * @param employeeId
+     * @return
+     */
+   /* public double getAssessmentByEmployeeId(String cycle, String employeeId) {
+        Map map=new HashMap();
+        if(cycle!=null&&!cycle.equals("")){
+            map.put("cycle",cycle);
+        }
+        if(employeeId!=null&&!employeeId.equals("")){
+            map.put("employeeId",employeeId);
+        }
+        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        double kaoqin=assessment.getKaoqin();
+        return kaoqin;
+    }*/
 
     /**
      * 生成本月工资信息
@@ -305,12 +362,15 @@ public class WagsComtroller {
     @RequestMapping(value = "/updWages", method = {RequestMethod.POST})
     @ResponseBody
     public String updWags(@RequestBody Wages wages) {
-        System.out.println(wages.toString());
+        //获取工资编号
         Integer wagesId = wages.getId();
         int result = 0;
+        //若编号不为空，修改工资信息
         if (wagesId != null&&!"".equals(wagesId)) {
             result = wagsService.updWags(wages);
-        } else {
+        }
+        //若编号为空，添加当前被操作人工资信息
+        else {
             wages.setDate(wages.getDate()+"-01");
             result = wagsService.addThisMonthWags(wages);
         }

@@ -318,7 +318,7 @@ function delectAchievement(id) {
         data: {"id": id},
         success: function (data) {
             if (data =="SUCCESS"){
-                showAchievement("");
+                showAchievement($("#test4").val());
             }
         }
     });
@@ -387,7 +387,7 @@ function addAteAchievement() {
             if (data == "SUCCESS") {
                 layer.alert("添加成功");
                 layer.closeAll();
-                showAchievement("");
+                showAchievement($("#test4").val());
                 clearVal();
             } else{
                 layer.alert("添加失败")
@@ -588,7 +588,7 @@ function updBehavior() {
     var employeeId = $("#employeeIdHidden2").val();
     var remark = $('#remark').val();
     var jiaban = $('#jiaban').val();
-    var kaoqin = $('#kaoqin').val();
+    var kaoqin = parseFloat($('#kaoqin').val());
     var cycle = $("#test6").val();
     var sum = $("#sum").val();
     var netPerformance = $("#netPerformance").val();//净绩效
@@ -613,7 +613,7 @@ function updBehavior() {
         success: function (data) {
             if (data == "SUCCESS") {
                 layer.alert("修改成功");
-                showBehavior("");
+                showBehavior($("#test6").val());
                 // layer.closeAll();
             }
         }

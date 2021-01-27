@@ -88,7 +88,7 @@ public class AchievementsController {
                     empIdStr+=getUsersId(employee.getId(),empList);
                 }
             }
-        }else{//当用户session为空，默认为管理员权限
+        }/*else{//当用户session为空，默认为管理员权限
             List<Employee> rootList=employeeService.getEmployeeByManager(240);
             if(rootList!=null){
                 List<Employee> empList=employeeService.getEmployeeByManager(0);
@@ -97,7 +97,7 @@ public class AchievementsController {
                     empIdStr+=getUsersId(employee.getId(),empList);
                 }
             }
-        }
+        }*/
         if(empIdStr!=null&&!empIdStr.equals("")){
             empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
         }

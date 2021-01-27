@@ -63,8 +63,8 @@ public class EmployeeController {
     @RequestMapping("/getEmployeeList")
     @ResponseBody
     public String getEmployeeList(HttpServletRequest request) {
-        Users users = this.getPrincipal();
         Subject subject = SecurityUtils.getSubject();
+        Users users=(Users)subject.getPrincipal();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         List<Employee> list = null;
         Integer employeeId = null;
@@ -73,21 +73,7 @@ public class EmployeeController {
             employeeId = users.getEmployeeId();
         }
         if (selectAllFlag) {
-            List<Employee> rootList = employeeService.getEmployeeByManager(0);
-            if (rootList != null) {
-                empIdStr += employeeId + ",";
-                List<Employee> empList = employeeService.getEmployeeByManager(0);
-                System.out.println("empList::" + empList.size() + ";;" + empList);
-                for (Employee employee : rootList) {
-                    empIdStr += employee.getId() + ",";
-                    empIdStr += getUsersId(employee.getId(), empList);
-                }
-            }
-            if (empIdStr != null && !empIdStr.equals("")) {
-                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-            }
             Map map = new HashMap();
-            map.put("empId", empIdStr);
             list = employeeService.getEmployeeList(map);
         } else {
             List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
@@ -105,8 +91,6 @@ public class EmployeeController {
             Map map = new HashMap();
             map.put("empId", empIdStr);
             list = employeeService.getEmployeeList(map);
-
-
         }
         Result result = new Result();
         result.setCode(0);
