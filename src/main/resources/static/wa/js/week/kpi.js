@@ -1,6 +1,22 @@
 var path = "";
+var date = new Date();
+var year = date.getFullYear();
+var month = date.getMonth() + 1;
 $(function(){
     showDate();
+    if (month == 12) {
+        month = 1;
+        year = year + 1;
+    }
+    if (month == 0) {
+        month = 12;
+        year = year - 1;
+    }
+    if (month < 10) {
+        month = "0"+month;
+    }
+    showKpi(year+"-"+month);
+    $("#test15").val(year+"-"+month);
 });
 //显示时间
 function showDate() {
@@ -39,7 +55,6 @@ function showKpi(startTime) {
                 {field: 'companyName', title: '公司', align: 'center'},
                 {field: 'departmentName', title: '部门', align: 'center'},
                 {field: 'userName', title: '员工', align: 'center'},
-                {field: 'sex', title: '性别', align: 'center'},
                 {field: 'frequency', title: '月巡检次数',sort :true, align: 'center', event: 'monthNum', style:'cursor: pointer;color: red;'},
                 {field: 'point', title: '月巡检点数',sort :true, align: 'center', event: 'monthPoint', style:'cursor: pointer;color: red;'}
             ]]
@@ -80,6 +95,40 @@ function showKpi(startTime) {
             }
         });
     });
+}
+//上个月
+function monthUpBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m --;
+    if (m == 0) {
+        m = 12;
+        y = y - 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a1 = y+"-"+m;
+    showKpi(a1)
+}
+//下个月
+function monthDownBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m ++;
+    if (m == 13){
+        m = 1;
+        y = Number(y) + 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a2 = y+"-"+m;
+    showKpi(a2)
 }
 function num(userId,startTime) {
     layui.use(['table',"form"], function() {

@@ -6,6 +6,7 @@ import com.howei.util.DateFormat;
 import com.howei.util.EasyuiResult;
 import com.howei.util.Page;
 import com.howei.util.Result;
+import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -101,7 +102,7 @@ public class KPIController {
         if (empIdStr != null && !empIdStr.equals("")) {
             empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
         }
-       // map.put("empId", empIdStr);
+        // map.put("empId", empIdStr);
 
 
         if (startTime != null && !startTime.equals("")) {
@@ -392,14 +393,38 @@ public class KPIController {
             map.put("startTime", DateFormat.ThisMonth());
         }
         List<MaintenanceRecord> list = examinationServive.getWorkingHoursByProPeople(map);
-        List<Users> users = userService.getNameByProjectId(null);
+        //System.out.println("list::"+list);
 
 
+        Subject subject = SecurityUtils.getSubject();
+        Users user = (Users) subject.getPrincipal();
+        boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
+        Integer employeeId = user.getEmployeeId();
+        String empIdStr = null;
+        if (selectAllFlag) {
+            employeeId = 0;
+        }
+        List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
+        if (rootList != null) {
+            empIdStr = user.getEmployeeId() + ",";
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            for (Employee employee : rootList) {
+                empIdStr += employee.getId() + ",";
+                empIdStr += getUsersId(employee.getId(), empList);
+            }
+        }
+        if (empIdStr != null && !empIdStr.equals("")) {
+            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+        }
+        map = new HashMap();
+        map.put("empId", empIdStr);
+
+        List<Map> users = userService.getNameByEmployeeIds(empIdStr);
 
 
         Integer size = users.size();
         //处理分页的users列表
-        List<Users> users2 = new ArrayList<>();
+        List<Map> users2 = new ArrayList<>();
         for (int i = rows; i < Integer.parseInt(page) * (Integer.parseInt(limit)); i++) {
             if (i < users.size()) {
                 users2.add(users.get(i));
@@ -416,33 +441,29 @@ public class KPIController {
         return result1;
     }
 
-    public List<Map<String, String>> resultWorkHoursList(List<Users> users, List<MaintenanceRecord> list, String depart, String rows, int offset, String page) {
+    public List<Map<String, String>> resultWorkHoursList(List<Map> users, List<MaintenanceRecord> list, String depart, String rows, int offset, String page) {
         List<Map<String, String>> result = new ArrayList<>();
         double[] count = new double[users.size()];
         for (int i = 0; i < users.size(); i++) {
-            Users user = users.get(i);
+            Map<String, Object> userMap = users.get(i);
             count[i] = 0;
             for (int k = 0; k < list.size(); k++) {
                 MaintenanceRecord record = list.get(k);
                 String people = record.getPeople();
-                String userName = user.getUserName().toUpperCase();
-                if (people.toUpperCase().contains(userName)) {//包含
+                String userNumber = userMap.get("userNumber").toString().toUpperCase();
+                if (people.toUpperCase().contains(userNumber)) {
                     count[i] += record.getWorkingHours();
                 }
             }
         }
-
         for (int i = 0; i < users.size(); i++) {
-            double data = count[i];
-            if (data <= 0) {
-
-            } else {
-                Map<String, String> map = new HashMap<>();
-                map.put("id", users.get(i).getId() + "");
-                map.put("name", users.get(i).getUserName());
-                map.put("workingHours", count[i] + "");
-                result.add(map);
-            }
+            Map<String, String> map = new HashMap<>();
+            map.put("id", users.get(i).get("id").toString());
+            map.put("name", users.get(i).get("userName").toString());
+            map.put("companyName", users.get(i).get("companyName").toString());
+            map.put("departmentName", users.get(i).get("departmentName").toString());
+            map.put("workingHours", count[i] + "");
+            result.add(map);
         }
         return result;
     }
@@ -459,11 +480,10 @@ public class KPIController {
 
     @RequestMapping("/getSelWorkHoursList")
     @ResponseBody
-    public List<Map<String, String>> getSelWorkHoursList(HttpServletRequest request) {
+    public Result getSelWorkHoursList(HttpServletRequest request) {
         String userId = request.getParameter("userId");
         String startTime = request.getParameter("startTime");
-        String depart = request.getParameter("depart");
-        List<Map<String, String>> result = new ArrayList<>();
+        List<Map<String, String>> resultList = new ArrayList<>();
         Map map = new HashMap();
         if (startTime != null && !startTime.equals("") && !startTime.equals(",")) {
             map.put("startTime", startTime);
@@ -471,18 +491,15 @@ public class KPIController {
             startTime = DateFormat.ThisMonth();
             map.put("startTime", DateFormat.ThisMonth());
         }
-        if (depart != null) {
-            map.put("depart", depart);
-        }
         List<MaintenanceRecord> list = examinationServive.getWorkingHoursByProPeople(map);
         Users user = userService.findById(userId);
         int days = DateFormat.getDaysOfMonth(startTime + "-01");
         double[][] dayData = new double[days][1];
-        String userName = user.getUserName().toUpperCase();
+        String userNumber = user.getUserNumber().toUpperCase();
         for (int k = 0; k < list.size(); k++) {
             MaintenanceRecord record = list.get(k);
             String people = record.getPeople().toUpperCase();
-            if (people.contains(userName)) {//包含
+            if (people.contains(userNumber)) {//包含
                 String dateTimeStr = record.getDatetime();
                 int dataTime = Integer.parseInt(dateTimeStr.substring(8, 10));
                 dataTime--;
@@ -496,9 +513,13 @@ public class KPIController {
                 Map<String, String> mapMap = new HashMap<>();
                 mapMap.put("day", "第" + (i + 1) + "天");
                 mapMap.put("workHours", data + "");
-                result.add(mapMap);
+                resultList.add(mapMap);
             }
         }
+        Result result=new Result();
+        result.setCode(0);
+        result.setData(resultList);
+        result.setCount(resultList.size());
         return result;
     }
 }
