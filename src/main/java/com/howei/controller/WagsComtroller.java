@@ -365,13 +365,14 @@ public class WagsComtroller {
         //获取工资编号
         Integer wagesId = wages.getId();
         int result = 0;
-        //若编号不为空，修改工资信息
-        if (wagesId != null&&!"".equals(wagesId)) {
+
+        if (wagesId != null && !"".equals(wagesId)) {
             result = wagsService.updWags(wages);
-        }
-        //若编号为空，添加当前被操作人工资信息
-        else {
-            wages.setDate(wages.getDate()+"-01");
+        } else {
+            String dateTime = wages.getDate() + "-01";
+            wages.setDate(dateTime);
+            wages.setCreated(dateTime);
+            wages.setHighTemperatureSubsidy(0.00);
             result = wagsService.addThisMonthWags(wages);
         }
         if (result > 0) {

@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+
 <html>
 <head>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
@@ -8,34 +10,40 @@
     <link rel="stylesheet" href="../js/font/css/font-awesome.css">
 </head>
 <style type="text/css">
-    *{
+    * {
         margin: 0;
         padding: 0;
-        font-family: "PingFang SC","Lantinghei SC","Microsoft YaHei","HanHei SC","Helvetica Neue","Open Sans",Arial,"Hiragino Sans GB","微软雅黑",STHeiti,"WenQuanYi Micro Hei",SimSun,sans-serif;
+        font-family: "PingFang SC", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", Arial, "Hiragino Sans GB", "微软雅黑", STHeiti, "WenQuanYi Micro Hei", SimSun, sans-serif;
     }
-    .warp{
+
+    .warp {
         width: 100%;
         height: 100%;
         overflow-x: auto;
         overflow-y: scroll;
     }
+
     .warp::-webkit-scrollbar {
         display: none;
     }
-    .bodyHeader{
+
+    .bodyHeader {
         width: 100%;
     }
-    .bodyContent{
+
+    .bodyContent {
         width: 100%;
         height: 90%;
 
     }
-    .bodyContentHead{
+
+    .bodyContentHead {
         margin: 0 10px;
         height: 100%;
         text-align: center;
     }
-    ul{
+
+    ul {
         margin: 0px 0px 0px 0px;
         padding: 20px 0px 0px 0px;
         width: 100%;
@@ -43,12 +51,14 @@
         background-color: #F0F8FF;
         list-style-type: none;
     }
-    li{
+
+    li {
         height: 100%;
         float: left;
         margin-left: 40px;
     }
-    .updateUser{
+
+    .updateUser {
         width: 100%;
         padding: 5px;
         color: #333;
@@ -56,28 +66,34 @@
         background: #fff;
         display: none;
     }
-    .updateUser::-webkit-scrollbar{
-        display:none;
+
+    .updateUser::-webkit-scrollbar {
+        display: none;
     }
-    .updateUser table{
+
+    .updateUser table {
         border: 1px solid #ddd;
         width: 100%;
     }
+
     .updateUser table tr {
         height: 50px;
         font-size: 15px;
         width: 100%;
     }
-    .updateUser table th{
+
+    .updateUser table th {
         text-align: center;
         border: 1px solid #ddd;
         font-size: 20px;
     }
-    .updateUser table tr td{
+
+    .updateUser table tr td {
         border: 1px solid #ddd;
         width: 38%;
     }
-    .updateUser table tr td input{
+
+    .updateUser table tr td input {
         width: 98%;
         outline: none;
         height: 47px;
@@ -86,22 +102,25 @@
         padding-left: 8px;
         box-sizing: border-box;
     }
-    .updateUser table tr td:first-of-type,.updateUser table tr td:nth-child(3){
+
+    .updateUser table tr td:first-of-type, .updateUser table tr td:nth-child(3) {
         text-align: right;
         width: 146px;
     }
-    .updateUser input[type=button],.bodyHeader input[type=button]{
+
+    .updateUser input[type=button], .bodyHeader input[type=button] {
         width: 20%;
         height: 35px;
         outline: none;
         font-size: 18px;
         background-color: #1E9FFF;
         color: #fff;
-        margin-right:  5%;
+        margin-right: 5%;
         border: none;
         border-radius: 8px;
     }
-    .bodyHeader input[type=text]{
+
+    .bodyHeader input[type=text] {
         width: 70%;
         height: 50px;
         margin-right: 5%;
@@ -110,14 +129,17 @@
         padding-left: 8px;
         box-sizing: border-box;
     }
-    .bodyContent #testAdd .layui-layer-page #updateUser{
+
+    .bodyContent #testAdd .layui-layer-page #updateUser {
         width: 98%;
         padding: 10px;
     }
-    .bodyContent #testAdd .layui-layer-page #updateUser .layui-anim-upbit{
+
+    .bodyContent #testAdd .layui-layer-page #updateUser .layui-anim-upbit {
         height: 150px;
     }
-    body::-webkit-scrollbar{
+
+    body::-webkit-scrollbar {
         display: none;
     }
 </style>
@@ -126,7 +148,7 @@
     <div class="bodyHeader">
         <div style="width: 50%;margin: 10px auto;">
             <input type="text" placeholder="请输入员工编号/姓名/地址" id="searchName">
-            <input type="button" value="搜索" style="height: 50px;"  id="searchBtn">
+            <input type="button" value="搜索" style="height: 50px;" id="searchBtn">
         </div>
     </div>
     <%--内容主体--%>
@@ -137,7 +159,7 @@
                 <a class="layui-btn layui-btn-xs" lay-event="edit" id="showUpdataUser">编辑</a>
             </script>
         </div>
-        <form  id="testAdd" method="post" target="iframe1" class="layui-form" action="">
+        <form id="testAdd" method="post" target="iframe1" class="layui-form" action="">
             <div class="updateUser">
                 <input type="hidden" id="userIdHidden">
                 <table>
@@ -164,25 +186,60 @@
                     </tr>
                     <tr>
                         <td>部门：</td>
-                        <td><input type="text" id="departmentName" name="departmentName" disabled></td>
+                        <td>
+                            <shiro:hasPermission name='基本信息修改'>
+                                <input type="text" id="departmentName" name="departmentName">
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+                                <input type="text" id="departmentName" name="departmentName" disabled>
+                            </shiro:lacksPermission>
+                        </td>
                         <td>岗位：</td>
-                        <td><input type="text" id="postName" name="postName" disabled></td>
+                        <td>
+                            <shiro:hasPermission name='基本信息修改'>
+                                <input type="text" id="postName" name="postName">
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+                                <input type="text" id="postName" name="postName" disabled>
+                            </shiro:lacksPermission>
+                        </td>
                     </tr>
                     <tr>
                         <td>电话号码：</td>
                         <td><input type="tel" id="phone" name="phone" disabled></td>
                         <td>邮箱：</td>
-                        <td><input type="text" id="email" name="email"></td>
+                        <td><input type="text" id="email" name="email" disabled></td>
                     </tr>
                     <tr>
                         <td>证书1：</td>
-                        <td><input type="text" id="credentials1" name="credentials1"></td>
+                        <td>
+
+                            <shiro:hasPermission name='基本信息修改'>
+                                <input type="text" id="credentials1" name="credentials1">
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+                                <input type="text" id="credentials1" name="credentials1" disabled>
+                            </shiro:lacksPermission>
+                        </td>
                         <td>证书2：</td>
-                        <td><input type="text" id="credentials2" name="credentials2"></td>
+                        <td>
+                            <shiro:hasPermission name='基本信息修改'>
+                                <input type="text" id="credentials2" name="credentials2">
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+                                <input type="text" id="credentials2" name="credentials2" disabled>
+                            </shiro:lacksPermission></td>
                     </tr>
                     <tr>
                         <td>证书3：</td>
-                        <td><input type="text" id="credentials3" name="credentials3"></td>
+                        <td>
+                            <shiro:hasPermission name='基本信息修改'>
+                                <input type="text" id="credentials3" name="credentials3">
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+                                <input type="text" id="credentials3" name="credentials3" disabled>
+                            </shiro:lacksPermission>
+                            </td>
                         <td>身份证：</td>
                         <td><input type="text" id="idNumber" name="idNumber"></td>
                     </tr>
@@ -203,10 +260,20 @@
                         <td><input type="text" id="hat" name="hat"></td>
                         <td>劳务派遣：</td>
                         <td>
+
+                            <shiro:hasPermission name='基本信息修改'>
+
+                            </shiro:hasPermission>
+                            <shiro:lacksPermission name="基本信息修改">
+
+
+                            </shiro:lacksPermission>
+
                             <div class="layui-form-item" style="margin-bottom: 0px">
                                 <div class="layui-inline">
                                     <div class="layui-input-inline">
-                                        <select name="laowupaiqian" lay-verify="required" lay-filter="laowupaiqian" lay-search="" id="laowupaiqian">
+                                        <select name="laowupaiqian" lay-verify="required" lay-filter="laowupaiqian"
+                                                lay-search="" id="laowupaiqian">
                                             <option value="是">是</option>
                                             <option value="否">否</option>
                                         </select>
@@ -224,7 +291,8 @@
                             <div class="layui-form-item" style="margin-bottom: 0px">
                                 <div class="layui-inline">
                                     <div class="layui-input-inline">
-                                        <select name="managerName" lay-verify="required" lay-filter="managerName" lay-search="" id="managerName">
+                                        <select name="managerName" lay-verify="required" lay-filter="managerName"
+                                                lay-search="" id="managerName">
                                         </select>
                                     </div>
                                 </div>
@@ -272,39 +340,39 @@
                         <td>基本工资：</td>
                         <td><input type="text" id="basicwages" name="basicwages"></td>
                     </tr>--%>
-                    <%--<tr>
-                        <td>技能工资：</td>
-                        <td><input type="text" id="skillPay" name="skillPay"></td>
-                        <td>职务工资：</td>
-                        <td><input type="text" id="positionSalary" name="positionSalary"></td>
-                    </tr>
-                    <tr>
-                        <td>工龄工资：</td>
-                        <td><input type="text" id="seniorityWage" name="seniorityWage"></td>
-                        <td>工会费：</td>
-                        <td><input type="text" id="unionFees" name="unionFees"></td>
-                    </tr>
-                    <tr>
-                        <td>养老保险：</td>
-                        <td><input type="text" id="endowmentInsurance" name="endowmentInsurance"></td>
-                        <td>医疗保险：</td>
-                        <td><input type="text" id="medicalInsurance" name="medicalInsurance"></td>
-                    </tr>
-                    <tr>
-                        <td>公积金：</td>
-                        <td><input type="text" id="accumulationFund" name="accumulationFund"></td>
-                        <td>失业金：</td>
-                        <td><input type="text" id="unemploymentBenefits" name="unemploymentBenefits"></td>
-                    </tr>
-                    <tr>
-                        <td>缴费基数：</td>
-                        <td colspan="3"><input type="text" id="paymentBase" name="paymentBase"></td>
-                    </tr>--%>
-                    <%--</tbody>
-                </table>--%>
+                <%--<tr>
+                    <td>技能工资：</td>
+                    <td><input type="text" id="skillPay" name="skillPay"></td>
+                    <td>职务工资：</td>
+                    <td><input type="text" id="positionSalary" name="positionSalary"></td>
+                </tr>
+                <tr>
+                    <td>工龄工资：</td>
+                    <td><input type="text" id="seniorityWage" name="seniorityWage"></td>
+                    <td>工会费：</td>
+                    <td><input type="text" id="unionFees" name="unionFees"></td>
+                </tr>
+                <tr>
+                    <td>养老保险：</td>
+                    <td><input type="text" id="endowmentInsurance" name="endowmentInsurance"></td>
+                    <td>医疗保险：</td>
+                    <td><input type="text" id="medicalInsurance" name="medicalInsurance"></td>
+                </tr>
+                <tr>
+                    <td>公积金：</td>
+                    <td><input type="text" id="accumulationFund" name="accumulationFund"></td>
+                    <td>失业金：</td>
+                    <td><input type="text" id="unemploymentBenefits" name="unemploymentBenefits"></td>
+                </tr>
+                <tr>
+                    <td>缴费基数：</td>
+                    <td colspan="3"><input type="text" id="paymentBase" name="paymentBase"></td>
+                </tr>--%>
+                <%--</tbody>
+            </table>--%>
                 <div style="text-align: center;margin: 15px 0px;">
                     <input type="button" value="确定" onclick="updUserInfo()">
-                    <input  style="margin-left: 5%" type="button" value="取消" onclick="cancel()">
+                    <input style="margin-left: 5%" type="button" value="取消" onclick="cancel()">
                 </div>
             </div>
         </form>
