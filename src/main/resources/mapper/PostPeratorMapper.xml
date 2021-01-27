@@ -20,76 +20,26 @@
     </sql>
 
     <select id="getKPIList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        <!--select u.id as id,p.userName as userName,p.frequency as frequency,pdd.point as point
-        from (
-          select u.userName,COUNT(*) as frequency
-          from postPerator p
-          left join users u on u.Id=p.postPeratorId where 1=1 and p.inspectionEndTime is not null
-          <if test="depart!=null and depart!=''">
-              and p.department=#{depart}
-          </if>
-          <if test="startTime!=null and startTime!=''">
-              and DATE_FORMAT(p.created,'%Y-%m')=#{startTime}
-          </if>
-          group by p.postPeratorId
-        ) p
-        left join users u on u.userName=p.userName
-        left join (
-          select pd.createdBy as createdBy,count(pd.postPeratorId) as point
-          from postPerator_data pd where 1=1 and pd.measuringTypeData is not null
-          <if test="startTime!=null and startTime!=''">
-              and DATE_FORMAT(pd.created,'%Y-%m')=#{startTime}
-          </if>
-          GROUP BY pd.createdBy
-        ) pdd on pdd.createdBy=u.Id-->
-
-        SELECT
-        p.id AS id,
-        p.userNumber,
-        p.companyId,
-        p.companyName,
-        p.deparmentId,
-        p.departmentName,
-        p.userName AS userName,
-        if(p.sex=1,"男","女") sex ,
-        p.frequency AS frequency,
-        pdd.point AS point
+        SELECT p.id AS id,p.userNumber,p.companyId,p.companyName,p.deparmentId,p.departmentName,p.userName AS userName,if(p.sex=1,"男","女") sex ,p.frequency AS frequency,pdd.point AS point
         FROM
         (
-        SELECT
-        u.id,
-        u.userName,
-        u.sex,
-        u.userNumber,
-        c.id companyId,
-        c. NAME companyName,
-        c2.id deparmentId,
-        c2. NAME departmentName,
-        COUNT(*) AS frequency
-        FROM
-        postPerator p
-        JOIN users u ON u.Id = p.postPeratorId
-        JOIN company c ON c.id = u.companyId
-        JOIN company c2 ON c2.id = u.departmentId
-        WHERE
-        1 = 1
-        AND p.inspectionEndTime IS NOT NULL
-        AND p.created like CONCAT( '%', #{startTime},'%')
-        GROUP BY
-        p.postPeratorId
+          SELECT u.id,u.userName,u.sex,u.userNumber,c.id companyId,c. NAME companyName,c2.id deparmentId,c2. NAME departmentName,COUNT(*) AS frequency
+          FROM postPerator p
+          JOIN users u ON u.Id = p.postPeratorId
+          JOIN company c ON c.id = u.companyId
+          JOIN company c2 ON c2.id = u.departmentId
+          WHERE 1 = 1
+          AND p.inspectionEndTime IS NOT NULL
+          AND p.created like CONCAT( '%', #{startTime},'%')
+          GROUP BY p.postPeratorId
         ) p
         JOIN (
-        SELECT
-        pd.createdBy AS createdBy,
-        count(pd.postPeratorId) AS point
-        FROM
-        postPerator_data pd
-        WHERE
-        1 = 1
-        AND pd.measuringTypeData IS NOT NULL
-        AND pd.created like CONCAT( '%', #{startTime},'%')
-        GROUP BY
-        pd.createdBy
+          SELECT pd.createdBy AS createdBy,count(pd.postPeratorId) AS point
+          FROM postPerator_data pd
+          WHERE 1 = 1
+          AND pd.measuringTypeData IS NOT NULL
+          AND pd.created like CONCAT( '%', #{startTime},'%')
+          GROUP BY pd.createdBy
         ) pdd ON pdd.createdBy = p.Id
         where 1=1
         <if test="empId!=null and empId!=''">
