@@ -24,32 +24,13 @@
 </style>
 <div class="warp">
     <div class="top">
-        <input type="hidden" id="selDepartNameHidden">
-        <form class="layui-form" action="" style="display: inline-block;margin-bottom: 10px;">
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">部门</label>
-                    <div class="layui-input-inline">
-                        <select name="modules" lay-verify="required" lay-filter="selDepartName" lay-search="" id="selDepartName">
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </form>
         <input type="hidden" id="selStartTime">
         <div class="layui-inline" style="margin-bottom: 10px;">
-            <label class="layui-form-label">日期</label>
+            <label class="layui-form-label">日期:</label>
             <div class="layui-input-inline">
                 <input type="text" class="layui-input" id="test15" placeholder="年月">
             </div>
         </div>
-        <form class="layui-form" action="" style="display: inline-block;">
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button type="button" class="layui-btn" onclick="showKpi()">查询</button>
-                </div>
-            </div>
-        </form>
     </div>
     <%--表格--%>
     <div class="center">

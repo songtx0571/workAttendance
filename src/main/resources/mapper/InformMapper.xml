@@ -20,7 +20,7 @@
           group by f.createdBy
         ) f
         join users u on u.`id`=f.createdBy
-        right join (
+        join (
           select ui.userId,count(*) as selCount from user_inform ui
           GROUP BY ui.userId
         ) uf on uf.userId=u.id

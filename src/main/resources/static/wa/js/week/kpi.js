@@ -1,7 +1,6 @@
 var path = "";
 $(function(){
     showDate();
-    showDepartName();
 });
 //显示时间
 function showDate() {
@@ -14,48 +13,21 @@ function showDate() {
             ,type: 'month'
             ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
-                $("#selStartTime").val(value);
+                showKpi(value)
             }
         });
     })
 }
-//显示部门和员工
-function showDepartName() {
-    layui.use(['form'], function () {
-        var form = layui.form;
-        $.ajax({
-            type: "GET",
-            url: path + "/wa/department/getDepartmentList",
-            dataType: "json",
-            success: function (data) {
-                $("#selDepartName").empty();
-                var option = "<option value='0' >请选择部门</option>";
-                for (var i = 0; i < data.length; i++) {
-                    option += "<option value='" + data[i].id + "'>" + data[i].text + "</option>"
-                }
-                $('#selDepartName').html(option);
-                form.render();//菜单渲染 把内容加载进去
-            }
-        });
-        form.on('select(selDepartName)', function (data) {
-            $("#selDepartNameHidden").val(data.value);
-        });
-    });
-}
 //查询工时数据
-function showKpi() {
-    if ( $("#selDepartNameHidden").val() == "" ||  $("#selDepartNameHidden").val() == "0"){
-        alert("请选择部门");
-        return;
-    }
-    var depart = $("#selDepartNameHidden").val();
-    var startTime = $("#selStartTime").val();
+function showKpi(startTime) {
+    var win = $(window).height();
+    var height = win-100;
     layui.use(['table',"form"], function() {
         var table = layui.table;
         table.render({
             elem: '#demo'
-            , height: 500
-            , url: path + '/wa/kpi/getKPIList?depart='+depart+'&startTime='+startTime //数据接口
+            , height: height
+            , url: path + '/wa/kpi/getKPIList?startTime='+startTime //数据接口
             , page: {
                 curr: 1
             } //开启分页
@@ -63,7 +35,11 @@ function showKpi() {
             , limits: [10, 20, 30]
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide:true,width: 120},
+                {field: 'userNumber', title: '员工编号', align: 'center'},
+                {field: 'companyName', title: '公司', align: 'center'},
+                {field: 'departmentName', title: '部门', align: 'center'},
                 {field: 'userName', title: '员工', align: 'center'},
+                {field: 'sex', title: '性别', align: 'center'},
                 {field: 'frequency', title: '月巡检次数',sort :true, align: 'center', event: 'monthNum', style:'cursor: pointer;color: red;'},
                 {field: 'point', title: '月巡检点数',sort :true, align: 'center', event: 'monthPoint', style:'cursor: pointer;color: red;'}
             ]]
@@ -73,7 +49,6 @@ function showKpi() {
         table.on('tool(test)', function (obj) {
             var data = obj.data;
             var userId = data.id;
-            var startTime = $("#selStartTime").val();
             if (obj.event == 'monthNum') {//月巡检次数
                 num(userId,startTime);
                 layer.open({
