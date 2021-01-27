@@ -8,6 +8,35 @@ public class Users implements Serializable {
     private static final long serialVersionUID = -2071565876962058344L;
 
     private Integer id;
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", employeeId=" + employeeId +
+                ", state=" + state +
+                ", sex=" + sex +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", companyId=" + companyId +
+                ", departmentId=" + departmentId +
+                ", postId=" + postId +
+                ", userNumber='" + userNumber + '\'' +
+                ", manager=" + manager +
+                ", entryDate='" + entryDate + '\'' +
+                ", stateName='" + stateName + '\'' +
+                ", departName='" + departName + '\'' +
+                ", sexName='" + sexName + '\'' +
+                ", postName='" + postName + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", roles=" + roles +
+                ", roleName='" + roleName + '\'' +
+                '}';
+    }
+
     private String userName;//用户
     private String password;//密码
     private int employeeId;//员工id
@@ -30,11 +59,6 @@ public class Users implements Serializable {
     private String managerName;
     private List<Role> roles;//角色集合
     private String roleName;
-
-    @Override
-    public String toString() {
-        return "id="+id;
-    }
 
     public Integer getId() {
         return id;

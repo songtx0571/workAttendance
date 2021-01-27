@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.howei.mapper.UsersMapper" >
+<mapper namespace="com.howei.mapper.UsersMapper">
 
     <resultMap id="userMap" type="com.howei.pojo.Users">
         <result column="id" property="id"></result>
@@ -21,10 +21,10 @@
     </resultMap>
 
     <resultMap id="roleMap" type="com.howei.pojo.Role">
-        <result column="rid" property="id" />
-        <result column="roleName" property="roleName" />
-        <result column="description" property="description" />
-        <result column="englishName" property="englishName" />
+        <result column="rid" property="id"/>
+        <result column="roleName" property="roleName"/>
+        <result column="description" property="description"/>
+        <result column="englishName" property="englishName"/>
     </resultMap>
 
     <select id="findUser" resultType="com.howei.pojo.Users" parameterType="java.lang.String" resultMap="userMap">
@@ -77,5 +77,28 @@
 
     <select id="getUserByEmpId" parameterType="java.lang.Integer" resultMap="userMap">
         select * from users where employeeId=#{employeeId}
+    </select>
+    <select id="getByEmployeeIds" resultType="map">
+        SELECT
+        u.id,
+        u.userNumber,
+        c.`name` companyName,
+        c2.`name` departmentName,
+        u.`userName`,
+        u.departmentId
+        FROM
+        employee a
+        JOIN users u ON u.UserNumber = a.UserNumber
+        JOin company c on c.id=u.companyId
+        JOIN company c2 on c2.id=u.departmentId
+        WHERE
+        u.state=1
+        <if test="empIdStr==null ">
+            and FIND_IN_SET(a.id,"")
+        </if>
+        <if test="empIdStr!=null">
+            and FIND_IN_SET(a.id,#{empIdStr})
+        </if>
+
     </select>
 </mapper>

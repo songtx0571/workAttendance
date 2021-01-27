@@ -3,6 +3,7 @@ package com.howei.service;
 import com.howei.pojo.Users;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -34,4 +35,6 @@ public interface UserService {
     Users getUserRolesByName(String userNumber);
 
     Users getUserByEmpId(Integer employeeId);
+
+    List<Map> getNameByEmployeeIds(String empIdStr);
 }

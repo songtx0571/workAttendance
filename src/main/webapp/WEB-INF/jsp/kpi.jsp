@@ -29,13 +29,15 @@
 <div class="warp">
     <div class="top">
         <input type="hidden" id="selStartTime">
-        <div class="layui-inline" style="margin-bottom: 10px;">
-            <label class="layui-form-label">日期:</label>
+        <button class="layui-btn layui-btn-sm" style="margin-left: 50px;float: left;height: 38px;margin-right: 5px;" onclick="monthUpBtn()" >&nbsp;&nbsp;&lt;&lt;&nbsp;&nbsp;</button>
+        <div class="layui-inline" style="margin-bottom: 10px;float:left;">
             <div class="layui-input-inline">
                 <input type="text" class="layui-input" id="test15" placeholder="年月">
             </div>
         </div>
+        <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn()" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
     </div>
+    <div style="clear: both;"></div>
     <%--表格--%>
     <div class="center">
         <table id="demo" lay-filter="test"></table>
