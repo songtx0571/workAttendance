@@ -1,26 +1,35 @@
 var path = "";
-var month = "";
-var year = "";
+var date = new Date();
+var year = date.getFullYear();
+var month = date.getMonth() + 1;
 $(function () {
-    var date = new Date();
-    month = date.getMonth()+1;
-    year = date.getFullYear();
-    var dateYM = year+"-"+month;
+    if (month == 12) {
+        month = 1;
+        year = year + 1;
+    }
+    if (month == 0) {
+        month = 12;
+        year = year - 1;
+    }
+    if (month < 10) {
+        month = "0"+month;
+    }
     //查询所有数据
-    showLeaveStatisticsList(1,dateYM,"");
+    showLeaveStatisticsList(1,year+"-"+month);
+    $("#test15").val(year+"-"+month);
     //显示时间
     showDate();
-    //显示人
-    showEmployeeName();
 });
 //显示当前月份
-function showLeaveStatisticsList(pageCount,month,employeeId) {
+function showLeaveStatisticsList(pageCount,month) {
+    var win = $(window).height();
+    var height = win-90;
     layui.use(['table',"form"], function() {
         var table = layui.table;
         table.render({
             elem: '#demo'
-            , height: 500
-            , url: path + '/wa/leave/getLeaveDataStatisticsList?month='+month+'&employeeId='+employeeId //数据接口
+            , height: height
+            , url: path + '/wa/leave/getLeaveDataStatisticsList?month='+month //数据接口
             , page: {
                 curr: pageCount
             } //开启分页
@@ -49,37 +58,46 @@ function showDate() {
             ,type: 'month'
             ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
-                $("#selStartTime").val(value);
+                selShowLeaveList(value)
             }
         });
     })
 }
-//显示请假人
-function showEmployeeName() {
-    layui.use(['form'], function () {
-        var form = layui.form;
-        $.ajax({
-            type: "GET",
-            url: path + "/wa/leave/getEmployeeName",
-            dataType: "json",
-            success: function (data) {
-                $("#selEmployeeName").empty();
-                var option = "<option value='0' >请选择人员</option>";
-                for (var i = 0; i < data.length; i++) {
-                    option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
-                }
-                $('#selEmployeeName').html(option);
-                form.render();//菜单渲染 把内容加载进去
-            }
-        });
-        form.on('select(selEmployeeName)', function (data) {
-            $("#selEmployeeNameHidden").val(data.value);
-        });
-    });
-}
 //根据条件查询
-function selShowLeaveList() {
-    var startTime1 = $("#selStartTime").val();
-    var selEmployeeId = $("#selEmployeeNameHidden").val();
-    showLeaveStatisticsList(1,startTime1,selEmployeeId);
+function selShowLeaveList(startTime) {
+    showLeaveStatisticsList(1,startTime);
+}
+//上个月
+function monthUpBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m --;
+    if (m == 0) {
+        m = 12;
+        y = y - 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a1 = y+"-"+m;
+    showLeaveStatisticsList(1,a1);
+}
+//下个月
+function monthDownBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m ++;
+    if (m == 13){
+        m = 1;
+        y = Number(y) + 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a2 = y+"-"+m;
+    showLeaveStatisticsList(1,a2);
 }

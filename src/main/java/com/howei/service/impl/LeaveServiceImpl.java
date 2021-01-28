@@ -105,11 +105,6 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public List<LeaveData> getLeaveDataStatisticsList(Map map) {
         List<LeaveData> list=leaveMapper.getLeaveDataStatisticsList(map);
-        if(list!=null && list.size()>0){
-            for(LeaveData leaveData:list){
-
-            }
-        }
         return list;
     }
 

@@ -1,16 +1,31 @@
 var path = "";
+var date = new Date();
+var year = date.getFullYear();
+var month = date.getMonth() + 1;
 $(function () {
-    //查询所有数据
-    showLeaveList(1,"","");
     //显示时间
     showDate();
     //显示请假配置名称
     showLeaveName();
     //显示人
     showEmployeeName();
+    if (month == 12) {
+        month = 1;
+        year = year + 1;
+    }
+    if (month == 0) {
+        month = 12;
+        year = year - 1;
+    }
+    if (month < 10) {
+        month = "0"+month;
+    }
+    //查询所有数据
+    showLeaveList(1,year+"-"+month);
+    $("#test15").val(year+"-"+month);
 });
 //查询所有数据
-function showLeaveList(pageCount,startTime,employeeId) {
+function showLeaveList(pageCount,startTime) {
     var top = $(".top").css("height");
     var win = $(window).height();
     var addBtn = $(".addBtn").css("height");
@@ -18,13 +33,13 @@ function showLeaveList(pageCount,startTime,employeeId) {
     var ap = addBtn.indexOf("p");
     var topHeight = top.substring(0,tp);
     var addBtnHeight = addBtn.substring(0,ap);
-    var height = win-topHeight-addBtnHeight-20;
+    var height = win-topHeight-addBtnHeight-70;
     layui.use(['table',"form"], function() {
         var table = layui.table;
         table.render({
             elem: '#demo'
             , height: height
-            , url: path + '/wa/leave/getLeaveDataList?startTime='+startTime+'&employeeId='+employeeId //数据接口
+            , url: path + '/wa/leave/getLeaveDataList?startTime='+startTime //数据接口
             , page: {
                 curr: pageCount
             } //开启分页
@@ -173,14 +188,12 @@ function showLeaveList(pageCount,startTime,employeeId) {
 function showDate() {
     layui.use('laydate', function () {
         var laydate = layui.laydate;
-        //查询所有数据日期
-        //年月选择器
         laydate.render({
             elem: '#test15'
             ,type: 'month'
             ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
-                $("#selStartTime").val(value);
+                selShowLeaveList(value)
             }
         });
         laydate.render({
@@ -275,14 +288,12 @@ function showEmployeeName() {
                 //通用公司下拉框
                 $("#addEmployeeName").empty();
                 $("#updEmployeeName").empty();
-                $("#selEmployeeName").empty();
                 var option = "<option value='0' >请选择人员</option>";
                 for (var i = 0; i < data.length; i++) {
                     option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
                 }
                 $('#addEmployeeName').html(option);
                 $('#updEmployeeName').html(option);
-                $('#selEmployeeName').html(option);
                 form.render();//菜单渲染 把内容加载进去
             }
         });
@@ -297,16 +308,11 @@ function showEmployeeName() {
                 $("#updEmployeeNameSpan").css("display","none");
             }
         });
-        form.on('select(selEmployeeName)', function (data) {
-            $("#selEmployeeNameHidden").val(data.value);
-        });
     });
 }
 //根据条件查询
-function selShowLeaveList() {
-    var startTime1 = $("#selStartTime").val();
-    var selEmployeeId = $("#selEmployeeNameHidden").val();
-    showLeaveList(1,startTime1,selEmployeeId);
+function selShowLeaveList(startTime) {
+    showLeaveList(1,startTime);
 }
 //显示添加页面
 function showAddLeave() {
@@ -362,7 +368,7 @@ function addBtnOk() {
                 $(".addLeave p").css("display","block");
             }else {
                 layer.closeAll();
-                showLeaveList(1,"","");
+                showLeaveList(1,"");
             }
         }
     });
@@ -381,7 +387,7 @@ function updBtnOk() {
         data: {"id": id, "startTime": startTime, "endTime": endTime, "leaveId": leaveId, "remark": remark},
         success: function (data) {
             layer.closeAll();
-            showLeaveList(1,"","");
+            showLeaveList(1,"");
         }
     });
 }
@@ -397,7 +403,7 @@ function examine(review) {
         success: function (data) {
             layer.closeAll();
             var page = $(".layui-laypage-skip").find("input").val();
-            showLeaveList(page,"","");
+            showLeaveList(page,"");
         }
     });
 }
@@ -414,6 +420,40 @@ function examineNo() {
     $("#exmReviewRemark").val("");
     $(".examineBtn").css("display","none");
     $("#examineShowNo").css("display","block");
+}
+//上个月
+function monthUpBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m --;
+    if (m == 0) {
+        m = 12;
+        y = y - 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a1 = y+"-"+m;
+    showLeaveList(1,a1);
+}
+//下个月
+function monthDownBtn() {
+    var time = $("#test15").val();
+    var y = time.substring(0,4);
+    var m = time.substring(5,7);
+    m ++;
+    if (m == 13){
+        m = 1;
+        y = Number(y) + 1;
+    }
+    if (m > 0 && m < 10){
+        m = "0" + m;
+    }
+    $("#test15").val(y+"-"+m);
+    var a2 = y+"-"+m;
+    showLeaveList(1,a2);
 }
 //取消
 function cancel() {

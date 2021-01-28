@@ -17,12 +17,12 @@ function getConfigureList() {
         var form = layui.form;
         table.render({
             elem: '#demo'
-            , height: 600
+            , height: 530
             ,toolbar: true
             , url: path + '/wa/leave/getConfigureList' //数据接口
             , page: true //开启分页
             , limit: 10
-            , limits: [10, 20, 30]
+            , limits: [10]
             , cols: [[ //表头
                 {field: 'name', title: '名称', width: 150, sort: true, edit: 'text'}
                 , {field: 'unit', title: '单位', width: 100,align:'center',templet: '#barDemo13'}

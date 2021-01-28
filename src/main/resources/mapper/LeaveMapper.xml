@@ -124,13 +124,11 @@
         left join (select id,name,count(id) count from employee GROUP BY id) e on e.id=ld.employeeId
         left join users u on u.employeeid=e.id
         where u.state=1 and ld.`status`=2
-        <if test="companyId!=null">
-            and u.companyId=#{companyId}
-        </if>
+            and u.companyId=1
         <if test="month!=null">
             and date_format(ld.startTime,'%Y-%m') = date_format(#{month},'%Y-%m')
         </if>
-        <if test="empIdStr!=null and empIdStr!=''">
+        <if test="empIdStr!=null ">
             and FIND_IN_SET(e.id,#{empIdStr})
         </if>
         GROUP BY l.name,e.id,e.name
