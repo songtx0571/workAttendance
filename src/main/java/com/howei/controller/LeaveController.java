@@ -641,6 +641,7 @@ public class LeaveController {
         String empId=String.valueOf(user.getEmployeeId());
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         Integer employeeId = user.getEmployeeId();
+        System.out.println("selectAllFlag::"+selectAllFlag);
         if (selectAllFlag) {
             employeeId = 0;
         }
@@ -658,11 +659,7 @@ public class LeaveController {
         if (empIdStr != null && !empIdStr.equals("")) {
             empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
         }
-        if (empId != null && !empId.equals("")) {
-            map.put("empIdStr", empId);
-        } else {
-            map.put("empIdStr", empIdStr);
-        }
+        map.put("empIdStr", empIdStr);
         List<LeaveData> total = leaveService.getLeaveDataStatisticsList(map);
         map.put("page", rows);
         map.put("pageSize", pageSize);
