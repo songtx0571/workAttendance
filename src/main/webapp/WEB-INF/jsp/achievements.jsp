@@ -96,9 +96,11 @@
             display: none;
         }
         .showSetSign table{
-            width: 100%;
             border: 1px solid;
             collapse: 0;
+            text-align: center;
+            margin: 0 auto;
+            width: 90%;
         }
         .showSetSign table tr{
             height: 50px;
@@ -201,6 +203,14 @@
                     </thead>
                     <tbody id='achievementTbody'>
 
+                    </tbody>
+                    <tbody id="achievementTbodyBtn">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">
+                                <input type='button' value='修改' class='layui-btn' onclick='updAchievement()' />
+                                <input type='button' value='取消' class='layui-btn' onclick='cancel()' />
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -383,24 +393,8 @@
         <div class="showSetSign">
             <p id="showSetSignData" style="display: none;"></p>
             <h2 style="text-align: center;margin: 20px 0;font-weight: bold;">业绩详情</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>业绩1</th>
-                        <th>业绩2</th>
-                        <th>业绩3</th>
-                        <th>业绩4</th>
-                        <th>业绩5</th>
-                        <th>业绩6</th>
-                        <th>业绩7</th>
-                        <th>业绩8</th>
-                        <th>业绩9</th>
-                        <th>业绩10</th>
-                    </tr>
-                </thead>
-                <tbody class="showSetSignTbody">
-
-                </tbody>
+            <p style="font-size: 20px;font-weight: bold;text-align: center;line-height: 116px;color: red;display: none;" id="setSignP">无业绩！</p>
+            <table id="achievementTableId">
             </table>
         </div>
     </div>

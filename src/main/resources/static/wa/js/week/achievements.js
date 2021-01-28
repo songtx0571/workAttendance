@@ -196,7 +196,7 @@ function jsonHtml() {
 }
 //查看业绩合计
 function showSetSign() {
-    var cycle = $("#cycleDataHidden").val();
+    var cycle = $("#test3").val();
     var id = $("#employeeIdHidden").val();
     $.ajax({
         url: path + '/wa/achievements/findPeAcc',//请求地址
@@ -204,12 +204,18 @@ function showSetSign() {
         type: "get",//请求方式
         data: {"employeeId": id, "cycle": cycle},
         success: function (data) {
-            var tbody = $(".showSetSignTbody");
-            tbody.html("");
-
-            tbody.html("<tr id='AssessmentTr'></tr>");
-            var tr = $("#AssessmentTr");
-            var td = "";
+            if (data == "") {
+                $("#setSignP").css("display","block");
+            } else {
+                $("#setSignP").css("display","none");
+            }
+            var table = $("#achievementTableId");
+            table.html("");
+            var td = "<tr style='font-weight: bold;'>";
+            for (var i = 0; i < data.length; i ++) {
+                td += '<td>业绩'+ (i+1) + '</td>';
+            }
+            td += "</tr><tr>";
             for (var i = 0; i < data.length; i ++) {
                 if(data[i].score == ''){
                     data[i].score=0;
@@ -217,7 +223,9 @@ function showSetSign() {
                 parseInt(data[i].score);
                 td += '<td>'+ data[i].score + '</td>';
             }
-            tr.html(td);
+            td += "</tr>";
+            console.log(td);
+            table.html(td);
         }
     })
 }
@@ -246,28 +254,33 @@ function showAchievement(cycle) {
         success: function(data){
             if (data == "" || data == null) {
                 $("#achievementTbody").css("display","none");
+                $("#achievementTbodyBtn").css("display","none");
                 return;
             }
             $("#achievementTbody").css("display","contents");
+            $("#achievementTbodyBtn").css("display","contents");
             var tbody = document.getElementById("achievementTbody");
             tbody.innerHTML = "";
             for(var i=0;i<data.length;i++){
                 $("#achievementIdHidden").val(data[i].id);
                 var tr = document.createElement("tr");
                 tr.setAttribute("class","achievementTr");
-                var td = "<td><textarea rows='2' class='readonly1 workTasks"+data[i].id+"'>"+data[i].workTasks+"</textarea></td>" +
-                    "<td><textarea rows='2' class='readonly1 access"+data[i].id+"'>"+data[i].access+"</textarea></td>" +
-                    "<td><textarea rows='2' class='readonly1 detail"+data[i].id+"'>"+data[i].detail+"</textarea></td>" +
+                var td = "<td><input type='hidden' class='achievementId' value='"+data[i].id+"' /><textarea rows='2' class='readonly1 workTasks workTasks"+data[i].id+"'>"+data[i].workTasks+"</textarea></td>" +
+                    "<td><textarea rows='2' class='readonly1 access access"+data[i].id+"'>"+data[i].access+"</textarea></td>" +
+                    "<td><textarea rows='2' class='readonly1 detail detail"+data[i].id+"'>"+data[i].detail+"</textarea></td>" +
                     // "<td><input type='text'  class='readonly1 detail"+data[i].id+"' value='"+data[i].detail+"' /></td>" +
-                    "<td><input type='text'  class='readonly1 score"+data[i].id+"' value='"+data[i].score+"' /></td>" +
-                    "<td><input type='text'  class='readonly1 weights"+data[i].id+"' value='"+data[i].weights+"'/></td>" +
-                    "<td class='hideTd"+userNumber+"'><input type='button' value='修改' class='layui-btn' onclick='updAchievement("+data[i].id+")' />" +
-                    "<input type='button' value='删除' class='layui-btn' onclick='delectAchievement("+data[i].id+")' /></td>";
+                    "<td><input type='text'  class='readonly1 score score"+data[i].id+"' value='"+data[i].score+"' /></td>" +
+                    "<td><input type='text'  class='readonly1 weights weights"+data[i].id+"' value='"+data[i].weights+"'/></td>" +
+                    "<td class='hideTd"+userNumber+"'><input type='button' value='删除' class='layui-btn' onclick='delectAchievement("+data[i].id+")' /></td>";
+                    /*"<td class='hideTd"+userNumber+"'><input type='button' value='修改' class='layui-btn' onclick='updAchievement("+data[i].id+")' />" +
+                    "<input type='button' value='删除' class='layui-btn' onclick='delectAchievement("+data[i].id+")' /></td>";*/
                 tr.innerHTML = td;
                 tbody.appendChild(tr);
             }
+            $("#achievementTbodyBtn").css("display","contents");
             if (userNumber == classUserNumber) {
                 $(".hideTd"+userNumber).html("无操作！");
+                $("#achievementTbodyBtn").css("display","none");
             }
             /*//获取当前月份
             var cycleMouth = Number(cycle.substring(5));
@@ -318,32 +331,76 @@ function delectAchievement(id) {
         data: {"id": id},
         success: function (data) {
             if (data =="SUCCESS"){
-                showAchievement("");
+                showAchievement($("#test4").val());
             }
         }
     });
 }
 //修改工作业绩
-function updAchievement(id) {
-    var workTasks =$(".workTasks"+id).val();// 工作任务
-    var access =$(".access"+id).val();//考核标准
-    var detail =$(".detail"+id).val();//考核详情
-    var score =$(".score"+id).val();//考核分
-    var weights =$(".weights"+id).val();//权重
-    if (Number(score) > Number(weights)) {
-        layer.alert("考核分不能大于权重！");
-        return;
+function updAchievement() {
+    var achievementIdArr = [];
+    var workTasksArr = [];
+    var accessArr = [];
+    var detailArr = [];
+    var scoreArr = [];
+    var weightsArr = [];
+    var achievementIdS = document.getElementsByClassName("achievementId");
+    var workTasksS = document.getElementsByClassName("workTasks");
+    var accessS = document.getElementsByClassName("access");
+    var detailS = document.getElementsByClassName("detail");
+    var scoreS = document.getElementsByClassName("score");
+    var weightsS = document.getElementsByClassName("weights");
+    for (var i = 0; i < workTasksS.length; i ++) {
+        achievementIdArr.push(achievementIdS[i].value);
+        workTasksArr.push(workTasksS[i].value);
+        accessArr.push(accessS[i].value);
+        detailArr.push(detailS[i].value);
+        scoreArr.push(scoreS[i].value);
+        weightsArr.push(weightsS[i].value);
+        if (Number(scoreS[i].value) > Number(weightsS[i].value)) {
+            layer.alert("考核分不能大于权重！");
+            return;
+        }
     }
+    function trans (arr) {
+        var result = [];
+        arr.forEach(function (item) {
+            item.forEach(function (d, i) {
+                if(result[i]!=null){
+                    result[i]=result[i];
+                }else{
+                    result[i]=[];
+                }
+                result[i].push(d);
+            })
+        })
+        return result
+    }
+    var arrAll = trans([achievementIdArr,workTasksArr,accessArr,detailArr,scoreArr,weightsArr]);
+
+    var obj = [];
+    for (var i = 0; i < arrAll.length; i ++) {
+        obj[i]= {};
+        for (var j = 0; j < arrAll[i].length; j ++) {
+            obj[i].id = arrAll[i][0];
+            obj[i].workTasks = arrAll[i][1];
+            obj[i].access = arrAll[i][2];
+            obj[i].detail = arrAll[i][3];
+            obj[i].score = arrAll[i][4];
+            obj[i].weights = arrAll[i][5];
+        }
+    }
+    console.log(obj)
     $.ajax({
         url: path + '/wa/achievements/updatePeAcc',//请求地址
         dataType: "json",//数据格式
         type: "post",//请求方式
-        data: {"id": id, "workTasks": workTasks, "access": access, "detail": detail, "score": score, "weights": weights},
+        data: JSON.stringify(obj),
+        contentType: "application/json; charset=utf-8",
         success: function (data) {
             if (data =="SUCCESS"){
-                // showAchievement("");
                 layer.alert("修改成功");
-                // layer.closeAll()
+                showAchievementsList($("#test3").val());
             }
         }
     });
@@ -387,7 +444,8 @@ function addAteAchievement() {
             if (data == "SUCCESS") {
                 layer.alert("添加成功");
                 layer.closeAll();
-                showAchievement("");
+                showAchievement($("#test4").val());
+                showAchievementsList($("#test3").val());
                 clearVal();
             } else{
                 layer.alert("添加失败")
@@ -588,7 +646,7 @@ function updBehavior() {
     var employeeId = $("#employeeIdHidden2").val();
     var remark = $('#remark').val();
     var jiaban = $('#jiaban').val();
-    var kaoqin = $('#kaoqin').val();
+    var kaoqin = parseFloat($('#kaoqin').val());
     var cycle = $("#test6").val();
     var sum = $("#sum").val();
     var netPerformance = $("#netPerformance").val();//净绩效
@@ -613,7 +671,8 @@ function updBehavior() {
         success: function (data) {
             if (data == "SUCCESS") {
                 layer.alert("修改成功");
-                showBehavior("");
+                showBehavior($("#test6").val());
+                showAchievementsList($("#test3").val());
                 // layer.closeAll();
             }
         }
@@ -721,5 +780,6 @@ function monthDownBtn(type) {
 //取消
 function cancel() {
     layer.closeAll();
+    showAchievementsList($("#test3").val());
     clearVal();
 }

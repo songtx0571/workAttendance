@@ -258,7 +258,7 @@ function showWagsList(m){
             $(".individualTaxAdjustment").val(data.individualTaxAdjustment);
             $(".netSalary").val(data.netSalary);
             var subTotalOfSubsidies = parseFloat($(".foodSupplement").val())+parseFloat($(".highTemperatureSubsidy").val());
-            $("#subTotalOfSubsidies").val(subTotalOfSubsidies);
+            $(".subTotalOfSubsidies").val(subTotalOfSubsidies);
             setInterval(function () {
                 $("#totalTax").val(Number($('#totalPayable').val())-Number($("#totalDeduction").val()));
             },1000);
