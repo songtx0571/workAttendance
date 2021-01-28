@@ -81,7 +81,7 @@
     <select id="getByEmployeeIds" resultType="map">
         SELECT
         u.id,
-        u.userNumber,
+        u.userNumber,updatePeAcc
         c.`name` companyName,
         c2.`name` departmentName,
         u.`userName`,

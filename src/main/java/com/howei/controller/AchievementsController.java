@@ -1,6 +1,7 @@
 package com.howei.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
@@ -18,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.shiro.authz.annotation.Logical.OR;
 
@@ -221,45 +219,56 @@ public class AchievementsController {
     }
 
     /**
+     * id：id
+     * 工作任务：workTasks
+     * 考核标准：access
+     * 考核详情：detail
+     * 考核分：score
+     * 权重： weights
      * 修改业绩
-     * @param request
      * @return
      */
     @RequestMapping(value = "/updatePeAcc")
     @ResponseBody
-    public String updatePeAcc(HttpServletRequest request){
-        String id=request.getParameter("id");
-        String weights=request.getParameter("weights");//权重
-        String access=request.getParameter("access");//考核标准
-        String workTasks=request.getParameter("workTasks");
-        String detail=request.getParameter("detail");
-        String score=request.getParameter("score");
-        Performance performance=performanceService.getPeAcc(id);
-        if(performance!=null){
-            if(weights!=null&&!weights.equals("")){
-                performance.setWeights(weights);
+    public String updatePeAcc(@RequestBody String obj){
+        if(obj!=null){
+            List list=(List)JSONArray.parse(obj);
+            try {
+                for (int i=0;i<list.size();i++){
+                    Map<String,Object> map=(Map<String, Object>) list.get(i);
+                    String id=map.get("id")+"";
+                    String weights=map.get("weights")+"";//权重
+                    String access=map.get("access")+"";//考核标准
+                    String workTasks=map.get("workTasks")+"";
+                    String detail=map.get("detail")+"";
+                    String score=map.get("score")+"";
+                    Performance performance=performanceService.getPeAcc(id);
+                    if(performance!=null){
+                        if(weights!=null&&!weights.equals("")){
+                            performance.setWeights(weights);
+                        }
+                        if(access!=null&&!access.equals("")){
+                            performance.setAccess(access);
+                        }
+                        if(workTasks!=null&&!access.equals("")){
+                            performance.setWorkTasks(workTasks);
+                        }
+                        if(detail!=null&&!detail.equals("")){
+                            performance.setDetail(detail);
+                        }
+                        if(score!=null&&!score.equals("")){
+                            performance.setScore(score);
+                        }
+                        performanceService.update(performance);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return JSON.toJSONString(Type.ERROR);
             }
-            if(access!=null&&!access.equals("")){
-                performance.setAccess(access);
-            }
-            if(workTasks!=null&&!access.equals("")){
-                performance.setWorkTasks(workTasks);
-            }
-            if(detail!=null&&!detail.equals("")){
-                performance.setDetail(detail);
-            }
-            if(score!=null&&!score.equals("")){
-                performance.setScore(score);
-            }
-
-            int result=performanceService.update(performance);
-            if(result>0){
-                return JSON.toJSONString(Type.SUCCESS);
-            }else {
-                return JSON.toJSONString(Type.CANCEL);
-            }
+            return JSON.toJSONString(Type.SUCCESS);
         }
-        return JSON.toJSONString(Type.ERROR);
+        return JSON.toJSONString(Type.CANCEL);
     }
 
     /**
