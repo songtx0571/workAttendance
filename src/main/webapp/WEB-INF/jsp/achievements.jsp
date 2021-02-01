@@ -215,36 +215,6 @@
                 </table>
             </div>
         </div>
-        <%--修改工作业绩--%>
-        <%--<div class="updateAchievement">
-            <input type="hidden" id="achievementIdHidden">
-            <table>
-                <caption align="top">修改考核内容</caption>
-                <tr>
-                    <td>工作任务:</td>
-                    <td><input type="text" id="udeWorkTasks"></td>
-                </tr>
-                <tr>
-                    <td>考核标准:</td>
-                    <td><input type="text" id="uqdAccess"></td>
-                </tr>
-                <tr>
-                    <td>考核详情:</td>
-                    <td><input type="text" id="updDetail"></td>
-                </tr>
-                <tr class="cycleTr" style="display: none;">
-                    <td>考核分:</td>
-                    <td><input type="number" id="updScore"></td>
-                </tr>
-                <tr>
-                    <td>权重:</td>
-                    <td><input type="number" id="updWeights"></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align: center;width: 100%;"><button class="layui-btn" onclick="updateAchievement()">确定</button><button class="layui-btn" onclick="cancel1()">取消</button></td>
-                </tr>
-            </table>
-        </div>--%>
         <%--添加工作业绩--%>
         <div class="addateAchievement">
             <table>
@@ -305,8 +275,6 @@
                     </div>
                     <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn('xingwei')" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
                 </li>
-                <%--<li><button class="layui-btn" onclick="showBehavior()">查询</button></li>--%>
-                <%--<li><button class="layui-btn" onclick="showAddBehavior()" id="addBtnBehaviorDiv" style="display: none">添加考核项</button></li>--%>
             </ul>
             <div class="behaviorTable">
                 <table style="width: 100%;border: 1px solid #ccc;collapse: 0;text-align: center">
