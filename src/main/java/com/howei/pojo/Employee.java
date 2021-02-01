@@ -33,6 +33,7 @@ public class Employee implements Serializable {
     private int createdBy;
     private String sign;//个性签名
     private String email;//邮箱
+    private String isChanged;//人事异动
 
     private Double skillPay;//技能工资
     private Double positionSalary;//职务工资
@@ -52,7 +53,6 @@ public class Employee implements Serializable {
     private String companyName;
     private String managerName;//绩效管理人
     private List<Employee> managerList;//被绩效管理人
-    private String isChanged;//人事异动
 
     public String getIsChanged() {
         return isChanged;

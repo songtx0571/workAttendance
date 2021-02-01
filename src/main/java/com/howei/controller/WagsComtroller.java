@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.invoke.empty.Empty;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -93,6 +94,32 @@ public class WagsComtroller {
         if(list!=null){
             for (Wages wages:list) {
                 wages.setPerformanceCoefficient(getAssessmentByEmployeeId(month,wages.getEmployeeId()+""));
+                double subTotal=wages.getFoodSupplement()+wages.getHighTemperatureSubsidy();
+                if(subTotal-0.0<1e-6){
+                    wages.setSubTotalOfSubsidies(0.00);
+                }else{
+                    BigDecimal bd = new BigDecimal(wages.getFoodSupplement()+wages.getHighTemperatureSubsidy());
+                    double subTotalOfSubsidies=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
+                }
+                String isChanged=wages.getIsChanged();//人事异动
+                if(isChanged!=null&& isChanged.equals("0")){
+                    wages.setIsChanged("正常");
+                }else if(isChanged!=null&& isChanged.equals("1")){
+                    wages.setIsChanged("当月入职");
+                }else if(isChanged!=null&& isChanged.equals("2")){
+                    wages.setIsChanged("当月离职");
+                }else if(isChanged!=null&& isChanged.equals("3")){
+                    wages.setIsChanged("试用期");
+                }else if(isChanged!=null&& isChanged.equals("4")){
+                    wages.setIsChanged("试用转正");
+                }else if(isChanged!=null&& isChanged.equals("5")){
+                    wages.setIsChanged("派遣调整");
+                }else if(isChanged!=null&& isChanged.equals("6")){
+                    wages.setIsChanged("部门调整");
+                }else if(isChanged!=null&& isChanged.equals("7")){
+                    wages.setIsChanged("薪酬调整");
+                }
             }
         }
         Result result = new Result();

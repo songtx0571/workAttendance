@@ -33,12 +33,15 @@ public class Wages implements Serializable {
     private String remark;//备注
     private String date;//日期
     private String created;//创建时间
-    private Double highTemperatureSubsidy;//高温补贴
+    private double highTemperatureSubsidy;//高温补贴
 
     //虚字段
     private String employeeName;//员工姓名
     private String userNumber;//员工姓名
     private String laowupaiqian;//劳务派遣
+    private double subTotalOfSubsidies;//补贴小计
+    private String departmentName;//部门名称
+    private String isChanged;//人事异动
 
     @Override
     public String toString() {
@@ -73,6 +76,9 @@ public class Wages implements Serializable {
                 ", highTemperatureSubsidy=" + highTemperatureSubsidy +
                 ", employeeName='" + employeeName + '\'' +
                 ", userNumber='" + userNumber + '\'' +
+                ", laowupaiqian='" + laowupaiqian + '\'' +
+                ", subTotalOfSubsidies=" + subTotalOfSubsidies +
+                ", departmentName='" + departmentName + '\'' +
                 '}';
     }
 
@@ -292,11 +298,11 @@ public class Wages implements Serializable {
         this.created = created;
     }
 
-    public Double getHighTemperatureSubsidy() {
+    public double getHighTemperatureSubsidy() {
         return highTemperatureSubsidy;
     }
 
-    public void setHighTemperatureSubsidy(Double highTemperatureSubsidy) {
+    public void setHighTemperatureSubsidy(double highTemperatureSubsidy) {
         this.highTemperatureSubsidy = highTemperatureSubsidy;
     }
 
@@ -322,5 +328,29 @@ public class Wages implements Serializable {
 
     public void setLaowupaiqian(String laowupaiqian) {
         this.laowupaiqian = laowupaiqian;
+    }
+
+    public double getSubTotalOfSubsidies() {
+        return subTotalOfSubsidies;
+    }
+
+    public void setSubTotalOfSubsidies(double subTotalOfSubsidies) {
+        this.subTotalOfSubsidies = subTotalOfSubsidies;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public String getIsChanged() {
+        return isChanged;
+    }
+
+    public void setIsChanged(String isChanged) {
+        this.isChanged = isChanged;
     }
 }
