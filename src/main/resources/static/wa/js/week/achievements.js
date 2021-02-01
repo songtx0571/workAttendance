@@ -1,11 +1,26 @@
 var path = "";
 var userNumber = "";
 var classUserNumber = "";
+var date = new Date();
+var year = date.getFullYear();
+var month = date.getMonth() + 1;
 $(function(){
     //显示考核日期
     showCycleData();
     // 查询员工绩效信息
-    showAchievementsList("");
+    if (month == 12) {
+        month = 1;
+        year = year + 1;
+    }
+    if (month == 0) {
+        month = 12;
+        year = year - 1;
+    }
+    if (month < 10) {
+        month = "0"+month;
+    }
+    showAchievementsList(year+"-"+month);
+    $("#test3").val(year+"-"+month);
     getUser();
 });
 /*显示考核日期*/
@@ -475,17 +490,6 @@ function showBehavior(cycle) {
     var date = new Date();
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
-    if(cycle == "" || cycle.length <= 0){
-        if (month == 1){
-            month = 12;
-            year = year - 1;
-        }
-        if (month < 10 && month >= 1) {
-            month = "0"+month;
-        }
-        cycle = year+"-"+month;
-        $("#test6").val(cycle)
-    }
     var cycleM = cycle.substring(5,cycle.length);
     var cycleY = cycle.substring(0,4);
     if (cycleM > month && year == cycleY){
@@ -502,47 +506,60 @@ function showBehavior(cycle) {
         $('#comprehensivePerformance').val('0');
         return;
     }
+    var leaveConfig = $("#leaveConfig");
+
     $.ajax({
         type:"post",
         url: path + '/wa/achievements/findBehavior',
         data:{'employeeId': id, "cycle": cycle},
         dataType:"json",
         success:function(data){
-            $("#leaveConfig").html("");
+            leaveConfig.html("");
+            var tr = "";
             if (data == "" || data == null){
-                return;
-            }
-            var leaveData = data[0].leaveData;
-            if (leaveData != "" || leaveData != null){
-                var leaveConfig = $("#leaveConfig");
-                var tr = '<tr><td rowspan="'+(leaveData.length+1)+'" style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
-                for (var i = 0; i < leaveData.length; i ++) {
-                    tr += '<tr><td ><input value="'+leaveData[i].leaveCount+'" readonly name="tiaoxiu" class="inputCount tiaoxiu'+leaveData[i].employeeId+'"></td><td>'+leaveData[i].leaveUnitName+'</td><td colspan="7">'+leaveData[i].leaveName+'</td><td><input class="ftiaoxiu'+leaveData[i].employeeId+'" name="fResult" readonly value="'+leaveData[i].leaveResult+'"></tr>';
+                tr = '<tr><td style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
+                $('.week1').val("");
+                $('.week2').val("");
+                $('.week3').val("");
+                $('.week4').val("");
+                $('#sum').val("");
+                $('#remark').val("");
+                $('#jiaban').val('0');
+                $('#kaoqin').val('0');
+                $('#netPerformance').val('0');
+                $('#comprehensivePerformance').val('0');
+                // return;
+            } else {
+                var leaveData = data[0].leaveData;
+                tr = '<tr><td rowspan="'+(leaveData.length+1)+'" style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
+                if (leaveData != "" || leaveData != null){
+                    for (var i = 0; i < leaveData.length; i ++) {
+                        tr += '<tr><td ><input value="'+leaveData[i].leaveCount+'" readonly name="tiaoxiu" class="inputCount tiaoxiu'+leaveData[i].employeeId+'"></td><td>'+leaveData[i].leaveUnitName+'</td><td colspan="7">'+leaveData[i].leaveName+'</td><td><input class="ftiaoxiu'+leaveData[i].employeeId+'" name="fResult" readonly value="'+leaveData[i].leaveResult+'"></tr>';
+                    }
                 }
-                leaveConfig.html(tr);
+                if (data[0].week1 == "") {
+                    data[0].week1 = 0;
+                }
+                if (data[0].week2 == "") {
+                    data[0].week2 = 0;
+                }
+                if (data[0].week3 == "") {
+                    data[0].week3 = 0;
+                }
+                if (data[0].week4 == "") {
+                    data[0].week4 = 0;
+                }
+                $("#BeId").val(data[0].id);
+                $(".week1").val(data[0].week1);
+                $(".week2").val(data[0].week2);
+                $(".week3").val(data[0].week3);
+                $(".week4").val(data[0].week4);
+                $(".period").val('10');
+                $("#jiaban").val(data[0].jiaban);//加班
+                $("#kaoqin").val(data[0].kaoqin);//考勤
+                $("#remark").val(data[0].remark);//备注
             }
-            if (data[0].week1 == "") {
-                data[0].week1 = 0;
-            }
-            if (data[0].week2 == "") {
-                data[0].week2 = 0;
-            }
-            if (data[0].week3 == "") {
-                data[0].week3 = 0;
-            }
-            if (data[0].week4 == "") {
-                data[0].week4 = 0;
-            }
-            $("#BeId").val(data[0].id);
-            $(".week1").val(data[0].week1);
-            $(".week2").val(data[0].week2);
-            $(".week3").val(data[0].week3);
-            $(".week4").val(data[0].week4);
-            $(".period").val('10');
-            $("#jiaban").val(data[0].jiaban);//加班
-            $("#kaoqin").val(data[0].kaoqin);//考勤
-            $("#remark").val(data[0].remark);//备注
-
+            leaveConfig.html(tr);
             //计算数值
             calculateAttendance();
             $.ajax({
@@ -563,11 +580,11 @@ function showBehavior(cycle) {
             });
         }
     });
-    if ((cycleM == 12 && month == 1 && cycleY == year - 1) || (cycleM == month - 1 && cycleY == year) || (cycleM == month && cycleY == year)) {
+    /*if ((cycleM == 12 && month == 1 && cycleY == year - 1) || (cycleM == month - 1 && cycleY == year) || (cycleM == month && cycleY == year)) {
         $(".hideBtn").css("display", "revert");
     } else  {
         $(".hideBtn").css("display", "none");
-    }
+    }*/
 }
 //增加
 function addCount(id) {

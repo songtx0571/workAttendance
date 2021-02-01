@@ -44,8 +44,13 @@ public class BehaviorServiceImpl implements BehaviorService {
     public Behavior findAllBe(Behavior behavior) {
         //获取学习能力:考试记录
         Behavior Behavior = behaviorMapper.findAll(behavior);
+        if(Behavior==null){
+            return null;
+        }
         //获取考勤情况:请假记录
         Map map=new HashMap();
+        System.out.println("behavior:::"+behavior);
+        System.out.println(Behavior);
         map.put("employeeId",Behavior.getEmployeeId());
         map.put("startTime",Behavior.getCycle()+"-01");
         List<LeaveData> list=leaveService.getLeaveDataToAchievements(map);
