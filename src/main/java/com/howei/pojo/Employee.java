@@ -52,46 +52,14 @@ public class Employee implements Serializable {
     private String companyName;
     private String managerName;//绩效管理人
     private List<Employee> managerList;//被绩效管理人
+    private String isChanged;//人事异动
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", userNumber='" + userNumber + '\'' +
-                ", idNumber='" + idNumber + '\'' +
-                ", manager=" + manager + '\'' +
-                ", bank='" + bank + '\'' +
-                ", card='" + card + '\'' +
-                ", phone='" + phone + '\'' +
-                ", closhe='" + closhe + '\'' +
-                ", hat='" + hat + '\'' +
-                ", laowupaiqian='" + laowupaiqian + '\'' +
-                ", education='" + education + '\'' +
-                ", credentials1='" + credentials1 + '\'' +
-                ", credentials2='" + credentials2 + '\'' +
-                ", credentials3='" + credentials3 + '\'' +
-                ", entryDate='" + entryDate + '\'' +
-                ", poision='" + poision + '\'' +
-                ", emergency='" + emergency + '\'' +
-                ", emergencyTel='" + emergencyTel + '\'' +
-                ", remark='" + remark + '\'' +
-                ", wages='" + wages + '\'' +
-                ", basicwages='" + basicwages + '\'' +
-                ", meritpay='" + meritpay + '\'' +
-                ", address='" + address + '\'' +
-                ", skillPay='" + skillPay + '\'' +
-                ", positionSalary='" + positionSalary + '\'' +
-                ", seniorityWage='" + seniorityWage + '\'' +
-                ", foodSupplement='" + foodSupplement + '\'' +
-                ", endowmentInsurance='" + endowmentInsurance + '\'' +
-                ", unemploymentBenefits='" + unemploymentBenefits + '\'' +
-                ", medicalInsurance='" + medicalInsurance + '\'' +
-                ", accumulationFund='" + accumulationFund + '\'' +
-                ", unionFees='" + unionFees + '\'' +
-                ", created='" + created + '\'' +
-                ", createdBy=" + createdBy +
-                '}';
+    public String getIsChanged() {
+        return isChanged;
+    }
+
+    public void setIsChanged(String isChanged) {
+        this.isChanged = isChanged;
     }
 
     public int getId() {
@@ -444,5 +412,56 @@ public class Employee implements Serializable {
 
     public void setSign(String sign) {
         this.sign = sign;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", userNumber='" + userNumber + '\'' +
+                ", idNumber='" + idNumber + '\'' +
+                ", bank='" + bank + '\'' +
+                ", card='" + card + '\'' +
+                ", phone='" + phone + '\'' +
+                ", closhe='" + closhe + '\'' +
+                ", hat='" + hat + '\'' +
+                ", laowupaiqian='" + laowupaiqian + '\'' +
+                ", education='" + education + '\'' +
+                ", credentials1='" + credentials1 + '\'' +
+                ", credentials2='" + credentials2 + '\'' +
+                ", credentials3='" + credentials3 + '\'' +
+                ", entryDate='" + entryDate + '\'' +
+                ", poision='" + poision + '\'' +
+                ", emergency='" + emergency + '\'' +
+                ", emergencyTel='" + emergencyTel + '\'' +
+                ", remark='" + remark + '\'' +
+                ", wages='" + wages + '\'' +
+                ", basicwages='" + basicwages + '\'' +
+                ", meritpay='" + meritpay + '\'' +
+                ", address='" + address + '\'' +
+                ", manager=" + manager +
+                ", created='" + created + '\'' +
+                ", createdBy=" + createdBy +
+                ", sign='" + sign + '\'' +
+                ", email='" + email + '\'' +
+                ", skillPay=" + skillPay +
+                ", positionSalary=" + positionSalary +
+                ", seniorityWage=" + seniorityWage +
+                ", foodSupplement=" + foodSupplement +
+                ", endowmentInsurance=" + endowmentInsurance +
+                ", unemploymentBenefits=" + unemploymentBenefits +
+                ", medicalInsurance=" + medicalInsurance +
+                ", accumulationFund=" + accumulationFund +
+                ", unionFees=" + unionFees +
+                ", stateName='" + stateName + '\'' +
+                ", sexName='" + sexName + '\'' +
+                ", departmentName='" + departmentName + '\'' +
+                ", postName='" + postName + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", managerList=" + managerList +
+                ", isChanged='" + isChanged + '\'' +
+                '}';
     }
 }
