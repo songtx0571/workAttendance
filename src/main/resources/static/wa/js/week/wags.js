@@ -202,10 +202,12 @@ function showWagsList(m){
             ,cols: [[ //表头
                 {field: 'userNumber', title: '编号', sort: true,width:70, totalRowText: '合计', align:'center'}
                 ,{field: 'employeeName', title: '姓名',width:100, align:'center'}
+                ,{field: 'departmentName', title: '项目部', align:'center'}
                 ,{field: 'laowupaiqian', title: '劳务派遣', sort: true, align:'center'}
                 ,{field: 'wageSubtotal', title: '工资小计', sort: true, align:'center', totalRow: true}
                 ,{field: 'performanceCoefficient', title: '绩效系数', sort: true, align:'center'}
                 ,{field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align:'center'}
+                ,{field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align:'center'}
                 ,{field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align:'center'}
                 ,{field: 'totalTax', title: '计税合计', sort: true, align:'center', totalRow: true}
                 ,{field: 'individualTaxAdjustment', title: '个调税', sort: true, align:'center', totalRow: true}

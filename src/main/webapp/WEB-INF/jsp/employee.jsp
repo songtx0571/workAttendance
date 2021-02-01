@@ -165,10 +165,7 @@
                 <table>
                     <thead>
                     <tr>
-                        <th colspan="4">员工信息
-                            <%--<span style="display: inline-block;margin-left: 15px" class="doubleUpBtn1" onclick="doubleUp1()"><i class='fa fa-arrow-up fa-lg'></i></span>
-                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn1" onclick="doubleDown1()"><i class='fa fa-arrow-down  fa-lg'></i></span>--%>
-                        </th>
+                        <th colspan="4">员工信息</th>
                     </tr>
                     </thead>
                     <tbody class="userTbody">
@@ -187,21 +184,11 @@
                     <tr>
                         <td>部门：</td>
                         <td>
-                            <shiro:hasPermission name='基本信息修改'>
-                                <input type="text" id="departmentName" name="departmentName">
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-                                <input type="text" id="departmentName" name="departmentName" disabled>
-                            </shiro:lacksPermission>
+                            <input type="text" id="departmentName" name="departmentName">
                         </td>
                         <td>岗位：</td>
                         <td>
-                            <shiro:hasPermission name='基本信息修改'>
-                                <input type="text" id="postName" name="postName">
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-                                <input type="text" id="postName" name="postName" disabled>
-                            </shiro:lacksPermission>
+                            <input type="text" id="postName" name="postName">
                         </td>
                     </tr>
                     <tr>
@@ -213,62 +200,62 @@
                     <tr>
                         <td>证书1：</td>
                         <td>
-
-                            <shiro:hasPermission name='基本信息修改'>
-                                <input type="text" id="credentials1" name="credentials1">
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-                                <input type="text" id="credentials1" name="credentials1" disabled>
-                            </shiro:lacksPermission>
+                            <input type="text" id="credentials1" name="credentials1">
                         </td>
                         <td>证书2：</td>
                         <td>
-                            <shiro:hasPermission name='基本信息修改'>
-                                <input type="text" id="credentials2" name="credentials2">
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-                                <input type="text" id="credentials2" name="credentials2" disabled>
-                            </shiro:lacksPermission></td>
+                            <input type="text" id="credentials2" name="credentials2">
+                        </td>
                     </tr>
                     <tr>
                         <td>证书3：</td>
                         <td>
-                            <shiro:hasPermission name='基本信息修改'>
-                                <input type="text" id="credentials3" name="credentials3">
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-                                <input type="text" id="credentials3" name="credentials3" disabled>
-                            </shiro:lacksPermission>
-                            </td>
+                            <input type="text" id="credentials3" name="credentials3">
+                        </td>
                         <td>身份证：</td>
                         <td><input type="text" id="idNumber" name="idNumber"></td>
                     </tr>
                     <tr>
                         <td>住址：</td>
                         <td><input type="text" id="address" name="address"></td>
+                        <td>人事异动：</td>
+                        <td>
+                            <div class="layui-form-item" style="margin-bottom: 0px">
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <select name="isChanged" lay-verify="required" lay-filter="isChanged"
+                                                lay-search="" id="isChanged">
+                                            <option value="0">正常</option>
+                                            <option value="1">当月入职</option>
+                                            <option value="2">当月离职</option>
+                                            <option value="3">试用期</option>
+                                            <option value="4">试用转正</option>
+                                            <option value="5">派遣调整</option>
+                                            <option value="6">部门调整</option>
+                                            <option value="7">薪酬调整</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="isChangedHidden" name="isChangedHidden">
+                        </td>
+                    </tr>
+                    <tr>
                         <td>应急联系人：</td>
                         <td><input type="text" id="emergency" name="emergency"></td>
-                    </tr>
-                    <tr>
                         <td>应急电话：</td>
                         <td><input type="number" id="emergencyTel" name="emergencyTel"></td>
-                        <td>衣服尺寸：</td>
-                        <td><input type="text" id="closhe" name="closhe"></td>
                     </tr>
                     <tr>
+                        <td>衣服尺寸：</td>
+                        <td><input type="text" id="closhe" name="closhe"></td>
                         <td>安全帽编号：</td>
                         <td><input type="text" id="hat" name="hat"></td>
+
+                    </tr>
+                    <tr>
                         <td>劳务派遣：</td>
                         <td>
-
-                            <shiro:hasPermission name='基本信息修改'>
-
-                            </shiro:hasPermission>
-                            <shiro:lacksPermission name="基本信息修改">
-
-
-                            </shiro:lacksPermission>
-
                             <div class="layui-form-item" style="margin-bottom: 0px">
                                 <div class="layui-inline">
                                     <div class="layui-input-inline">
@@ -282,10 +269,6 @@
                             </div>
                             <input type="hidden" id="laowupaiqianHidden" name="laowupaiqianHidden">
                         </td>
-                    </tr>
-                    <tr>
-                        <td>学历：</td>
-                        <td><input type="text" id="education" name="education"></td>
                         <td>绩效管理：</td>
                         <td>
                             <div class="layui-form-item" style="margin-bottom: 0px">
@@ -307,8 +290,10 @@
                         <td><input type="number" id="card" name="card"></td>
                     </tr>
                     <tr>
+                        <td>学历：</td>
+                        <td><input type="text" id="education" name="education"></td>
                         <td>签名：</td>
-                        <td colspan="3"><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
+                        <td><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
                     </tr>
                     <tr>
                         <td>备注：</td>
@@ -316,62 +301,10 @@
                     </tr>
                     </tbody>
                 </table>
-                <%--<table style="margin-top: 20px;">
-                    <thead>
-                    <tr>
-                        <th colspan="4">工资信息
-                            <span style="display: inline-block;margin-left: 15px" class="doubleUpBtn2" onclick="doubleUp2()"><i class='fa fa-arrow-up fa-lg'></i></span>
-                            <span style="display: inline-block;margin-left: 15px;display: none;" class="doubleDownBtn2" onclick="doubleDown2()"><i class='fa fa-arrow-down  fa-lg'></i></span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody class="payTbody">
-                    <tr>
-                        <td style="width: 16%;">绩效工资：</td>
-                        <td><input type="text" id="meritpay" name="meritpay"></td>
-
-                    </tr>
-
-                    <tr>
-                        <td>待遇标准：</td>
-                        <td><input type="text" id="wages" name="wages"></td>
-                        <td>缴费基数：</td>
-                        <td><input type="text" id="paymentBase" name="paymentBase"></td>
-                        <td>基本工资：</td>
-                        <td><input type="text" id="basicwages" name="basicwages"></td>
-                    </tr>--%>
-                <%--<tr>
-                    <td>技能工资：</td>
-                    <td><input type="text" id="skillPay" name="skillPay"></td>
-                    <td>职务工资：</td>
-                    <td><input type="text" id="positionSalary" name="positionSalary"></td>
-                </tr>
-                <tr>
-                    <td>工龄工资：</td>
-                    <td><input type="text" id="seniorityWage" name="seniorityWage"></td>
-                    <td>工会费：</td>
-                    <td><input type="text" id="unionFees" name="unionFees"></td>
-                </tr>
-                <tr>
-                    <td>养老保险：</td>
-                    <td><input type="text" id="endowmentInsurance" name="endowmentInsurance"></td>
-                    <td>医疗保险：</td>
-                    <td><input type="text" id="medicalInsurance" name="medicalInsurance"></td>
-                </tr>
-                <tr>
-                    <td>公积金：</td>
-                    <td><input type="text" id="accumulationFund" name="accumulationFund"></td>
-                    <td>失业金：</td>
-                    <td><input type="text" id="unemploymentBenefits" name="unemploymentBenefits"></td>
-                </tr>
-                <tr>
-                    <td>缴费基数：</td>
-                    <td colspan="3"><input type="text" id="paymentBase" name="paymentBase"></td>
-                </tr>--%>
-                <%--</tbody>
-            </table>--%>
                 <div style="text-align: center;margin: 15px 0px;">
-                    <input type="button" value="确定" onclick="updUserInfo()">
+                    <shiro:hasPermission name='基本信息修改'>
+                        <input type="button" value="确定" onclick="updUserInfo()">
+                    </shiro:hasPermission>
                     <input style="margin-left: 5%" type="button" value="取消" onclick="cancel()">
                 </div>
             </div>
