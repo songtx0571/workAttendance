@@ -148,6 +148,8 @@ function showAchievementsList(cycle){
             if (obj.event == 'showAchievement') {//工作业绩考核
                 $("#test4").val($("#test3").val());
                 showAchievement($("#test3").val());
+                $("#hideTimeDiv").css("display","none");
+                $("#copyTimeBtn").css("display","none");
                 layer.open({
                     type: 1
                     ,id: 'showAchievementDiv' //防止重复弹出
@@ -467,6 +469,44 @@ function addAteAchievement() {
             }
         }
     });
+}
+//工作业绩和工作行为相互切换
+function switchBehavior(type) {
+    layer.closeAll();
+    if (type == "achievement") {
+        $("#test6").val($("#test3").val());
+        showBehavior($("#test3").val());
+        layer.open({
+            type: 1
+            ,id: 'showBehaviorDiv1' //防止重复弹出
+            ,content: $(".showBehaviorDiv")
+            ,btnAlign: 'c' //按钮居中
+            ,shade: 0.5 //不显示遮罩
+            ,area: ['100%', '100%']
+            ,success: function () {
+            }
+            ,yes: function(){
+            }
+        });
+    } else {
+        $("#test4").val($("#test3").val());
+        showAchievement($("#test3").val());
+        $("#hideTimeDiv").css("display","none");
+        $("#copyTimeBtn").css("display","none");
+        layer.open({
+            type: 1
+            ,id: 'showAchievementDiv1' //防止重复弹出
+            ,content: $(".showAchievementDiv")
+            ,btnAlign: 'c' //按钮居中
+            ,shade: 0.5 //不显示遮罩
+            ,area: ['100%', '100%']
+            ,success: function () {
+            }
+            ,yes: function(){
+            }
+        });
+    }
+
 }
 //清空值
 function clearVal() {
