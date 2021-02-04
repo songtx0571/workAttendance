@@ -175,6 +175,9 @@
             <ul class="showAchievementList">
                 <li><button class="layui-btn" onclick="showAddateAchievement()" id="addBtnAchievementDiv">添加考核项</button></li>
                 <li>
+                    <button class="layui-btn layui-btn-normal" style="float: left;margin-left: 10px;"  onclick="switchBehavior('achievement')">切换</button>
+                </li>
+                <li>
                     <button class="layui-btn" style="float: left;" onclick="showCopyTime()">复制</button>
                 </li>
                 <li>
@@ -274,6 +277,9 @@
                         </div>
                     </div>
                     <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn('xingwei')" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
+                </li>
+                <li>
+                    <button class="layui-btn layui-btn-normal" style="float: left;margin-left: 10px;"  onclick="switchBehavior('behavior')">切换</button>
                 </li>
             </ul>
             <div class="behaviorTable">
