@@ -26,7 +26,7 @@ public class SchedulerTask {
      * 计算工资
      * 每月5号执行
      */
-    @Scheduled(cron = "0 0 8 5 * ?")
+    //@Scheduled(cron = "0 0 11 2 * ?")
     private void processFixedRate(){
         Map map=new HashMap();
         String month=DateFormat.beforeMonth();

@@ -129,21 +129,21 @@ function sumWages() {
 
     var other = parseFloat($("#other").val());
     var wages = basePay + skillPay + positionSalary + seniorityWage + meritPay + other;
-    $("#wageSubtotal").val(wages);
+    $(".wageSubtotal").val(wages);
     //应发工资
     var performanceCoefficient = parseFloat($("#performanceCoefficient").val());
     var wagesPayable = basePay + skillPay + positionSalary + seniorityWage + other;
     var wagesPayableSum = wagesPayable + meritPay * performanceCoefficient;
-    $("#wagesPayable").val(wagesPayableSum);
+    $(".wagesPayable").val(wagesPayableSum);
     //补贴小计
     var foodSupplement = parseFloat($("#foodSupplement").val());
     var highTemperatureSubsidy = Number($("#highTemperatureSubsidy").val());
     var subTotalOfSubsidies = foodSupplement + parseFloat(highTemperatureSubsidy);
-    $("#subTotalOfSubsidies").val(subTotalOfSubsidies);
+    $(".subTotalOfSubsidies").val(subTotalOfSubsidies);
     //应发合计
     var wagesPayable = $("#wagesPayable").val();
     var subTotalOfSubsidies1 = $("#subTotalOfSubsidies").val();
-    $("#totalPayable").val(Number(wagesPayable)+Number(subTotalOfSubsidies1));
+    $(".totalPayable").val(Number(wagesPayable)+Number(subTotalOfSubsidies1));
     //扣款合计
     var endowmentInsurance = parseFloat($("#endowmentInsurance").val());
     var medicalInsurance = parseFloat($("#medicalInsurance").val());
@@ -153,11 +153,11 @@ function sumWages() {
     var otherDeductions = parseFloat($("#otherDeductions").val());
     var deduction = endowmentInsurance + medicalInsurance + accumulationFund + unemploymentBenefits + unionFees + otherDeductions;
     deduction = deduction.toFixed(2)
-    $("#totalDeduction").val(deduction);
+    $(".totalDeduction").val(deduction);
     //计税合计
     var totalTax = parseFloat($('#totalPayable').val())-parseFloat($("#totalDeduction").val());
     totalTax = totalTax.toFixed(2);
-    $("#totalTax").val(totalTax);
+    $(".totalTax").val(totalTax);
     $.ajax({
         type: "post",
         url: path + "/wa/wags/taxation",
@@ -176,10 +176,10 @@ function sumWages() {
         success: function(data){
             var individualTaxAdjustment = data.tax;
             individualTaxAdjustment = Math.floor(individualTaxAdjustment * 100) / 100;
-            $("#individualTaxAdjustment").val(individualTaxAdjustment);
+            $(".individualTaxAdjustment").val(individualTaxAdjustment);
             var netSalary = data.netSalary;
             netSalary = Math.floor(netSalary * 100) / 100;
-            $("#netSalary").val(netSalary);
+            $(".netSalary").val(netSalary);
         }
     });
 }
@@ -244,6 +244,12 @@ function showWagsList(m){
             $(".meritPay").val(data.meritPay);
             $(".performanceCoefficient").val(data.performanceCoefficient);
             $(".wagesPayable").val(data.wagesPayable);
+            if (data.foodSupplement == "" || data.foodSupplement == null) {
+                data.foodSupplement = 0.00;
+            }
+            if (data.highTemperatureSubsidy == "" || data.highTemperatureSubsidy == null) {
+                data.highTemperatureSubsidy = 0.00;
+            }
             $(".foodSupplement").val(data.foodSupplement);
             $(".highTemperatureSubsidy").val(data.highTemperatureSubsidy);
             $(".totalPayable").val(data.totalPayable);
@@ -260,11 +266,6 @@ function showWagsList(m){
             $(".remark").val(data.remark);
             $(".individualTaxAdjustment").val(data.individualTaxAdjustment);
             $(".netSalary").val(data.netSalary);
-            var subTotalOfSubsidies = parseFloat($(".foodSupplement").val())+parseFloat($(".highTemperatureSubsidy").val());
-            $(".subTotalOfSubsidies").val(subTotalOfSubsidies);
-            setInterval(function () {
-                $("#totalTax").val(Number($('#totalPayable').val())-Number($("#totalDeduction").val()));
-            },1000);
             sumWages();
             if(obj.event === 'edit'){//修改
                 layer.open({
@@ -366,7 +367,6 @@ function updFinance() {
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
     wages.deductionOfExpenses = '5000.00';//减除费用
-    console.log(wages)
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",
