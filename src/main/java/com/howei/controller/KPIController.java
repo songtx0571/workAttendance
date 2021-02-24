@@ -3,10 +3,8 @@ package com.howei.controller;
 import com.howei.pojo.*;
 import com.howei.service.*;
 import com.howei.util.DateFormat;
-import com.howei.util.EasyuiResult;
 import com.howei.util.Page;
 import com.howei.util.Result;
-import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,10 +78,14 @@ public class KPIController {
     @ResponseBody
     public Result getKPIList(HttpServletRequest request) {
         String startTime = request.getParameter("startTime");
+        String  departmentId=request.getParameter("departmentId");
         String page = request.getParameter("page");
         String limit = request.getParameter("limit");
         int rows = Page.getOffSet(page, limit);
         Map map = new HashMap();
+        if(departmentId!=null&&!"0".equals(departmentId.trim())&&!"".equals(departmentId.trim())){
+            map.put("departmentId",departmentId);
+        }
         Subject subject = SecurityUtils.getSubject();
         Users users = (Users) subject.getPrincipal();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
@@ -111,15 +114,35 @@ public class KPIController {
             map.put("startTime", DateFormat.ThisMonth());
         }
 
-        List<Map> listTotal = postPeratorService.getKPIList(map);
-        map.put("pageSize", limit);
-        map.put("page", rows);
+
+        long frequencySum = 0L;
+        long pointSum = 0L;
+//        List<Map> listTotal = postPeratorService.getKPIList(map);
+//
+//
+//        map.put("pageSize", limit);
+//        map.put("page", rows);
+
+
         List<Map> list = postPeratorService.getKPIList(map);
 
+        for (Map kpiMap : list) {
+            frequencySum += (Long) kpiMap.get("frequency");
+            pointSum += (Long) kpiMap.get("point");
+        }
+
+        System.out.println("frequency:"+frequencySum);
+
+        System.out.println("point:"+pointSum);
+        DecimalFormat df=new DecimalFormat("0.0");
+        double frequencyAver=frequencySum*1.0/list.size();
+        double pointAver=pointSum*1.0/list.size();
+        System.out.println("average:"+df.format(frequencyAver));
+        System.out.println("average:"+df.format(pointAver));
         Result result = new Result();
         result.setCode(0);
         result.setData(list);
-        result.setCount(listTotal.size());
+        result.setCount(list.size());
         return result;
     }
 
@@ -259,10 +282,15 @@ public class KPIController {
     @ResponseBody
     public Result getInformKPIList(HttpServletRequest request) {
         String startTime = request.getParameter("startTime");
+        String departmentId = request.getParameter("departmentId");
         String page = request.getParameter("page");
         String limit = request.getParameter("limit");
         int rows = Page.getOffSet(page, limit);
         Map map = new HashMap();
+
+        if(departmentId!=null&&!"0".equals(departmentId.trim())&&!"".equals(departmentId.trim())){
+            map.put("departmentId",departmentId);
+        }
         if (startTime != null && !startTime.equals("")) {
             map.put("startTime", startTime);
         } else {
@@ -270,26 +298,40 @@ public class KPIController {
         }
 
         List<Map> listTotal = informService.getInformKPIList(map);
-        map.put("pageSize", limit);
-        map.put("page", rows);
+//        map.put("pageSize", limit);
+//        map.put("page", rows);
         List<Map> list = informService.getInformKPIList(map);
+
+        long  createInformCountSum=0;
+        long selcountSum=0;
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 Map map1 = list.get(i);
                 String userName = (String) map1.get("userName");
-                String createdCount = map1.get("createdCount") + "";
-                if (createdCount.isEmpty() || createdCount == null || createdCount.equals("null")) {
-                    map1.put("createdCount", 0);
-                    Users user = userService.findByUserName(userName);
-                    if (user != null) {
-                        map1.put("Id", user.getId());
-                        map1.put("Name", user.getUserName());
-                    } else {
-                        list.remove(map1);
-                    }
-                }
+                long createdCount =(long) map1.get("createdCount") ;
+                long selCount =(long) map1.get("selCount");
+//                if (createdCount.isEmpty() || createdCount == null || createdCount.equals("null")) {
+//                    map1.put("createdCount", 0);
+//                    Users user = userService.findByUserName(userName);
+//                    if (user != null) {
+//                        map1.put("Id", user.getId());
+//                        map1.put("Name", user.getUserName());
+//                    } else {
+//                        list.remove(map1);
+//                    }
+//                }
+
+
+                createInformCountSum+=createdCount;
+                selcountSum+=selCount;
             }
         }
+
+        DecimalFormat df=new DecimalFormat("0.0");
+        System.out.println("sum1:"+createInformCountSum);
+        System.out.println("sum2:"+selcountSum);
+        System.out.println("average1:"+df.format(createInformCountSum*1.0/list.size()));
+        System.out.println("average1:"+df.format(selcountSum*1.0/list.size()));
         Result result = new Result();
         result.setCode(0);
         result.setData(list);
@@ -383,14 +425,19 @@ public class KPIController {
     @ResponseBody
     public Result getWorkHoursList(HttpServletRequest request) {
         String startTime = request.getParameter("startTime");
-        String page = request.getParameter("page");
-        String limit = request.getParameter("limit");
-        int rows = Page.getOffSet(page, limit);
+        String departmentId = request.getParameter("departmentId");
+//        String page = request.getParameter("page");
+//        String limit = request.getParameter("limit");
+//        int rows = Page.getOffSet(page, limit);
         Map map = new HashMap();
         if (startTime != null && !startTime.equals("")) {
             map.put("startTime", startTime);
         } else {
             map.put("startTime", DateFormat.ThisMonth());
+        }
+        String depart="0";
+        if(departmentId!=null&&!"".equals(departmentId.trim())){
+            depart=departmentId;
         }
         List<MaintenanceRecord> list = examinationServive.getWorkingHoursByProPeople(map);
         //System.out.println("list::"+list);
@@ -424,15 +471,15 @@ public class KPIController {
 
         Integer size = users.size();
         //处理分页的users列表
-        List<Map> users2 = new ArrayList<>();
-        for (int i = rows; i < Integer.parseInt(page) * (Integer.parseInt(limit)); i++) {
-            if (i < users.size()) {
-                users2.add(users.get(i));
-            }
-        }
-        users = users2;
+//        List<Map> users2 = new ArrayList<>();
+//        for (int i = rows; i < Integer.parseInt(page) * (Integer.parseInt(limit)); i++) {
+//            if (i < users.size()) {
+//                users2.add(users.get(i));
+//            }
+//        }
+//        users = users2;
 
-        List<Map<String, String>> result = resultWorkHoursList(users, list, "", limit, rows, page);
+        List<Map<String, String>> result = resultWorkHoursList(users, list, depart, "", 0, "");
 
         Result result1 = new Result();
         result1.setCode(0);
@@ -457,13 +504,19 @@ public class KPIController {
             }
         }
         for (int i = 0; i < users.size(); i++) {
+
             Map<String, String> map = new HashMap<>();
+            String departmentId = users.get(i).get("departmentId").toString();
             map.put("id", users.get(i).get("id").toString());
             map.put("name", users.get(i).get("userName").toString());
+            map.put("userNumber", users.get(i).get("userNumber").toString());
             map.put("companyName", users.get(i).get("companyName").toString());
             map.put("departmentName", users.get(i).get("departmentName").toString());
             map.put("workingHours", count[i] + "");
-            result.add(map);
+            if(depart.equals(departmentId)||"0".equals(depart)){
+                result.add(map);
+            }
+
         }
         return result;
     }
@@ -516,7 +569,7 @@ public class KPIController {
                 resultList.add(mapMap);
             }
         }
-        Result result=new Result();
+        Result result = new Result();
         result.setCode(0);
         result.setData(resultList);
         result.setCount(resultList.size());

@@ -4,6 +4,7 @@ var year = date.getFullYear();
 var month = date.getMonth() + 1;
 $(function(){
     showDate();
+    showDepart();
     if (month == 12) {
         month = 1;
         year = year + 1;
@@ -15,7 +16,8 @@ $(function(){
     if (month < 10) {
         month = "0"+month;
     }
-    showKpi(year+"-"+month);
+    $("#selDepartNameHidden").val("");
+    showKpi(year+"-"+month,$("#selDepartNameHidden").val());
     $("#test15").val(year+"-"+month);
 });
 //显示时间
@@ -27,13 +29,37 @@ function showDate() {
             ,type: 'month'
             ,trigger: 'click'//呼出事件改成click
             , done: function (value) {
-                showKpi(value)
+                showKpi(value,$("#selDepartNameHidden").val())
             }
         });
     })
 }
+//显示部门
+function showDepart() {
+    layui.use(['form'], function () {
+        var form = layui.form;
+        $.ajax({
+            type: "GET",
+            url: path + "/wa/department/getDepartmentList",
+            dataType: "json",
+            success: function (data) {
+                $("#selDepartName").empty();
+                var option = "<option value='0' >请选择部门</option>";
+                for (var i = 0; i < data.length; i++) {
+                    option += "<option value='" + data[i].id + "'>" + data[i].text + "</option>"
+                }
+                $('#selDepartName').html(option);
+                form.render();//菜单渲染 把内容加载进去
+            }
+        });
+        form.on('select(selDepartName)', function (data) {
+            $("#selDepartNameHidden").val(data.value);
+            showKpi($("#test15").val(),$("#selDepartNameHidden").val());
+        });
+    })
+}
 //查询工时数据
-function showKpi(startTime) {
+function showKpi(startTime,departmentId) {
     var win = $(window).height();
     var height = win-100;
     layui.use(['table',"form"], function() {
@@ -41,18 +67,16 @@ function showKpi(startTime) {
         table.render({
             elem: '#demo'
             , height: height
-            , url: path + '/wa/kpi/getWorkHoursList?startTime='+startTime //数据接口
-            , page: {
-                curr: 1
-            } //开启分页
-            , limit: 10
-            , limits: [10, 20, 30]
+            , url: path + '/wa/kpi/getWorkHoursList?startTime='+startTime+'&departmentId='+departmentId //数据接口
+            , page: false
+            ,totalRow: true
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide:true,width: 120},
-                {field: 'companyName', title: '公司名称', align: 'center' },
+                {field: 'userNumber', title: '员工编号', align: 'center', totalRowText: '合计'},
+                {field: 'companyName', title: '公司名称', align: 'center' ,},
                 {field: 'departmentName', title: '部门名称', align: 'center'},
                 {field: 'name', title: '员工', align: 'center'},
-                {field: 'workingHours', title: '月度总工时',sort :true, align: 'center',event: 'workingHour', style:'color: red;'},
+                {field: 'workingHours', title: '月度总工时',sort :true, align: 'center',event: 'workingHour', style:'color: red;', totalRow: true},
             ]]
             , done: function (res, curr, count) {}
         });
@@ -93,7 +117,7 @@ function monthUpBtn() {
     }
     $("#test15").val(y+"-"+m);
     var a1 = y+"-"+m;
-    showKpi(a1)
+    showKpi(a1,$("#selDepartNameHidden").val())
 }
 //下个月
 function monthDownBtn() {
@@ -110,7 +134,7 @@ function monthDownBtn() {
     }
     $("#test15").val(y+"-"+m);
     var a2 = y+"-"+m;
-    showKpi(a2)
+    showKpi(a2,$("#selDepartNameHidden").val())
 }
 //月度总工时
 function workHour(userId,startTime) {
