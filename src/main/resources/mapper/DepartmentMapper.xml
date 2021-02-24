@@ -16,4 +16,26 @@
       select * from company where parent=(select id from company where headQuarters=0)
     </select>
 
+    <select id="getDepartmentMap" resultType="com.howei.pojo.Company" parameterType="java.util.Map">
+      select * from company
+        <where>
+            <if test="active!=null">
+                and isactive=1
+            </if>
+            <if test="companyId!=null">
+                and parent=#{companyId}
+            </if>
+            <if test="companyId==null or companyId==''">
+                and parent=1
+            </if>
+            <if test="departmentId!=null">
+                and id=#{departmentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCompanyMap" resultType="com.howei.pojo.Company">
+        select * from company where isactive=1 and parent=0
+    </select>
+
 </mapper>

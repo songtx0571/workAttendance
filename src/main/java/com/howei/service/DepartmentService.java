@@ -3,6 +3,7 @@ package com.howei.service;
 import com.howei.pojo.Company;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DepartmentService {
     /**
@@ -10,4 +11,8 @@ public interface DepartmentService {
      * @return
      */
     List<Company> getDepList();
+
+    List<Map<String,String>> getDepartmentMap(Map map);
+
+    List<Map<String,String>> getCompanyMap();
 }

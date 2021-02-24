@@ -25,4 +25,6 @@ public interface EmployeeMapper {
     List<Employee> getEmployeeByManager(@Param("empId") int employeeId);
 
     List<Employee> getEmployeeMap();
+
+    List<Employee> getEmpMap(Map map);
 }

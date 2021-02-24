@@ -1,5 +1,5 @@
 package com.howei.util;
 
 public enum Type {
-    SUCCESS,ERROR,CANCEL,FAIL,AddManager;
+    SUCCESS,ERROR,CANCEL,FAIL,AddManager,RESIGNIN;
 }

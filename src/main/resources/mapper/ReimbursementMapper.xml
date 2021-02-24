@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.ReimbursementMapper">
+    <resultMap id="reimbursement" type="com.howei.pojo.Reimbursement">
+        <result property="id" column="id"></result>
+        <result property="reimbursor" column="reimbursor"></result>
+        <result property="departmentId" column="departmentId"></result>
+        <result property="reimbursementContent" column="reimbursementContent"></result>
+        <result property="subject" column="subject"></result>
+        <result property="reimbursementAmount" column="reimbursementAmount"></result>
+        <result property="remark" column="remark"></result>
+        <result property="reimbursementDate" column="reimbursementDate"></result>
+        <result property="createdBy" column="createdBy"></result>
+        <result property="created" column="created"></result>
+        <result property="status" column="status"></result>
+        <result property="financeResult" column="financeResult"></result>
+        <result property="financeDate" column="financeDate"></result>
+        <result property="financeRemark" column="financeRemark"></result>
+    </resultMap>
+
+    <select id="getReimbursementById" parameterType="java.lang.String" resultType="com.howei.pojo.Reimbursement">
+        select * from reimbursement where id=#{id}
+    </select>
+    
+    <select id="getReimbursementList" resultType="com.howei.pojo.Reimbursement">
+        select r.*,c.name as departemntName,e1.name as reimbursorName,c1.id as companyId from reimbursement r
+        left join company c on c.id=r.departmentId
+        left join company c1 on c1.id=c.parent
+        left join employee e1 on e1.id=r.reimbursor
+        <where>
+            <if test="month!=null and month!=''">
+                and DATE_FORMAT(r.reimbursementDate,'%Y-%m') = DATE_FORMAT(#{month},'%Y-%m')
+            </if>
+            <if test="departmentId!=null">
+                and r.departmentId = #{departmentId}
+            </if>
+            <if test="active!=null">
+                and c.isactive=1
+            </if>
+            <if test="financeResult==1">
+                and r.financeResult in (0,1,2,3,4) or r.status=2
+            </if>
+            <if test="financeResult==3">
+                and r.financeResult in (1,3,4) or (r.financeResult in (3,4) and r.status=2)
+            </if>
+        </where>
+        order by r.status,r.reimbursementDate desc
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+
+    <insert id="addReimbursement" useGeneratedKeys="true" keyProperty="id" parameterType="com.howei.pojo.Reimbursement">
+        insert into reimbursement(reimbursor,departmentId,reimbursementContent,subject,reimbursementAmount,remark,reimbursementDate,createdBy,created,status
+        ,financeResult,financeDate,financeRemark) value (#{reimbursor},#{departmentId},#{reimbursementContent},#{subject},#{reimbursementAmount},#{remark},
+        #{reimbursementDate},#{createdBy},#{created},#{status},#{financeResult},#{financeDate},#{financeRemark})
+    </insert>
+
+    <update id="updReimbursement" parameterType="com.howei.pojo.Reimbursement" useGeneratedKeys="true" keyProperty="id">
+        update reimbursement
+        <set>
+            <if test="reimbursementContent!=null and reimbursementContent!=''">
+                reimbursementContent=#{reimbursementContent},
+            </if>
+            <if test="subject!=null">
+                subject=#{subject},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="reimbursementAmount!=null">
+                reimbursementAmount=#{reimbursementAmount},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="examine" parameterType="com.howei.pojo.Reimbursement" useGeneratedKeys="true" keyProperty="id">
+        update reimbursement
+        <set>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="financeResult!=null">
+                financeResult=#{financeResult},
+            </if>
+            <if test="financeDate!=null">
+                financeDate=#{financeDate},
+            </if>
+            <if test="financeRemark!=null">
+                financeRemark=#{financeRemark},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

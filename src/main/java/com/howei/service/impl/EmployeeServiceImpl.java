@@ -83,4 +83,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return result;
     }
+
+    @Override
+    public List<Map<String, String>> getEmpMap(Map map) {
+        List<Employee> list=employeeMapper.getEmpMap(map);
+        List<Map<String, String>> result=new ArrayList<>();
+        if(list!=null&&list.size()>0){
+            for(Employee employee:list){
+                Map<String,String> map1=new HashMap<>();
+                map1.put("id",employee.getId()+"");
+                map1.put("name", employee.getName());
+                result.add(map1);
+            }
+        }
+        return result;
+    }
 }

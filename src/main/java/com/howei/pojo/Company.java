@@ -5,7 +5,7 @@ package com.howei.pojo;
  */
 public class Company {
 
-    private int id;
+    private Integer id;
     private String name;
     private String created;
     private int createdBy;

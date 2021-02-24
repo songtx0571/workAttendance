@@ -24,7 +24,6 @@ import java.util.*;
 
 @Controller
 //@CrossOrigin(origins="http://test.hopeop.com",allowCredentials = "true")
-// 1.1.1showLaborAll，getKPIList、getWorkHoursList、getInformKPIList、toCreated、toSel、toFrequency、toPoint、toSelWorkHours接口分页格式转换为layui格式
 public class UserController {
 
     @Autowired
@@ -38,7 +37,6 @@ public class UserController {
 
     /*存入session里的用户名称*/
     public static final String SESSION_USER = "sessionUser";
-    public ObjectMapper jsonTranster = new ObjectMapper();
 
     @RequestMapping("/")
     @CrossOrigin
@@ -111,37 +109,6 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
-    /*// 获取员工所属项目部信息
-    @ResponseBody
-    @RequestMapping(value = "/getProjectIdS", produces = "text/json;charset=UTF-8")
-    public String getProjectIdS(HttpServletRequest request) {
-        String userName=request.getParameter("userName");
-        String pageStr=request.getParameter("page");
-        Integer page=Integer.parseInt(pageStr);
-        String limit=request.getParameter("");
-        Integer rows=Integer.parseInt(limit);
-        List<Users> users = null;
-        users = userService.getProjectIdS(userName);
-        Integer size = users.size();
-        if (page == null && limit == null) {
-
-        } else {
-            List<Users> users2 = new ArrayList<>();
-            for (int i = (page - 1) * rows; i < page * (rows); i++) {
-                if (i < users.size()) {
-                    users2.add(users.get(i));
-                }
-            }
-            users = users2;
-        }
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("code", 0);
-        map.put("msg", "");
-        map.put("count", size);
-        map.put("data", users);
-        return JSON.toJSONString(map);
-    }
-*/
     //获取员工所属项目部信息
     @ResponseBody
     @RequestMapping("/getNameByProjectId")

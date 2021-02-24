@@ -21,4 +21,6 @@ public interface EmployeeService {
     List<Employee> getEmployeeByManager(int employeeId);
 
     Map<Integer,String> getEmployeeMap();
+
+    List<Map<String,String>> getEmpMap(Map map);
 }

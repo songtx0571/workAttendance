@@ -2,6 +2,7 @@ package com.howei.config;
 
 import com.howei.realm.LoginRealm;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -38,7 +39,7 @@ public class ShiroConfig {
     @DependsOn(value="lifecycleBeanPostProcessor")
     public LoginRealm loginRealm(){
         LoginRealm userRealm = new LoginRealm();
-        userRealm.setCredentialsMatcher(credentialsMatcher());
+        //userRealm.setCredentialsMatcher(credentialsMatcher());
         return userRealm;
     }
 
@@ -67,11 +68,13 @@ public class ShiroConfig {
         bean.setLoginUrl(masterLoginUrl);
         Map<String, Filter>filters = new LinkedHashMap<>();
         filters.put("anon", new AnonymousFilter());
-        //配置自定义登出 覆盖 logout 之前默认的LogoutFilter
-        filters.put("logout", shiroLogoutFilter());
         bean.setFilters(filters);
+        //shiro配置过滤规则少量的话可以用hashMap,数量多了要用LinkedHashMap,保证有序，原因未知
+        Map<String,String> map1=new HashMap<>();
+        map1.put("/logout","logout");
         //首页
         bean.setSuccessUrl("/home");
+        bean.setFilterChainDefinitionMap(map1);
         return bean;
     }
 
@@ -87,21 +90,13 @@ public class ShiroConfig {
     @Bean(name="sessionManager")
     public DefaultWebSessionManager defaultWebSessionManager(RedisSessionDao redisSessionDao) {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        Cookie cookie=sessionManager.getSessionIdCookie();
-        cookie.setName("sessionId");
-        sessionManager.setGlobalSessionTimeout(5000);
-        //sessionManager.setGlobalSessionTimeout(14400000); //4小时
-        sessionManager.setSessionDAO(redisSessionDao);
-        //是否开启定时调度器进行检测过期session 默认为true
-        sessionManager.setSessionValidationSchedulerEnabled(true);
-        //设置session失效的扫描时间, 清理用户直接关闭浏览器造成的孤立会话 默认为 1个小时
-        //设置该属性 就不需要设置 ExecutorServiceSessionValidationScheduler 底层也是默认自动调用ExecutorServiceSessionValidationScheduler
-        //设置为 1分钟 用来测试
-        sessionManager.setSessionValidationInterval(5000);
-        //sessionManager.setSessionValidationInterval(60000);
-        //是否开启删除无效的session对象  默认为true
+        sessionManager.setGlobalSessionTimeout(900000); //15分钟
         sessionManager.setDeleteInvalidSessions(true);
-        sessionManager.setSessionIdCookie(new SimpleCookie("sessionId"));
+        sessionManager.setSessionDAO(redisSessionDao);
+        sessionManager.setSessionValidationSchedulerEnabled(true);
+        sessionManager.setDeleteInvalidSessions(true);
+        sessionManager.setSessionIdCookie(getSessionIdCookie());
+        sessionManager.setSessionIdCookie(new SimpleCookie("sessionUser"));
         return sessionManager;
     }
 
@@ -124,14 +119,7 @@ public class ShiroConfig {
     @Bean(name="sessionIdCookie")
     public SimpleCookie getSessionIdCookie(){
         SimpleCookie simpleCookie = new SimpleCookie(jessionId);
-        //maxAge=-1表示浏览器关闭时失效此Cookie
-        simpleCookie.setMaxAge(-1);
         return simpleCookie;
-    }
-
-    @Bean(name="credentialsMatcher")
-    public CredentialsMatcher credentialsMatcher() {
-        return new RetryLimitHashedCredentialsMatcher();
     }
 
     /**
@@ -143,14 +131,4 @@ public class ShiroConfig {
         return new LifecycleBeanPostProcessor();
     }
 
-    /**
-     * 配置LogoutFilter
-     * @return
-     */
-    public ShiroLogoutFilter shiroLogoutFilter(){
-        ShiroLogoutFilter shiroLogoutFilter = new ShiroLogoutFilter();
-        //配置登出后重定向的地址，等出后配置跳转到登录接口
-        shiroLogoutFilter.setRedirectUrl("/");
-        return shiroLogoutFilter;
-    }
 }

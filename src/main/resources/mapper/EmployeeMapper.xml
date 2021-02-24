@@ -224,4 +224,16 @@
         select id,name from employee
     </select>
 
+    <select id="getEmpMap" resultType="com.howei.pojo.Employee" parameterType="java.util.Map">
+        select e.id,e.name from employee e
+        join users u on u.employeeId=e.id
+        where u.state=1
+        <if test="companyId!=null">
+          and u.companyId=#{companyId}
+        </if>
+        <if test="departmentId!=null">
+            and u.departmentId=#{departmentId}
+        </if>
+    </select>
+
 </mapper>
