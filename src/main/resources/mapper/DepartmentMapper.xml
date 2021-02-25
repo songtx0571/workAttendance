@@ -19,9 +19,6 @@
     <select id="getDepartmentMap" resultType="com.howei.pojo.Company" parameterType="java.util.Map">
       select * from company
         <where>
-            <if test="active!=null">
-                and isactive=1
-            </if>
             <if test="companyId!=null">
                 and parent=#{companyId}
             </if>
@@ -29,7 +26,7 @@
                 and parent=1
             </if>
             <if test="departmentId!=null">
-                and id=#{departmentId}
+                and (id=#{departmentId} or id in (79,80))
             </if>
         </where>
     </select>

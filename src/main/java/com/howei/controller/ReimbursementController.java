@@ -74,16 +74,14 @@ public class ReimbursementController {
         boolean gPermitted=subject.isPermitted("报销管理员");
         boolean cPermitted=subject.isPermitted("报销财务员");
         boolean xPermitted=subject.isPermitted("报销项目部");
-        if(gPermitted||cPermitted){
-
-        }else{
+        if(gPermitted||cPermitted||jPermitted){
             if(departmentId!=null&&!departmentId.equals("")){
                 map.put("departmentId",departmentId);
-            }else{
-                Users users=this.getPrincipal();
-                if(users!=null&&xPermitted){
-                    map.put("departmentId",users.getDepartmentId());
-                }
+            }
+        }else{
+            Users users = this.getPrincipal();
+            if (users != null && xPermitted) {
+                map.put("departmentId", users.getDepartmentId());
             }
         }
         if(jPermitted||gPermitted||cPermitted){
@@ -132,18 +130,12 @@ public class ReimbursementController {
         if(!jPermitted && !gPermitted && !cPermitted && !xPermitted){
             return null;
         }
-        if(jPermitted||gPermitted||cPermitted){
-            active=null;
-        }else{
-            active="1";
-        }
         if(xPermitted){
             if(users!=null){
                 map.put("departmentId",users.getDepartmentId());
             }
         }
         map.put("companyId",companyId);
-        map.put("active",active);
         List<Map<String,String>> result=departmentService.getDepartmentMap(map);
         return result;
     }
@@ -267,6 +259,9 @@ public class ReimbursementController {
     public String updReimbursement(@RequestBody Reimbursement reimbursement){
         if(reimbursement.getId()!=null){
             try {
+                reimbursement.setFinanceResult(0);
+                reimbursement.setFinanceDate("");
+                reimbursement.setStatus(0);
                 reimbursementService.updReimbursement(reimbursement);
             } catch (Exception e) {
                 e.printStackTrace();

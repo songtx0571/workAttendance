@@ -38,10 +38,10 @@
                 and c.isactive=1
             </if>
             <if test="financeResult==1">
-                and r.financeResult in (0,1,2,3,4) or r.status=2
+                and (r.financeResult in (0,1,2,3,4) or r.status=2)
             </if>
             <if test="financeResult==3">
-                and r.financeResult in (1,3,4) or (r.financeResult in (3,4) and r.status=2)
+                and (r.financeResult in (1,3,4) or (r.financeResult in (3,4) and r.status=2))
             </if>
         </where>
         order by r.status,r.reimbursementDate desc
@@ -70,6 +70,18 @@
             </if>
             <if test="reimbursementAmount!=null">
                 reimbursementAmount=#{reimbursementAmount},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="financeResult!=null">
+                financeResult=#{financeResult},
+            </if>
+            <if test="financeDate!=null">
+                financeDate=#{financeDate},
+            </if>
+            <if test="financeRemark!=null">
+                financeRemark=#{financeRemark},
             </if>
         </set>
         where id=#{id}

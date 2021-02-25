@@ -69,15 +69,17 @@
             </div>
         </form>
         <shiro:hasPermission name="报销项目部">
-            <button class="layui-btn layui-btn-sm  layui-btn-normal" style="margin-left: 50px;float: left;height: 38px;margin-right: 5px;" onclick="showAddDiv()">添加</button>
+        <button class="layui-btn layui-btn-sm  layui-btn-normal" style="margin-left: 50px;float: left;height: 38px;margin-right: 5px;" onclick="showAddDiv()">添加</button>
         </shiro:hasPermission>
     </div>
     <div class="department">
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="barDemoDepartOk">
             {{#  if(d.financeResult == 2){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="departEdit">修改</a>
             <span style="color: #FFB800;">无效</span>
             {{#  } else if(d.financeResult == 1) { }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="departEdit">修改</a>
             <span style="color: #009688;">有效</span>
             {{#  } else if(d.financeResult == 0){ }}
             <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="departEdit">修改</a>
@@ -88,6 +90,7 @@
             {{#  } else if(d.financeResult == 3) { }}
             <span style="color: #009688;">有效</span>
             {{#  } else if(d.financeResult == 4) { }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="departEdit">修改</a>
             <span style="color: #009688;">有效</span>
             {{#  } }}
         </script>
