@@ -32,6 +32,15 @@
             </div>
         </div>
         <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn()" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
+        <form class="layui-form" action="">
+            <div class="layui-inline" style="float: left;margin-left: 50px;">
+                <div class="layui-input-inline">
+                    <input type="hidden" id="selDepartNameHidden">
+                    <select name="modules" lay-verify="required" lay-filter="selDepartName" lay-search="" id="selDepartName">
+                    </select>
+                </div>
+            </div>
+        </form>
     </div>
     <div style="clear: both;"></div>
     <%--表格--%>

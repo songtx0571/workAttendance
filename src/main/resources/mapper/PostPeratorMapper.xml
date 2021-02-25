@@ -20,10 +20,10 @@
     </sql>
 
     <select id="getKPIList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        SELECT p.id AS id,p.userNumber,p.companyId,p.companyName,p.deparmentId,p.departmentName,p.userName AS userName,if(p.sex=1,"男","女") sex ,p.frequency AS frequency,pdd.point AS point
+        SELECT p.id AS id,p.userNumber,p.companyId,p.companyName,p.departmentId,p.departmentName,p.userName AS userName,if(p.sex=1,"男","女") sex ,p.frequency AS frequency,pdd.point AS point
         FROM
         (
-          SELECT u.id,u.userName,u.sex,u.userNumber,c.id companyId,c. NAME companyName,c2.id deparmentId,c2. NAME departmentName,COUNT(*) AS frequency
+          SELECT u.id,u.userName,u.sex,u.userNumber,c.id companyId,c. NAME companyName,c2.id departmentId,c2. NAME departmentName,COUNT(*) AS frequency
           FROM postPerator p
           JOIN users u ON u.Id = p.postPeratorId
           JOIN company c ON c.id = u.companyId
@@ -44,6 +44,9 @@
         where 1=1
         <if test="empId!=null and empId!=''">
             and FIND_IN_SET(p.id,#{empId})
+        </if>
+        <if test="departmentId!=null and empId!='0'">
+            and p.departmentId=#{departmentId}
         </if>
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}

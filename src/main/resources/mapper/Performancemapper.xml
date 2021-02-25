@@ -35,8 +35,8 @@
     </delete>
 
     <insert id="insert" >
-        insert ignore into performance (workTasks,access,weights,cycle,employeeId,cycle2)
-        value (#{workTasks},#{access},#{weights},#{cycle},#{employeeId},concat(#{cycle},'-01'))
+        insert  into performance (workTasks,access,weights,cycle,employeeId,cycle2,detail)
+        value (#{workTasks},#{access},#{weights},#{cycle},#{employeeId},concat(#{cycle},'-01'),#{detail})
     </insert>
 
     <update id="update" parameterType="com.howei.pojo.Performance" useGeneratedKeys="true" keyProperty="id">
