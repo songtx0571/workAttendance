@@ -57,7 +57,7 @@
             reimbursement
         where 1=1
         <if test="departmentId!=null">
-           and  departmentId =#{departmentId}
+           and  FIND_IN_SET(departmentId,#{departmentId})
         </if>
         <if test="date!=null">
             and reimbursementDate like concat("%",#{date},"%")

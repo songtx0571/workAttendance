@@ -61,17 +61,17 @@ public class ReimbursementController {
 
     @RequestMapping("/getReimbursementList")
     @ResponseBody
-    public Result getReimbursementList(HttpServletRequest request){
-        String month=request.getParameter("month");
-        String departmentId=request.getParameter("departmentId");
-        String page=request.getParameter("page");
-        String limit=request.getParameter("limit");
+    public Result getReimbursementList(HttpServletRequest request) {
+        String month = request.getParameter("month");
+        String departmentId = request.getParameter("departmentId");
+        String page = request.getParameter("page");
+        String limit = request.getParameter("limit");
         Users users = this.getPrincipal();
-        Integer financeResult=0;
-        int rows=Page.getOffSet(page,limit);
-        Map map=new HashMap();
-        if(month==null&&month.equals("")){
-            month=DateFormat.ThisMonth();
+        Integer financeResult = 0;
+        int rows = Page.getOffSet(page, limit);
+        Map map = new HashMap();
+        if (month == null && month.equals("")) {
+            month = DateFormat.ThisMonth();
         }
         if (month != null) {
             map.put("month", month + "-01");
@@ -95,10 +95,10 @@ public class ReimbursementController {
                 }
             }
         }
-        if(gPermitted){
-            financeResult=1;
-        }else if (cPermitted){
-            financeResult=3;
+        if (gPermitted) {
+            financeResult = 1;
+        } else if (cPermitted) {
+            financeResult = 3;
         }
         map.put("financeResult", financeResult);
 
@@ -139,6 +139,7 @@ public class ReimbursementController {
         boolean xPermitted = subject.isPermitted("报销项目部");
         //判断是否存在这四个权限
         if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
+            System.out.println("11111111111111111");
             return null;
         }
         if (xPermitted) {
@@ -288,28 +289,58 @@ public class ReimbursementController {
         }
         return JSON.toJSONString(Type.ERROR);
     }
+
     @GetMapping("/getStatistics")
     @ResponseBody
-    public Result getStatistics(HttpServletRequest request){
+    public Result getStatistics(HttpServletRequest request) {
 
         String month = request.getParameter("month");
         String depart = request.getParameter("depart");
-        Map<String,Object> map=new HashMap<>();
-        if(depart!=null&&!"".equals(depart.trim())){
-            map.put("departmentId",depart);
+
+        Map<String, Object> map = new HashMap<>();
+
+        String departmentIdSet = "";
+
+
+        if (depart != null && !"".equals(depart.trim())) {
+            departmentIdSet = depart;
+        } else {
+
+            String companyId = "1";
+            Users users = this.getPrincipal();
+            Subject subject = SecurityUtils.getSubject();
+            boolean jPermitted = subject.isPermitted("报销监视员");
+            boolean gPermitted = subject.isPermitted("报销管理员");
+            boolean cPermitted = subject.isPermitted("报销财务员");
+            boolean xPermitted = subject.isPermitted("报销项目部");
+            //判断是否存在这四个权限
+            if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
+                departmentIdSet="";
+            }else{
+                map.put("departmentId", users.getDepartmentId());
+                map.put("companyId", companyId);
+                List<Map<String, String>> departmentIdList = departmentService.getDepartmentMap(map);
+                for (Map<String, String> stringStringMap : departmentIdList) {
+                    departmentIdSet += stringStringMap.get("id") + ",";
+                }
+            }
+
         }
-        if(month!=null&&!"".equals(month.trim())){
-            map.put("date",month);
+        map.clear();
+        map.put("departmentId", departmentIdSet);
+
+        if (month != null && !"".equals(month.trim())) {
+            map.put("date", month);
         }
 
         List<Map> statistic = reimbursementService.getReimbuseStatistic(map);
 
-        Result result=new Result();
+        Result result = new Result();
         result.setCode(0);
 
         result.setCount(statistic.size());
         result.setMsg("查询成功");
         result.setData(statistic);
-        return  result;
+        return result;
     }
 }
