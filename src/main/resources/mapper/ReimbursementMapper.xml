@@ -21,7 +21,8 @@
     <select id="getReimbursementById" parameterType="java.lang.String" resultType="com.howei.pojo.Reimbursement">
         select * from reimbursement where id=#{id}
     </select>
-    
+
+    <!--<if test="active!=null"> and c.isactive=1 </if>-->
     <select id="getReimbursementList" resultType="com.howei.pojo.Reimbursement">
         select r.*,c.name as departemntName,e1.name as reimbursorName,c1.id as companyId from reimbursement r
         left join company c on c.id=r.departmentId
@@ -32,10 +33,7 @@
                 and DATE_FORMAT(r.reimbursementDate,'%Y-%m') = DATE_FORMAT(#{month},'%Y-%m')
             </if>
             <if test="departmentId!=null">
-                and r.departmentId = #{departmentId}
-            </if>
-            <if test="active!=null">
-                and c.isactive=1
+                and (r.departmentId = #{departmentId} or r.departmentId in (79,80))
             </if>
             <if test="financeResult==1">
                 and (r.financeResult in (0,1,2,3,4) or r.status=2)

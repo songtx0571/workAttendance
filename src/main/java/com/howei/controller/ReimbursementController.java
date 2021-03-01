@@ -59,9 +59,9 @@ public class ReimbursementController {
         String departmentId=request.getParameter("departmentId");
         String page=request.getParameter("page");
         String limit=request.getParameter("limit");
+        Users users = this.getPrincipal();
         Integer financeResult=0;
         int rows=Page.getOffSet(page,limit);
-        String active="";
         Map map=new HashMap();
         if(month==null&&month.equals("")){
             month=DateFormat.ThisMonth();
@@ -78,18 +78,15 @@ public class ReimbursementController {
             if(departmentId!=null&&!departmentId.equals("")){
                 map.put("departmentId",departmentId);
             }
-        }else{
-            Users users = this.getPrincipal();
-            if (users != null && xPermitted) {
-                map.put("departmentId", users.getDepartmentId());
-            }
+        }else if(xPermitted){
+                if(departmentId!=null&&!departmentId.equals("")){
+                    map.put("departmentId", departmentId);
+                }else{
+                    if (users != null) {
+                        map.put("departmentId", users.getDepartmentId());
+                    }
+                }
         }
-        if(jPermitted||gPermitted||cPermitted){
-            active=null;
-        }else{
-            active="1";
-        }
-        map.put("active",active);
         if(gPermitted){
             financeResult=1;
         }else if (cPermitted){
