@@ -34,6 +34,9 @@
             <if test="departmentId!=null">
                 and (r.departmentId = #{departmentId} or r.departmentId in (79,80))
             </if>
+            <if test="active!=null">
+                and c.isactive=1
+            </if>
             <if test="financeResult==1">
                 and (r.financeResult in (0,1,2,3,4) or r.status=2)
             </if>

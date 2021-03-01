@@ -86,13 +86,14 @@ public class ReimbursementController {
                 map.put("departmentId", departmentId);
             }
         }else if(xPermitted){
-                if(departmentId!=null&&!departmentId.equals("")){
-                    map.put("departmentId", departmentId);
-                }else{
-                    if (users != null) {
-                        map.put("departmentId", users.getDepartmentId());
-                    }
+            if (departmentId != null && !departmentId.equals("")) {
+                map.put("departmentId", departmentId);
+            } else {
+                if (users != null) {
+                    map.put("departmentId", users.getDepartmentId());
+                    map.put("active",1);
                 }
+            }
         }
         if(gPermitted){
             financeResult=1;
@@ -100,6 +101,7 @@ public class ReimbursementController {
             financeResult=3;
         }
         map.put("financeResult", financeResult);
+
         List<Reimbursement> total = reimbursementService.getReimbursementList(map);
         map.put("pageSize", limit);
         map.put("page", rows);
@@ -108,6 +110,10 @@ public class ReimbursementController {
         result.setCount(total.size());
         result.setData(list);
         result.setCode(0);
+        if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
+            result.setCount(0);
+            result.setData(null);
+        }
         return result;
     }
 
