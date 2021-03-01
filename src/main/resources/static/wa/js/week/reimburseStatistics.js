@@ -55,10 +55,14 @@ function showCompany() {
                 layer.alert("请选择年份");
                 return;
             }
-            if ($("#selMonthHidden").val() < 10) {
-                $("#selMonthHidden").val("0"+$("#selMonthHidden").val());
+            if ($("#selMonthHidden").val() != "13") {
+                if ($("#selMonthHidden").val() < 10) {
+                    $("#selMonthHidden").val("0"+$("#selMonthHidden").val());
+                }
+                showTable($("#test2").val()+"-"+$("#selMonthHidden").val(),$("#selDepartNameHidden").val());
+            }else {
+                showTable($("#test2").val(),$("#selDepartNameHidden").val());
             }
-            showTable($("#test2").val()+"-"+$("#selMonthHidden").val(),$("#selDepartNameHidden").val());
         });
     })
 }
@@ -81,7 +85,7 @@ function showTable(cycle,depart){
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide: true}
                 ,{fixed: '', title: '科目', toolbar: '#barDemoDepartSubject', align: 'center', sort: true, totalRowText: '合计'}
-                ,{field: 'totalAmount', title: '报销金额', align: 'center', totalRow: true}
+                ,{field: 'totalAmount', title: '报销金额(元)', align: 'center', totalRow: true}
             ]]
             , done: function (res, curr, count) {}
         });

@@ -44,7 +44,7 @@
             <div class="layui-inline" style="float: left;margin-left: 50px;">
                 <div class="layui-input-inline">
                     <select name="modules" lay-verify="required" lay-filter="selMonth" lay-search="" id="selMonth">
-                        <option value="0">请选择月份</option>
+                        <option value="13">请选择月份</option>
                         <option value="1">1月</option>
                         <option value="2">2月</option>
                         <option value="3">3月</option>
