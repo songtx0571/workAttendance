@@ -16,4 +16,6 @@ public interface ReimbursementService {
     int updReimbursement(Reimbursement reimbursement);
 
     int examine(Reimbursement reimbursement);
+
+    List<Map> getReimbuseStatistic(Map  map);
 }

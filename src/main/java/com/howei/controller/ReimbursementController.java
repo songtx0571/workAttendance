@@ -132,9 +132,7 @@ public class ReimbursementController {
         }
         if(xPermitted){
             if(users!=null){
-                if(!gPermitted && !jPermitted && !cPermitted){
-                    map.put("departmentId",users.getDepartmentId());
-                }
+                map.put("departmentId",users.getDepartmentId());
             }
         }
         map.put("companyId",companyId);

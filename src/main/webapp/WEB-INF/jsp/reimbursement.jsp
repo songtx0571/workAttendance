@@ -198,7 +198,7 @@
                             <div class="layui-form-item">
                                 <div class="layui-inline">
                                     <div class="layui-input-inline" style="width: 300px;">
-                                        <select name="modules" lay-verify="required" lay-filter="addSubjectName" lay-search="" id="addSubjectName">
+                                        <select name="modules" lay-verify="required" lay-filter="addSubjectName" lay-search="" id="addSubjectName"  placeholder="请选择">
                                             <option value="0">直接选择或搜索选择</option>
                                             <option value="1">差旅费</option>
                                             <option value="2">差旅补助</option>

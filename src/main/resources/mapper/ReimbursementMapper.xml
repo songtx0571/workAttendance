@@ -21,7 +21,7 @@
     <select id="getReimbursementById" parameterType="java.lang.String" resultType="com.howei.pojo.Reimbursement">
         select * from reimbursement where id=#{id}
     </select>
-    
+
     <select id="getReimbursementList" resultType="com.howei.pojo.Reimbursement">
         select r.*,c.name as departemntName,e1.name as reimbursorName,c1.id as companyId from reimbursement r
         left join company c on c.id=r.departmentId
@@ -48,6 +48,22 @@
         <if test="page!=null and pageSize!=null">
             limit ${page},${pageSize}
         </if>
+    </select>
+    <select id="getReimbuseStatistic" resultType="java.util.Map" parameterType="map">
+        SELECT
+            subject,
+        ROUND( SUM(reimbursementAmount),2) totalAmount
+        FROM
+            reimbursement
+        where 1=1
+        <if test="departmentId!=null">
+           and  departmentId =#{departmentId}
+        </if>
+        <if test="date!=null">
+            and reimbursementDate like concat("%",#{date},"%")
+        </if>
+        GROUP BY
+            `subject`
     </select>
 
     <insert id="addReimbursement" useGeneratedKeys="true" keyProperty="id" parameterType="com.howei.pojo.Reimbursement">
