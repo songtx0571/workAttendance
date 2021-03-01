@@ -10,7 +10,6 @@ $(function(){
     // 查询员工绩效信息
     showTable(year,"");
     $("#test2").val(year);
-    $("#test3").val(year+"-"+month);
 });
 /*显示考核日期*/
 function showCycleData() {
@@ -47,24 +46,31 @@ function showCompany() {
         });
         form.on('select(selDepartName)', function (data) {
             $("#selDepartNameHidden").val(data.value);
-            showTable($("#test3").val(),$("#selDepartNameHidden").val())
+            if ($("#selMonthHidden").val() == "") {
+                showTable($("#test2").val(),$("#selDepartNameHidden").val());
+            }else {
+                timeMonth();
+            }
         });
         form.on('select(selMonth)', function (data) {
             $("#selMonthHidden").val(data.value);
-            if ($("#tetst2").val() == "") {
+            if ($("#test2").val() == "") {
                 layer.alert("请选择年份");
                 return;
             }
-            if ($("#selMonthHidden").val() != "13") {
-                if ($("#selMonthHidden").val() < 10) {
-                    $("#selMonthHidden").val("0"+$("#selMonthHidden").val());
-                }
-                showTable($("#test2").val()+"-"+$("#selMonthHidden").val(),$("#selDepartNameHidden").val());
-            }else {
-                showTable($("#test2").val(),$("#selDepartNameHidden").val());
-            }
+            timeMonth();
         });
     })
+}
+function timeMonth() {
+    if ($("#selMonthHidden").val() != "13") {
+        if ($("#selMonthHidden").val().length < 2) {
+            $("#selMonthHidden").val("0"+$("#selMonthHidden").val());
+        }
+        showTable($("#test2").val()+"-"+$("#selMonthHidden").val(),$("#selDepartNameHidden").val());
+    }else {
+        showTable($("#test2").val(),$("#selDepartNameHidden").val());
+    }
 }
 //显示数据
 function showTable(cycle,depart){
