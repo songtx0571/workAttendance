@@ -39,4 +39,9 @@ public class ReimbursementServiceImpl implements ReimbursementService {
     public int examine(Reimbursement reimbursement) {
         return reimbursementMapper.examine(reimbursement);
     }
+
+    @Override
+    public List<Map> getReimbuseStatistic(Map map) {
+        return reimbursementMapper.getReimbuseStatistic(map);
+    }
 }
