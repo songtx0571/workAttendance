@@ -99,6 +99,9 @@
             <if test="financeRemark!=null">
                 financeRemark=#{financeRemark},
             </if>
+            <if test="departmentId!=null">
+                departmentId=#{departmentId},
+            </if>
         </set>
         where id=#{id}
     </update>
