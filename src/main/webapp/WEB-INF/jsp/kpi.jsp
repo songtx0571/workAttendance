@@ -18,6 +18,26 @@
         width: 99%;
         margin: 0 auto;
     }
+    .layui-table-view{
+        margin-bottom: 0px;
+        border-bottom: none;
+    }
+    .averageVariance{
+        width: 100%;
+        border: 1px solid #e6e6e6;
+        border-top: none;
+    }
+    .averageVariance tr{
+        line-height: 38px;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+    }
+    .averageVariance tr td{
+        width: 16.6%;
+        border: 1px solid #e6e6e6;
+        background: rgb(242,242,242);
+    }
     .showMonthNum,.showMonthPoint{
         display: none;
     }
@@ -50,6 +70,32 @@
     <%--表格--%>
     <div class="center">
         <table id="demo" lay-filter="test"></table>
+        <table class="averageVariance" cellpadding="0">
+            <tr>
+                <td>合计</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="color: red;" id="sumNum">&nbsp;</td>
+                <td style="color: red;" id="sumPoint">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>均值</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="color: red;" id="averageNum">&nbsp;</td>
+                <td style="color: red;" id="averagePoint">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>方差</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="color: red;" id="varianceNum">&nbsp;</td>
+                <td style="color: red;" id="variancePoint">&nbsp;</td>
+            </tr>
+        </table>
     </div>
     <%--月巡检次数--%>
     <div class="showMonthNum">

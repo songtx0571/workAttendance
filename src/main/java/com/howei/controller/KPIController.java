@@ -115,33 +115,54 @@ public class KPIController {
         }
 
 
-        long frequencySum = 0L;
-        long pointSum = 0L;
-//        List<Map> listTotal = postPeratorService.getKPIList(map);
-//
-//
-//        map.put("pageSize", limit);
-//        map.put("page", rows);
+        Long frequencySum = 0L;
+        Long pointSum = 0L;
 
+
+        Map<String,Object> mapResult=new HashMap<>();
 
         List<Map> list = postPeratorService.getKPIList(map);
+        mapResult.put("list",list);
+
+        Integer listSize=1;
+        if(list!=null&&list.size()>0){
+            listSize=list.size();
+        }
+
 
         for (Map kpiMap : list) {
             frequencySum += (Long) kpiMap.get("frequency");
             pointSum += (Long) kpiMap.get("point");
         }
+        mapResult.put("frequencySum",frequencySum.toString());
+        mapResult.put("pointSum",pointSum.toString());
 
-        System.out.println("frequency:"+frequencySum);
-
-        System.out.println("point:"+pointSum);
         DecimalFormat df=new DecimalFormat("0.0");
-        double frequencyAver=frequencySum*1.0/list.size();
-        double pointAver=pointSum*1.0/list.size();
-        System.out.println("average:"+df.format(frequencyAver));
-        System.out.println("average:"+df.format(pointAver));
+
+        double frequencyAver=frequencySum*1.0/listSize;
+        double pointAver=pointSum*1.0/listSize;
+        mapResult.put("frequencyAverage",df.format(frequencyAver));
+        mapResult.put("pointAverage",df.format(pointAver));
+
+
+        double frequencyVariance=0;
+        double pointVariance=0;
+
+        for (Map kpiMap : list) {
+            Long frequencyi = (Long) kpiMap.get("frequency");
+            frequencyVariance+=(frequencyi-frequencyAver)*(frequencyi-frequencyAver);
+            Long pointi = (Long) kpiMap.get("point");
+            pointVariance+=(pointi-pointAver)*(pointi-pointAver);
+        }
+
+
+
+        mapResult.put("frequencyVariance",df.format(frequencyVariance));
+        mapResult.put("pointVariance",df.format(pointVariance));
+
         Result result = new Result();
         result.setCode(0);
-        result.setData(list);
+        result.setData(mapResult);
         result.setCount(list.size());
         return result;
     }
