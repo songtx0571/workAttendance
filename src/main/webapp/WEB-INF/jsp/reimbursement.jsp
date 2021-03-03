@@ -21,7 +21,7 @@
             padding: 20px 0;
             box-sizing: border-box;
         }
-        .department, .smartIMIS{
+        .department{
             padding: 0 10px;
             box-sizing: border-box;
         }
@@ -137,6 +137,12 @@
             <span>固定资产</span>
             {{#  } else if(d.subject == 12) { }}
             <span>房租</span>
+            {{#  } else if(d.subject == 14) { }}
+            <span>工资</span>
+            {{#  } else if(d.subject == 15) { }}
+            <span>社保、公积金</span>
+            {{#  } else if(d.subject == 16) { }}
+            <span>中介机构费</span>
             {{#  } else { }}
             <span>其他</span>
             {{#  } }}
@@ -213,6 +219,9 @@
                                             <option value="11">固定资产</option>
                                             <option value="12">房租</option>
                                             <option value="13">其他</option>
+                                            <option value="14">工资</option>
+                                            <option value="15">社保、公积金</option>
+                                            <option value="16">中介机构费</option>
                                         </select>
                                     </div>
                                 </div>
@@ -255,7 +264,7 @@
                         <div class="layui-form-item" style="margin-bottom: 0px;">
                             <div class="layui-inline">
                                 <div class="layui-input-inline" style="width: 300px;">
-                                    <select name="modules" lay-verify="required" lay-filter="updDepartName" lay-search="" id="updDepartName" disabled="disabled">
+                                    <select name="modules" lay-verify="required" lay-filter="updDepartName" lay-search="" id="updDepartName">
                                     </select>
                                 </div>
                             </div>
@@ -303,6 +312,9 @@
                                             <option value="11">固定资产</option>
                                             <option value="12">房租</option>
                                             <option value="13">其他</option>
+                                            <option value="14">工资</option>
+                                            <option value="15">社保、公积金</option>
+                                            <option value="16">中介机构费</option>
                                         </select>
                                     </div>
                                 </div>

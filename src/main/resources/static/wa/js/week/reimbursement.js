@@ -156,15 +156,16 @@ function showTable(cycle,depart){
             , limits: [50, 100, 150]
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide: true}
+                ,{field: 'reimbursementDate', title: '报销日期', align: 'center', sort: true}
                 ,{field: 'reimbursorName', title: '报销人', align: 'center'}
                 ,{field: 'departemntName', title: '部门', align: 'center', sort: true}
                 ,{field: 'reimbursementContent', title: '报销内容', align: 'center'}
                 ,{field: 'reimbursementAmount', title: '报销金额', align: 'center'}
-                ,{field: 'reimbursementDate', title: '报销日期', align: 'center', sort: true}
                 ,{fixed: '', title: '科目', toolbar: '#barDemoDepartSubject', align: 'center'}
                 ,{field: 'remark', title: '备注', align: 'center'}
-                ,{fixed: '', title: '确认情况', toolbar: '#barDemoDepartOk', align: 'center'}
-                ,{fixed: '', title: '财务审核意见', toolbar: '#barDemoDepartExamine', align: 'center'}
+                ,{fixed: '', title: '确认情况', toolbar: '#barDemoDepartOk', align: 'center',width: 170}
+                ,{field: 'financeRemark', title: '财务审核意见', align: 'center'}
+                ,{fixed: '', title: '财务审核结果', toolbar: '#barDemoDepartExamine', align: 'center'}
             ]]
             , done: function (res, curr, count) {}
         });
@@ -256,7 +257,6 @@ function insertOk() {
     var reimbursement = {};
     reimbursement.reimbursementDate = $("#addTest4Hidden").val();
     reimbursement.departmentId = $("#addDepartNameHidden").val();
-    //reimbursement.reimbursor = $("#addPeopleName").val();
     reimbursement.reimbursementContent = $("#addContent").val();
     reimbursement.reimbursementAmount = $("#addMoney").val();
     reimbursement.subject = $("#addSubjectNameHidden").val();
@@ -289,6 +289,7 @@ function updateDepart(data) {
         $("#updReimbursementId").val(data.id);
         $("#updTest5Hidden").val(data.reimbursementDate);
         $("#updDepartName").val(data.departmentId);
+        $("#updDepartNameHidden").val(data.departmentId);
         $("#updPeopleName").val(data.reimbursorName);
         $("#updContent").val(data.reimbursementContent);
         $("#updMoney").val(data.reimbursementAmount);
@@ -314,10 +315,12 @@ function updateDepart(data) {
 function updateOk() {
     var reimbursement = {};
     reimbursement.id = $("#updReimbursementId").val();
+    reimbursement.departmentId = $("#updDepartNameHidden").val();
     reimbursement.reimbursementContent = $("#updContent").val();
     reimbursement.reimbursementAmount = $("#updMoney").val();
     reimbursement.subject = $("#updSubjectNameHidden").val();
     reimbursement.remark = $("#updRemark").val();
+    reimbursement.financeResult = '0';
     $.ajax({
         url: path + "/wa/reimbursement/updReimbursement",
         dataType: "json",//数据格式

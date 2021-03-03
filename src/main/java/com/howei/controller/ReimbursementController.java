@@ -139,12 +139,13 @@ public class ReimbursementController {
         boolean xPermitted = subject.isPermitted("报销项目部");
         //判断是否存在这四个权限
         if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
-            System.out.println("11111111111111111");
             return null;
         }
         if (xPermitted) {
-            if (users != null) {
-                map.put("departmentId", users.getDepartmentId());
+            if(!jPermitted && !gPermitted && !cPermitted ){
+                if (users != null) {
+                    map.put("departmentId", users.getDepartmentId());
+                }
             }
         }
         map.put("companyId", companyId);
