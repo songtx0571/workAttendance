@@ -154,11 +154,12 @@ public class KPIController {
             Long pointi = (Long) kpiMap.get("point");
             pointVariance+=(pointi-pointAver)*(pointi-pointAver);
         }
-
-
+        frequencyVariance=Math.sqrt(frequencyVariance/listSize);
+        pointVariance=Math.sqrt(pointVariance/listSize);
 
         mapResult.put("frequencyVariance",df.format(frequencyVariance));
         mapResult.put("pointVariance",df.format(pointVariance));
+
 
         Result result = new Result();
         result.setCode(0);
