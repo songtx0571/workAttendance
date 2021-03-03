@@ -63,7 +63,7 @@ function showDepart() {
 //查询工时数据
 function showKpi(startTime,departmentId) {
     var win = $(window).height();
-    var height = win-100;
+    var height = win-200;
     layui.use(['table',"form"], function() {
         var table = layui.table;
         table.render({
@@ -71,16 +71,29 @@ function showKpi(startTime,departmentId) {
             , height: height
             , url: path + '/wa/kpi/getKPIList?startTime='+startTime+'&departmentId='+departmentId //数据接口
             , page: false
-            ,totalRow: true
             , cols: [[ //表头
                 {field: 'id', title: '编号', align: 'center', hide:true,width: 120},
                 {field: 'userNumber', title: '员工编号', align: 'center', totalRowText: '合计'},
                 {field: 'companyName', title: '公司', align: 'center'},
                 {field: 'departmentName', title: '部门', align: 'center'},
                 {field: 'userName', title: '员工', align: 'center'},
-                {field: 'frequency', title: '月巡检次数',sort :true, align: 'center', event: 'monthNum', style:'cursor: pointer;color: red;', totalRow: true},
-                {field: 'point', title: '月巡检点数',sort :true, align: 'center', event: 'monthPoint', style:'cursor: pointer;color: red;', totalRow: true}
+                {field: 'frequency', title: '月巡检次数',sort :true, align: 'center', event: 'monthNum', style:'cursor: pointer;color: red;'},
+                {field: 'point', title: '月巡检点数',sort :true, align: 'center', event: 'monthPoint', style:'cursor: pointer;color: red;'}
             ]]
+            ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+                $("#sumNum").text(res.data.frequencySum);
+                $("#averageNum").text(res.data.frequencyAverage);
+                $("#averagePoint").text(res.data.pointAverage);
+                $("#sumPoint").text(res.data.pointSum);
+                $("#varianceNum").text(res.data.frequencyVariance);
+                $("#variancePoint").text(res.data.pointVariance);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.count, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            }
             , done: function (res, curr, count) {}
         });
         //监听行工具事件
