@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.howei.mapper.Examinationmapper" >
+<mapper namespace="com.howei.mapper.Examinationmapper">
     <select id="getExamTimes" resultType="com.howei.pojo.Examination">
         select a.userName,a.cycle,a.week,IFNULL(a.times,0)times,a.questionId from examinationRecord a where a.userName=#{param1} and a.cycle=#{param2} and a.week=#{param3}
     </select>
     <select id="getWeek" resultType="com.howei.pojo.Examination">
         select a.week from exampublish a where a.state=2
     </select>
-    <select id="getWorkingHoursByProPeople" resultType="com.howei.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+    <select id="getWorkingHoursByProPeople" resultType="com.howei.pojo.MaintenanceRecord"
+            parameterType="java.util.HashMap">
         SELECT a.id,a.datetime,a.people,a.workingHours FROM maintenanceRecord a  WHERE  a.datetime LIKE CONCAT('%',#{startTime},'%')
     </select>
 
-    <select id="getWorkingHoursByPeople" resultType="com.howei.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
+    <select id="getWorkingHoursByPeople" resultType="com.howei.pojo.MaintenanceRecord"
+            parameterType="java.util.HashMap">
         SELECT a.id,a.datetime,a.people,a.workingHours FROM maintenanceRecord a  WHERE  a.datetime LIKE CONCAT('%',#{startTime},'%') and a.datetime LIKE CONCAT('%',#{startTime},'%')
     </select>
 
@@ -78,46 +80,104 @@
      SELECT b.userName,b.cycle,b.week,b.times,d.Name FROM ( select distinct a.userName,a.cycle,a.week,a.times from examinationRecord a where a.userName=#{param1} ORDER BY a.cycle DESC ,a.week DESC,a.times DESC )b JOIN users d ON b.userName=d.userName
     </select>
     <select id="showLaborAll" resultType="com.howei.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
-     SELECT * FROM (
-        SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY FIND_IN_SET(c.userName,a.people)) FROM users c WHERE FIND_IN_SET(c.userName,a.people) ) AS peopleName
-		FROM maintenanceRecord a
-      ) b
-      WHERE b.people LIKE CONCAT ('%',#{userName},'%')
-      OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
-      order by b.datetime desc
-      <if test="page!=null and pageSize!=null">
-          limit ${page},${pageSize}
-      </if>
+        SELECT * FROM (
+        SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0)
+        workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY
+        FIND_IN_SET(c.userName,a.people)) FROM users c WHERE FIND_IN_SET(c.userName,a.people) ) AS peopleName
+        FROM maintenanceRecord a
+        ) b
+        WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+        OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+        order by b.datetime desc
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
     </select>
     <select id="showLaborByDay" resultType="com.howei.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
-     select * from (
+        select * from (
         SELECT * FROM (
-          SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
-		  FROM maintenanceRecord a
-	    ) b
-	    WHERE b.people LIKE CONCAT ('%',#{userName},'%')
-	    OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
-	    order by b.datetime desc
-	  )e
-	  where e.datetime like concat (#{DayDateT},'%')
-      <if test="page!=null and pageSize!=null">
-          limit ${page},${pageSize}
-      </if>
+        SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0)
+        workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY
+        FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+        FROM maintenanceRecord a
+        ) b
+        WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+        OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+        order by b.datetime desc
+        )e
+        where e.datetime like concat (#{DayDateT},'%')
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
     </select>
     <select id="showLaborByMonth" resultType="com.howei.pojo.MaintenanceRecord" parameterType="java.util.HashMap">
-     select * from (
+        select * from (
         SELECT * FROM (
-          SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0) workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
-		  FROM maintenanceRecord a
-		) b
-		WHERE b.people LIKE CONCAT ('%',#{userName},'%')
-		OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
-		order by b.datetime desc
-	  )e
-	  where e.datetime like concat (#{MonthDate},'%')
-      <if test="page!=null and pageSize!=null">
-         limit ${page},${pageSize}
-      </if>
+        SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0)
+        workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY
+        FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+        FROM maintenanceRecord a
+        ) b
+        WHERE b.people LIKE CONCAT ('%',#{userName},'%')
+        OR b.peopleName LIKE CONCAT ('%',#{userName},'%')
+        order by b.datetime desc
+        )e
+        where e.datetime like concat (#{MonthDate},'%')
+        <if test="page!=null and pageSize!=null">
+            limit ${page},${pageSize}
+        </if>
+    </select>
+    <select id="getExamKnowledgeKpiList" resultType="java.util.Map">
+        SELECT
+        c1.`name` companyName,
+        c2.`name` departmentName,
+        kt.employee_id employeeId,
+        u.userName,
+        u.userNumber,
+        kt.kt_count,
+        CASE
+        WHEN kc.kc_count IS NULL THEN
+        0
+        ELSE
+        kc.kc_count
+        END kc_count
+        FROM
+        (
+        SELECT
+        employee_id,
+        COUNT(*) kt_count
+        FROM
+        knowledge k
+        WHERE
+        k.create_time LIKE #{createTime}
+        GROUP BY
+        employee_id
+        ) kt
+        LEFT JOIN (
+        SELECT
+        employee_id,
+        COUNT(*) kc_count
+        FROM
+        knowledge k
+        WHERE
+        k.create_time LIKE #{createTime}
+        AND k.type = 1
+        GROUP BY
+        employee_id
+        ) kc ON kc.employee_id = kt.employee_id
+        JOIN users u ON u.employeeId = kt.employee_id
+        JOIN company c1 ON c1.id = u.companyId
+        JOIN company c2 ON c2.id = u.departmentId
+        WHERE
+        1 = 1
+        <if test="empId!=null">
+            and FIND_IN_SET(kt.employee_id,#{empId})
+        </if>
+        <if test="departmentId!=null">
+            and u.departmentId =#{departmentId}
+        </if>
+
+
     </select>
     <insert id="insertExamHis">
         insert ignore into examinationRecord (userName,cycle,week,times,questionId) values (#{examination.userName},#{examination.cycle},#{examination.week},#{examination.times},#{examination.questionId})

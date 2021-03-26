@@ -291,6 +291,11 @@ public class ReimbursementController {
         return JSON.toJSONString(Type.ERROR);
     }
 
+    /**
+     * 获取保险费用统计信息统计信息
+     * @param request
+     * @return
+     */
     @GetMapping("/getStatistics")
     @ResponseBody
     public Result getStatistics(HttpServletRequest request) {
@@ -318,7 +323,14 @@ public class ReimbursementController {
             if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
                 departmentIdSet="";
             }else{
-                map.put("departmentId", users.getDepartmentId());
+                //如果有项目部的权限则加上部门id
+                if (xPermitted) {
+                    if(!jPermitted && !gPermitted && !cPermitted ){
+                        if (users != null) {
+                            map.put("departmentId", users.getDepartmentId());
+                        }
+                    }
+                }
                 map.put("companyId", companyId);
                 List<Map<String, String>> departmentIdList = departmentService.getDepartmentMap(map);
                 for (Map<String, String> stringStringMap : departmentIdList) {

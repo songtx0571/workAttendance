@@ -89,4 +89,8 @@ public class ExaminationService extends CommonCrudservice {
     public void insertExamHis(Examination examination) {
         examinationmapper.insertExamHis(examination);
     }
+
+    public List<Map> getExamKpiList(Map<String, Object> map) {
+        return examinationmapper.getExamKnowledgeKpiList(map);
+    }
 }

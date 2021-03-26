@@ -48,4 +48,6 @@ public interface Examinationmapper extends Commonmapper {
     List<MaintenanceRecord> showLaborByDay(Map map);
 
     List<MaintenanceRecord> showLaborByMonth(Map map);
+
+    List<Map> getExamKnowledgeKpiList(Map map);
 }

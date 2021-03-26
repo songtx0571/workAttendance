@@ -12,6 +12,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,6 +68,12 @@ public class KPIController {
         return "workingHours";
     }
 
+
+    @GetMapping("/toExamKnowledgeKpi")
+    private String toExamKpiPage() {
+        return "examKnowledgeKpi";
+    }
+
     /**
      * 获取运行KPI数据
      *
@@ -78,13 +85,13 @@ public class KPIController {
     @ResponseBody
     public Result getKPIList(HttpServletRequest request) {
         String startTime = request.getParameter("startTime");
-        String  departmentId=request.getParameter("departmentId");
+        String departmentId = request.getParameter("departmentId");
         String page = request.getParameter("page");
         String limit = request.getParameter("limit");
         int rows = Page.getOffSet(page, limit);
         Map map = new HashMap();
-        if(departmentId!=null&&!"0".equals(departmentId.trim())&&!"".equals(departmentId.trim())){
-            map.put("departmentId",departmentId);
+        if (departmentId != null && !"0".equals(departmentId.trim()) && !"".equals(departmentId.trim())) {
+            map.put("departmentId", departmentId);
         }
         Subject subject = SecurityUtils.getSubject();
         Users users = (Users) subject.getPrincipal();
@@ -119,14 +126,14 @@ public class KPIController {
         Long pointSum = 0L;
 
 
-        Map<String,Object> mapResult=new HashMap<>();
+        Map<String, Object> mapResult = new HashMap<>();
 
         List<Map> list = postPeratorService.getKPIList(map);
-        mapResult.put("list",list);
+        mapResult.put("list", list);
 
-        Integer listSize=1;
-        if(list!=null&&list.size()>0){
-            listSize=list.size();
+        Integer listSize = 1;
+        if (list != null && list.size() > 0) {
+            listSize = list.size();
         }
 
 
@@ -134,31 +141,31 @@ public class KPIController {
             frequencySum += (Long) kpiMap.get("frequency");
             pointSum += (Long) kpiMap.get("point");
         }
-        mapResult.put("frequencySum",frequencySum.toString());
-        mapResult.put("pointSum",pointSum.toString());
+        mapResult.put("frequencySum", frequencySum.toString());
+        mapResult.put("pointSum", pointSum.toString());
 
-        DecimalFormat df=new DecimalFormat("0.0");
+        DecimalFormat df = new DecimalFormat("0.0");
 
-        double frequencyAver=frequencySum*1.0/listSize;
-        double pointAver=pointSum*1.0/listSize;
-        mapResult.put("frequencyAverage",df.format(frequencyAver));
-        mapResult.put("pointAverage",df.format(pointAver));
+        double frequencyAver = frequencySum * 1.0 / listSize;
+        double pointAver = pointSum * 1.0 / listSize;
+        mapResult.put("frequencyAverage", df.format(frequencyAver));
+        mapResult.put("pointAverage", df.format(pointAver));
 
 
-        double frequencyVariance=0;
-        double pointVariance=0;
+        double frequencyVariance = 0;
+        double pointVariance = 0;
 
         for (Map kpiMap : list) {
             Long frequencyi = (Long) kpiMap.get("frequency");
-            frequencyVariance+=(frequencyi-frequencyAver)*(frequencyi-frequencyAver);
+            frequencyVariance += (frequencyi - frequencyAver) * (frequencyi - frequencyAver);
             Long pointi = (Long) kpiMap.get("point");
-            pointVariance+=(pointi-pointAver)*(pointi-pointAver);
+            pointVariance += (pointi - pointAver) * (pointi - pointAver);
         }
-        frequencyVariance=Math.sqrt(frequencyVariance/listSize);
-        pointVariance=Math.sqrt(pointVariance/listSize);
+        frequencyVariance = Math.sqrt(frequencyVariance / listSize);
+        pointVariance = Math.sqrt(pointVariance / listSize);
 
-        mapResult.put("frequencyVariance",df.format(frequencyVariance));
-        mapResult.put("pointVariance",df.format(pointVariance));
+        mapResult.put("frequencyVariance", df.format(frequencyVariance));
+        mapResult.put("pointVariance", df.format(pointVariance));
 
 
         Result result = new Result();
@@ -310,8 +317,8 @@ public class KPIController {
         int rows = Page.getOffSet(page, limit);
         Map map = new HashMap();
 
-        if(departmentId!=null&&!"0".equals(departmentId.trim())&&!"".equals(departmentId.trim())){
-            map.put("departmentId",departmentId);
+        if (departmentId != null && !"0".equals(departmentId.trim()) && !"".equals(departmentId.trim())) {
+            map.put("departmentId", departmentId);
         }
         if (startTime != null && !startTime.equals("")) {
             map.put("startTime", startTime);
@@ -324,14 +331,14 @@ public class KPIController {
 //        map.put("page", rows);
         List<Map> list = informService.getInformKPIList(map);
 
-        long  createInformCountSum=0;
-        long selcountSum=0;
+        long createInformCountSum = 0;
+        long selcountSum = 0;
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 Map map1 = list.get(i);
                 String userName = (String) map1.get("userName");
-                long createdCount =(long) map1.get("createdCount") ;
-                long selCount =(long) map1.get("selCount");
+                long createdCount = (long) map1.get("createdCount");
+                long selCount = (long) map1.get("selCount");
 //                if (createdCount.isEmpty() || createdCount == null || createdCount.equals("null")) {
 //                    map1.put("createdCount", 0);
 //                    Users user = userService.findByUserName(userName);
@@ -344,16 +351,16 @@ public class KPIController {
 //                }
 
 
-                createInformCountSum+=createdCount;
-                selcountSum+=selCount;
+                createInformCountSum += createdCount;
+                selcountSum += selCount;
             }
         }
 
-        DecimalFormat df=new DecimalFormat("0.0");
-        System.out.println("sum1:"+createInformCountSum);
-        System.out.println("sum2:"+selcountSum);
-        System.out.println("average1:"+df.format(createInformCountSum*1.0/list.size()));
-        System.out.println("average1:"+df.format(selcountSum*1.0/list.size()));
+        DecimalFormat df = new DecimalFormat("0.0");
+        System.out.println("sum1:" + createInformCountSum);
+        System.out.println("sum2:" + selcountSum);
+        System.out.println("average1:" + df.format(createInformCountSum * 1.0 / list.size()));
+        System.out.println("average1:" + df.format(selcountSum * 1.0 / list.size()));
         Result result = new Result();
         result.setCode(0);
         result.setData(list);
@@ -457,9 +464,9 @@ public class KPIController {
         } else {
             map.put("startTime", DateFormat.ThisMonth());
         }
-        String depart="0";
-        if(departmentId!=null&&!"".equals(departmentId.trim())){
-            depart=departmentId;
+        String depart = "0";
+        if (departmentId != null && !"".equals(departmentId.trim())) {
+            depart = departmentId;
         }
         List<MaintenanceRecord> list = examinationServive.getWorkingHoursByProPeople(map);
         //System.out.println("list::"+list);
@@ -535,7 +542,7 @@ public class KPIController {
             map.put("companyName", users.get(i).get("companyName").toString());
             map.put("departmentName", users.get(i).get("departmentName").toString());
             map.put("workingHours", count[i] + "");
-            if(depart.equals(departmentId)||"0".equals(depart)){
+            if (depart.equals(departmentId) || "0".equals(depart)) {
                 result.add(map);
             }
 
@@ -597,4 +604,60 @@ public class KPIController {
         result.setCount(resultList.size());
         return result;
     }
+
+
+    @GetMapping("/getExamKnowledgeKpiList")
+    @ResponseBody
+    public Result getExamKpiList(HttpServletRequest request) {
+
+        Map<String, Object> map = new HashMap<>();
+
+
+        String startTime = request.getParameter("startTime");
+        if(startTime!=null){
+            map.put("createTime",startTime+"%");
+        }
+        String departmentId = request.getParameter("departmentId");
+        if(departmentId!=null&&!"".equals(departmentId)&&!"0".equals(departmentId))
+        {
+            map.put("departmentId",departmentId);
+        }
+
+        Result result = new Result();
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            result.setMsg("用户失效,请重新登录");
+            return result;
+        }
+        Integer employeeId = users.getEmployeeId();
+        boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
+        String empIdStr = "";
+        if (!selectAllFlag) {
+            List<Employee> rootList = employeeService.getEmployeeByManager(0);
+            if (rootList != null) {
+                List<Employee> empList = employeeService.getEmployeeByManager(0);
+                for (Employee employee : rootList) {
+                    empIdStr += employee.getId() + ",";
+                    empIdStr += getUsersId(employee.getId(), empList);
+                }
+            }
+            if (empIdStr != null && !empIdStr.equals("")) {
+                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+            }
+            map.put("empId", empIdStr);
+            System.out.println("empId::"+empIdStr);
+        }
+
+        List<Map> list = examinationServive.getExamKpiList(map);
+
+        result.setMsg("成功");
+        result.setData(list);
+        result.setCode(0);
+        result.setCount(list.size());
+        return result;
+
+    }
+
+
 }
