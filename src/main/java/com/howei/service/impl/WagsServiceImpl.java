@@ -45,4 +45,9 @@ public class WagsServiceImpl implements WagsService {
     public int addThisMonthWags(Wages wages) {
         return wagsMapper.addThisMonthWags(wages);
     }
+
+    @Override
+    public List<Wages> getWagesToTax(Map map) {
+        return wagsMapper.getWagesToTax(map);
+    }
 }

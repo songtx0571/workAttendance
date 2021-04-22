@@ -222,4 +222,26 @@ public class DateFormat {
         return month<10?year+"-0"+month:year+"-"+month;
     }
 
+    /**
+     * 返回傳入年月的前或后第n个月的年月, 如果 lisdateYearmonth 为now,则代表当前年月
+     * eg: ("202012", -1) -> 202011 ; ("202012", 2) -> 202102
+     */
+    public static String getYearMonthByMonth(String lisdateYearmonth, int interval) {
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM");
+        Date date = new Date();
+        if (!"now".equals(lisdateYearmonth)) {
+            try{
+                date = format2.parse(lisdateYearmonth);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM");
+        c.add(Calendar.MONTH, interval);
+        String time = format.format(c.getTime());
+        return time;
+    }
+
 }

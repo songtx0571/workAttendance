@@ -43,7 +43,7 @@
         text-align: center;
     }
 
-    ul {
+    /*ul {
         margin: 0px 0px 0px 0px;
         padding: 20px 0px 0px 0px;
         width: 100%;
@@ -56,7 +56,7 @@
         height: 100%;
         float: left;
         margin-left: 40px;
-    }
+    }*/
 
     .updateUser {
         width: 100%;

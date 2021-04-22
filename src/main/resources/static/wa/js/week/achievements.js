@@ -333,8 +333,8 @@ function copyTimeOk() {
         success: function (data) {
             if (data == "success") {
                 layer.alert("周期已复制");
-            } else if(data=='fail'){
-                layer.alert("周期已存在");
+            } else if (data == "havaRecord") {
+                layer.alert(endTime+"周期已存在");
             }
         }
     });

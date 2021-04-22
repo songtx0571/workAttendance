@@ -250,12 +250,12 @@ function showAddDiv() {
 }
 //添加
 function insertOk() {
-    if ($("#addTest4Hidden").val() == "" || $("#addDepartNameHidden").val() == "" || $("#addContent").val() == "" || $("#addMoney").val() == ""|| $("#addSubjectNameHidden").val() == "0") {
+    if ($("#test4").val() == "" || $("#addDepartNameHidden").val() == "" || $("#addContent").val() == "" || $("#addMoney").val() == ""|| $("#addSubjectNameHidden").val() == "0") {
         layer.alert("请将信息填写完整！");
         return;
     }
     var reimbursement = {};
-    reimbursement.reimbursementDate = $("#addTest4Hidden").val();
+    reimbursement.reimbursementDate = $("#test4").val();
     reimbursement.departmentId = $("#addDepartNameHidden").val();
     reimbursement.reimbursementContent = $("#addContent").val();
     reimbursement.reimbursementAmount = $("#addMoney").val();

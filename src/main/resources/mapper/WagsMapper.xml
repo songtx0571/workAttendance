@@ -9,6 +9,7 @@
         <result column="positionSalary" property="positionSalary"></result>
         <result column="seniorityWage" property="seniorityWage"></result>
         <result column="other" property="other"></result>
+        <result column="meritBase" property="meritBase"></result>
         <result column="meritPay" property="meritPay"></result>
         <result column="wageSubtotal" property="wageSubtotal"></result>
         <result column="performanceCoefficient" property="performanceCoefficient"></result>
@@ -28,10 +29,13 @@
         <result column="remark" property="remark"></result>
         <result column="date" property="date"></result>
         <result column="created" property="created"></result>
+        <result column="subTotalOfSubsidies" property="subTotalOfSubsidies"></result>
+        <result column="wagesPostId" property="wagesPostId"></result>
+        <result column="postGradeId" property="postGradeId"></result>
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        SELECT  e.id employeeId,e.isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
+        SELECT e.id employeeId,e.isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian,wp.name as wagesPostName,pg.gradeName as postGradeName
         FROM employee e
         LEFT JOIN (
         SELECT * FROM wages
@@ -41,35 +45,39 @@
         </if>
         ) w ON e.id = w.employeeId
         LEFT JOIN users u ON u.employeeId = e.id
-        left join company c on c.id=u.departmentId
+        LEFT JOIN company c on c.id=u.departmentId
+        left join wagesPost wp on wp.id=w.wagesPostId
+        left join postGrade pg on pg.id=w.postGradeId
         where u.state=1 and u.companyId=1
         <if test="empId!=null">
             and FIND_IN_SET(e.id,#{empId})
         </if>
         order by e.laowupaiqian desc
     </select>
-    <!--subTotalOfSubsidies-->
+
     <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
         insert into wages
-        (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
-        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created)
+        (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
+        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created,
+        wagesPostId,postGradeId)
         values
         <foreach collection="list" item="item" separator="," index="index">
             (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.other},#{item.meritPay}
-            ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.totalPayable},#{item.endowmentInsurance}
+            ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.subTotalOfSubsidies},#{item.totalPayable},#{item.endowmentInsurance}
             ,#{item.unemploymentBenefits},#{item.medicalInsurance},#{item.accumulationFund},#{item.otherDeductions},#{item.unionFees},#{item.totalTax}
-            ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.remark},#{item.date},#{item.created})
+            ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.remark},#{item.date},#{item.created},#{item.wagesPostId},#{item.postGradeId})
         </foreach>
     </insert>
 
     <insert id="addThisMonthWags" parameterType="com.howei.pojo.Wages" useGeneratedKeys="true" keyProperty="id">
-        insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,
-        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created)
+        insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
+        totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created,
+        wagesPostId,postGradeId)
         values
         (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
-        ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.totalPayable},#{wages.endowmentInsurance}
+        ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.subTotalOfSubsidies},#{wages.totalPayable},#{wages.endowmentInsurance}
         ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
-        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created})
+        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},#{item.wagesPostId},#{item.postGradeId})
     </insert>
 
     <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">
@@ -147,26 +155,28 @@
             <if test="remark!=null and remark!=''">
                 remark=#{remark},
             </if>
+            <if test="subTotalOfSubsidies!=null">
+                subTotalOfSubsidies=#{subTotalOfSubsidies},
+            </if>
+            <if test="wagesPostId!=null">
+                wagesPostId=#{wagesPostId},
+            </if>
+            <if test="postGradeId!=null">
+                postGradeId=#{postGradeId},
+            </if>
+            <if test="meritBase!=null">
+                meritBase=#{meritBase},
+            </if>
         </set>
         where 1=1 and id=#{id} and date=#{date}
     </update>
 
-    <!--获取税列表-->
-    <select id="getTaxList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Tax">
-        select * from tax
-        <where>
-            1=1
-            <if test="employeeId!=null">
-                and employeeId=#{employeeId}
-            </if>
-            <if test="month!=null">
-                and DATE_FORMAT(`date`,'%Y-%m-%d')&lt;DATE_FORMAT(#{month},'%Y-%m-%d')
-            </if>
-        </where>
-    </select>
-
     <select id="getWagsListById" parameterType="java.lang.String" resultType="com.howei.pojo.Wages">
         select * from wages where id=#{id}
+    </select>
+
+    <select id="getWagesToTax" resultType="com.howei.pojo.Wages">
+          select * from wages where DATE_FORMAT(`date`,'%Y-%m-%d')&lt;=DATE_FORMAT(#{month},'%Y-%m-%d') and employeeId=#{employeeId} order by `date`
     </select>
 
 </mapper>

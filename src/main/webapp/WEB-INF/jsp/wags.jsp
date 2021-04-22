@@ -83,6 +83,28 @@
         <input type="hidden" id="wagsId">
         <input type="hidden" id="userId">
         <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="barDemoPost">
+            <span>{{= d.wagesPostName}} {{= d.postGradeName}}</span>
+        </script>
+        <script type="text/html" id="barisChanged">
+            {{#  if(d.isChanged == '0'){ }}
+            <span>正常</span>
+            {{#  } else if(d.isChanged == '1') { }}
+            <span>当月入职</span>
+            {{#  } else if(d.isChanged == '2') { }}
+            <span>当月离职</span>
+            {{#  } else if(d.isChanged == '3') { }}
+            <span>试用期</span>
+            {{#  } else if(d.isChanged == '4') { }}
+            <span>试用转正</span>
+            {{#  } else if(d.isChanged == '5') { }}
+            <span>派遣调整</span>
+            {{#  } else if(d.isChanged == '6') { }}
+            <span>部门调整</span>
+            {{#  } else if(d.isChanged == '7') { }}
+            <span>薪酬调整</span>
+            {{#  } }}
+        </script>
         <script type="text/html" id="barDemo">
             <a class="layui-btn layui-btn-xs detailBtn" lay-event="detail">详情</a>
             <shiro:hasPermission name='工资修改'>
@@ -101,50 +123,72 @@
             <tbody class="financeTbody">
             <tr>
                 <td style="width: 16%;">编号：</td>
-                <td><input type="text" class="userNumber" name="userNumber" readonly></td>
+                <td><input type="text" class="userNumber" id="userNumber" name="userNumber" readonly></td>
                 <td>姓名：</td>
-                <td><input type="text" class="employeeName" name="employeeName" readonly></td>
+                <td><input type="text" class="employeeName" id="employeeName" name="employeeName" readonly></td>
+            </tr>
+            <tr>
+                <td>岗位：</td>
+                <td>
+                    <form class="layui-form" action="" style="width: 100%;">
+                        <div class="layui-inline" style="width: 100%;">
+                            <div class="layui-input-inline" style="width: 99%;">
+                                <input type="hidden" id="selPostNameHidden">
+                                <select name="modules" lay-verify="required" lay-filter="selPostName" lay-search="" id="selPostName">
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                <td>岗位等级：</td>
+                <td>
+                    <form class="layui-form" action="" style="width: 100%;">
+                        <div class="layui-inline" style="width: 100%;">
+                            <div class="layui-input-inline" style="width: 99%;">
+                                <input type="hidden" id="selPostLevelNameHidden">
+                                <select name="modules" lay-verify="required" lay-filter="selPostLevelName" lay-search="" id="selPostLevelName">
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </td>
             </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">应发金额</td>
             </tr>
             <tr>
-                <td>基本工资：</td>
-                <td><input type="text" class="basePay" id="basePay" name="basePay" placeholder="0.00" onBlur="twoDecimal('basePay',this.value);sumWages();"></td>
-                <td>技能工资：</td>
-                <td><input type="text" class="skillPay" id="skillPay" name="skillPay" placeholder="0.00" onBlur="twoDecimal('skillPay',this.value);sumWages();"></td>
+                <td>岗位工资：</td>
+                <td><input type="text" class="basePay" id="basePay" name="basePay" placeholder="0.00"  onchange="twoDecimal('basePay',this.value);" readonly></td>
+                <td>职级工资：</td>
+                <td><input type="text" class="positionSalary" id="positionSalary" name="positionSalary" onchange="twoDecimal('positionSalary',this.value);" placeholder="0.00" readonly></td>
             </tr>
             <tr>
-                <td>职务工资：</td>
-                <td><input type="text" class="positionSalary" id="positionSalary" name="positionSalary" placeholder="0.00" onBlur="twoDecimal('positionSalary',this.value);sumWages();"></td>
-                <td>工龄工资：</td>
-                <td><input type="text" class="seniorityWage" id="seniorityWage" name="seniorityWage" placeholder="0.00" onBlur="twoDecimal('seniorityWage',this.value);sumWages();"></td>
+                <td>绩效基数：</td>
+                <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase" placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
+                <td>绩效系数：</td>
+                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
-                <td><input type="text" class="meritPay" id="meritPay" name="meritPay" placeholder="0.00" onBlur="twoDecimal('meritPay',this.value);sumWages();"></td>
+                <td><input type="text" class="meritPay" id="meritPay" name="meritPay" placeholder="0.00" onchange="twoDecimal('meritPay',this.value);" readonly></td>
                 <td>其他：</td>
                 <td><input type="text" class="other" id="other" name="other" placeholder="0.00" onBlur="twoDecimal('other',this.value);sumWages();" ></td>
             </tr>
             <tr>
                 <td style="color: red;">工资小计：</td>
                 <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00" readonly onchange="twoDecimal('wageSubtotal',this.value);"></td>
-                <td>绩效系数：</td>
-                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);sumWages();"></td>
-            </tr>
-            <tr>
                 <td style="color: red;">应发工资：</td>
                 <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00" readonly onchange="twoDecimal('wagesPayable',this.value);"></td>
+            </tr>
+            <tr>
                 <td>餐补：</td>
                 <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);sumWages();"></td>
-            </tr>
-            <tr>
                 <td>高温补贴：</td>
                 <td><input type="text" class="highTemperatureSubsidy" id="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
-                <td style="color: red;">补贴小计：</td>
-                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly onchange="twoDecimal('subTotalOfSubsidies',this.value);"></td>
             </tr>
             <tr>
+                <td style="color: red;">补贴小计：</td>
+                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly onchange="twoDecimal('subTotalOfSubsidies',this.value);"></td>
                 <td style="color: red;">应发合计：</td>
                 <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00" readonly onchange="twoDecimal('totalPayable',this.value);"></td>
             </tr>
@@ -218,16 +262,22 @@
                 <td><input type="text" class="employeeName" name="employeeName" readonly></td>
             </tr>
             <tr>
-                <td>基本工资：</td>
-                <td><input type="number" class="basePay" name="basePay" placeholder="0.00" readonly></td>
-                <td>技能工资：</td>
-                <td><input type="number" class="skillPay" name="skillPay" placeholder="0.00" readonly></td>
+                <td style="width: 16%;">岗位：</td>
+                <td><input type="text" class="userPost" name="userPost" readonly></td>
+                <td>岗位等级：</td>
+                <td><input type="text" class="postLevel" name="postLevel" readonly></td>
             </tr>
             <tr>
-                <td>职务工资：</td>
+                <td>岗位工资：</td>
+                <td><input type="number" class="basePay" name="basePay" placeholder="0.00" readonly></td>
+                <td>职级工资：</td>
                 <td><input type="number" class="positionSalary" name="positionSalary" placeholder="0.00" readonly></td>
-                <td>工龄工资：</td>
-                <td><input type="number" class="seniorityWage" name="seniorityWage" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
+                <td>绩效基数：</td>
+                <td><input type="number" class="performanceBase" name="performanceBase" placeholder="0.00" readonly></td>
+                <td>绩效系数：</td>
+                <td><input type="number" class="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" readonly></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
@@ -238,22 +288,18 @@
             <tr>
                 <td>工资小计：</td>
                 <td><input type="number" class="wageSubtotal" name="wageSubtotal" placeholder="0.00" readonly></td>
-                <td>绩效系数：</td>
-                <td><input type="number" class="performanceCoefficient" name="performanceCoefficient" placeholder="0.000"></td>
-            </tr>
-            <tr>
                 <td>应发工资：</td>
                 <td><input type="text" class="wagesPayable" name="wagesPayable" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
                 <td>餐补：</td>
                 <td><input type="number" class="foodSupplement" name="foodSupplement" placeholder="0.00" readonly></td>
-            </tr>
-            <tr>
                 <td>高温补贴：</td>
                 <td><input type="text" class="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" readonly></td>
-                <td>补贴小计：</td>
-                <td><input type="text" class="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly></td>
             </tr>
             <tr>
+                <td>补贴小计：</td>
+                <td><input type="text" class="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly></td>
                 <td>应发合计：</td>
                 <td><input type="text" class="totalPayable" name="totalPayable" placeholder="0.00" readonly></td>
             </tr>

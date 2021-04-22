@@ -86,16 +86,7 @@ public class AchievementsController {
                     empIdStr+=getUsersId(employee.getId(),empList);
                 }
             }
-        }/*else{//当用户session为空，默认为管理员权限
-            List<Employee> rootList=employeeService.getEmployeeByManager(240);
-            if(rootList!=null){
-                List<Employee> empList=employeeService.getEmployeeByManager(0);
-                for(Employee employee:rootList){
-                    empIdStr+=employee.getId()+",";
-                    empIdStr+=getUsersId(employee.getId(),empList);
-                }
-            }
-        }*/
+        }
         if(empIdStr!=null&&!empIdStr.equals("")){
             empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
         }
@@ -432,15 +423,23 @@ public class AchievementsController {
     @ResponseBody
     @RequestMapping("/copyPeAcc")
     public String copyPeAcc(Integer employeeId, String cycle, String lastcycle) {
+        //判斷複製周期是否存在10條記錄
         Performance performance = new Performance();
         performance.setemployeeId(employeeId);
-        performance.setCycle(cycle);
-        List<Performance> p = performanceService.findPeAcc(performance);
-        for (int i = 0; i < p.size(); i++) {
-            Performance performance1 = p.get(i);
-            performance1.setCycle(lastcycle);
-            performanceService.insert(performance1);
+        performance.setCycle(lastcycle);
+        List<Performance> p=performanceService.findPeAcc(performance);
+        if(p==null||p.size()==0){
+            performance = new Performance();
+            performance.setemployeeId(employeeId);
+            performance.setCycle(cycle);
+            p = performanceService.findPeAcc(performance);
+            for (int i = 0; i < p.size(); i++) {
+                Performance performance1 = p.get(i);
+                performance1.setCycle(lastcycle);
+                performanceService.insert(performance1);
+            }
+            return "success";
         }
-        return "success";
+        return "havaRecord";//存在記錄
     }
 }

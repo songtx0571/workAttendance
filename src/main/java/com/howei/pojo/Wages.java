@@ -13,12 +13,13 @@ public class Wages implements Serializable {
     private double positionSalary;//职务工资
     private double seniorityWage;//工龄工资
     private double other;//其他
+    private double meritBase;//绩效基数
     private double meritPay;//绩效工资
     private double wageSubtotal;//工资小记
     private double performanceCoefficient;//绩效系数:3位有效小数
     private double wagesPayable;//应发工资
     private double foodSupplement;//餐补
-    private double totalPayable;//应发合计
+    private double totalPayable;//应发合计:本期收入
     private double endowmentInsurance;//养老保险
     private double unemploymentBenefits;//失业金
     private double medicalInsurance;//医疗保险
@@ -34,14 +35,20 @@ public class Wages implements Serializable {
     private String date;//日期
     private String created;//创建时间
     private double highTemperatureSubsidy;//高温补贴
+    private double subTotalOfSubsidies;//补贴小计
+    private Integer postGradeId;//岗位等级Id
+    private Integer wagesPostId;//工资岗位Id
+
 
     //虚字段
     private String employeeName;//员工姓名
     private String userNumber;//员工姓名
     private String laowupaiqian;//劳务派遣
-    private double subTotalOfSubsidies;//补贴小计
     private String departmentName;//部门名称
     private String isChanged;//人事异动
+    private String postGradeName;//岗位等级名称
+    private String wagesPostName;//薪资岗位名称
+
 
     @Override
     public String toString() {
@@ -352,5 +359,45 @@ public class Wages implements Serializable {
 
     public void setIsChanged(String isChanged) {
         this.isChanged = isChanged;
+    }
+
+    public Integer getPostGradeId() {
+        return postGradeId;
+    }
+
+    public void setPostGradeId(Integer postGradeId) {
+        this.postGradeId = postGradeId;
+    }
+
+    public Integer getWagesPostId() {
+        return wagesPostId;
+    }
+
+    public void setWagesPostId(Integer wagesPostId) {
+        this.wagesPostId = wagesPostId;
+    }
+
+    public double getMeritBase() {
+        return meritBase;
+    }
+
+    public void setMeritBase(double meritBase) {
+        this.meritBase = meritBase;
+    }
+
+    public String getPostGradeName() {
+        return postGradeName;
+    }
+
+    public void setPostGradeName(String postGradeName) {
+        this.postGradeName = postGradeName;
+    }
+
+    public String getWagesPostName() {
+        return wagesPostName;
+    }
+
+    public void setWagesPostName(String wagesPostName) {
+        this.wagesPostName = wagesPostName;
     }
 }

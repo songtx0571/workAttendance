@@ -1,76 +1,78 @@
 var path = "";
 var date = new Date();
 var year = date.getFullYear();
-var mouth = date.getMonth();
+var month = date.getMonth();
 var day = date.getDate();
 var upBtnYear = year;
-var upBtnMonth = mouth;
-$(function(){
+var upBtnMonth = month;
+$(function () {
     showMonth();
-    if (mouth == 12) {
-        mouth = 1;
+    if (month == 12) {
+        month = 1;
         year = year + 1;
     }
-    if (mouth == 0) {
-        mouth = 12;
+    if (month == 0) {
+        month = 12;
         year = year - 1;
     }
-    if (mouth < 10) {
-        mouth = "0"+mouth;
+    if (month < 10) {
+        month = "0" + month;
     }
-    showWagsList(year+"-"+mouth);
+    showWagsList(year + "-" + month);
+    getSel();//显示岗位下拉框
 });
+
 //点击查看上个月数据
 function monthUpBtn() {
-    upBtnMonth --;
-    if (upBtnMonth < "1"){
-        upBtnYear --;
+    upBtnMonth--;
+    if (upBtnMonth < "1") {
+        upBtnYear--;
         upBtnMonth = 12;
     }
-    if (upBtnMonth<10){
-        upBtnMonth = "0"+upBtnMonth
+    if (upBtnMonth < 10) {
+        upBtnMonth = "0" + upBtnMonth
     }
     var monthUp = upBtnYear + "-" + upBtnMonth;
-    $("#monthStart").val(monthUp);
-    showWagsList(monthUp);
-    layui.use('form', function(){
+    layui.use('form', function () {
         var form = layui.form;
         $("#test15").val(monthUp);
         form.render('select');
         form.render(); //更新全部
     });
+    showWagsList($("#test15").val());
 }
+
 //点击查看下个月数据
 function monthDownBtn() {
-    if (upBtnMonth > mouth  && upBtnYear >= year) {
-        layui.use('layer', function() {
+    if (upBtnMonth > month && upBtnYear >= year) {
+        layui.use('layer', function () {
             layer.msg('<p style="width: 100px;text-align: center;">无数据</p>', {
                 time: 1000
             });
         });
         return;
     }
-    upBtnMonth ++;
-    if (upBtnMonth > '12'){
-        upBtnYear ++;
+    upBtnMonth++;
+    if (upBtnMonth > '12') {
+        upBtnYear++;
         upBtnMonth = 1;
     }
-    if (upBtnMonth<10){
-        upBtnMonth = "0"+upBtnMonth
+    if (upBtnMonth < 10) {
+        upBtnMonth = "0" + upBtnMonth
     }
     var monthDown = upBtnYear + "-" + upBtnMonth;
-    $("#monthStart").val(monthDown);
-    showWagsList(monthDown);
-    layui.use('form', function(){
+    layui.use('form', function () {
         var form = layui.form;
         $("#test15").val(monthDown);
         form.render('select');
         form.render(); //更新全部
     });
+    showWagsList($("#test15").val());
 }
+
 //显示时间
 function showMonth() {
-    var initial = upBtnYear +"-"+upBtnMonth;
+    var initial = upBtnYear + "-" + upBtnMonth;
     $("#monthStart").val(initial);
     layui.use('laydate', function () {
         var laydate = layui.laydate;
@@ -82,8 +84,8 @@ function showMonth() {
             , trigger: 'click'//呼出事件改成click
             , done: function (value) {
                 $("#monthStart").val(value);
-                upBtnYear = value.substring(0,4);
-                upBtnMonth = value.substr(5,2);
+                upBtnYear = value.substring(0, 4);
+                upBtnMonth = value.substr(5, 2);
                 showWagsList(value);
             }
         });
@@ -97,83 +99,149 @@ function showMonth() {
         });
     })
 }
-//输入两位小数
-function twoDecimal(id,value) {
-    var reg=/^\d+(\.\d{0,2})?$/;
-    if (reg.test(value)==false){
-        var td = value.indexOf(".");
-        var tdNumFront = value.substring(0,td);
-        var tdNumAfter = value.substr(td,3);
-        value = tdNumFront+tdNumAfter;
-    }
-    $("#"+id).val(value);
-}
-//输入三位小数
-function threeDecimal(id,value) {
-    var reg=/^\d+(\.\d{0,3})?$/;
-    if (reg.test(value)==false){
-        var td = value.indexOf(".");
-        var tdNumFront = value.substring(0,td);
-        var tdNumAfter = value.substr(td,4);
-        value = tdNumFront+tdNumAfter;
-    }
-    $("#"+id).val(value);
-}
-function sumWages() {
-    //工资小计
-    var basePay = parseFloat($("#basePay").val());
-    var skillPay = parseFloat($("#skillPay").val());
-    var positionSalary = parseFloat($("#positionSalary").val());
-    var seniorityWage = parseFloat($("#seniorityWage").val());
-    var meritPay = parseFloat($("#meritPay").val());
 
-    var other = parseFloat($("#other").val());
-    var wages = basePay + skillPay + positionSalary + seniorityWage + meritPay + other;
-    $(".wageSubtotal").val(wages);
-    //应发工资
-    var performanceCoefficient = parseFloat($("#performanceCoefficient").val());
-    var wagesPayable = basePay + skillPay + positionSalary + seniorityWage + other;
-    var wagesPayableSum = wagesPayable + meritPay * performanceCoefficient;
-    $(".wagesPayable").val(wagesPayableSum);
-    //补贴小计
-    var foodSupplement = parseFloat($("#foodSupplement").val());
-    var highTemperatureSubsidy = Number($("#highTemperatureSubsidy").val());
+//显示岗位下拉框
+function getSel(){
+    layui.use(['form'], function () {
+        var form = layui.form;
+        $.ajax({
+            type: "GET",
+            url: path + "/wa/wags/getWagesPostMap",
+            dataType: "json",
+            success: function (data) {
+                $("#selPostName").empty();
+                var option = "<option value='0' >请选择岗位</option>";
+                for (var i = 0; i < data.length; i++) {
+                    option += "<option value='" + data[i].id + "' label='"+data[i].wage+"'>" + data[i].name + "</option>"
+                }
+                $('#selPostName').html(option);
+                form.render();//菜单渲染 把内容加载进去
+                //岗位等级下拉框加载
+                form.on('select(selPostName)', function (data) {
+                    $("#selPostNameHidden").val(data.value);
+                    var dom = data.elem[data.elem.selectedIndex].label;
+                    dom = parseFloat(dom)
+                    $(".basePay").val(dom);
+                    sumWages();
+                    $.ajax({
+                        type: "GET",
+                        url: path + "/wa/wags/getPostGradeMap",
+                        data: {id: $("#selPostNameHidden").val()},
+                        dataType: "json",
+                        success: function (data) {
+                            $("#selPostLevelName").empty();
+                            var option = "<option value='0' >请选择岗位等级</option>";
+                            for (var i = 0; i < data.length; i++) {
+                                option += "<option value='" + data[i].id + "' label='"+data[i].wage+"'>" + data[i].name + "</option>"
+                            }
+                            $('#selPostLevelName').html(option);
+                            form.render();//菜单渲染 把内容加载进去
+                        }
+                    });
+                    form.on('select(selPostLevelName)', function (data1) {
+                        $("#selPostLevelNameHidden").val(data1.value);
+                        var dom1 = data1.elem[data1.elem.selectedIndex].label;
+                        dom1 = parseFloat(dom1)
+                        $(".positionSalary").val(dom1);
+                        sumWages();
+                    });
+                });
+            }
+        });
+
+    });
+}
+//输入两位小数
+function twoDecimal(id, value) {
+    var reg = /^\d+(\.\d{0,2})?$/;
+    if (reg.test(value) == false) {
+        var td = value.indexOf(".");
+        var tdNumFront = value.substring(0, td);
+        var tdNumAfter = value.substr(td, 3);
+        value = tdNumFront + tdNumAfter;
+    }
+    $("#" + id).val(value);
+}
+
+//输入三位小数
+function threeDecimal(id, value) {
+    var reg = /^\d+(\.\d{0,3})?$/;
+    if (reg.test(value) == false) {
+        var td = value.indexOf(".");
+        var tdNumFront = value.substring(0, td);
+        var tdNumAfter = value.substr(td, 4);
+        value = tdNumFront + tdNumAfter;
+    }
+    $("#" + id).val(value);
+}
+
+function sumWages() {
+    var basePay = parseFloat($(".basePay").val());//岗位工资
+    var positionSalary = parseFloat($(".positionSalary").val());//职级工资
+    //绩效基数=(岗位工资+职级工资)/2
+    var performanceBase = (basePay+positionSalary)/2;
+    performanceBase = performanceBase.toFixed(2);
+    $(".performanceBase").val(performanceBase);
+
+    //绩效工资=绩效基数*绩效系数
+    var performanceCoefficient = parseFloat($(".performanceCoefficient").val());
+    var meritPay = performanceBase*performanceCoefficient;
+    meritPay = meritPay.toFixed(2);
+    $(".meritPay").val(meritPay);//绩效工资
+
+    //工资小计=岗位工资+职级工资+绩效工资+其他  1
+    //工资小计=岗位工资+职级工资  2
+    var other = parseFloat($(".other").val());//其他
+    var wageSubtotal = basePay + positionSalary;
+    wageSubtotal = wageSubtotal.toFixed(2);
+    $(".wageSubtotal").val(wageSubtotal);//工资小计
+
+    //应发工资==(岗位工资+职级工资+其他)+绩效工资*绩效系数  1
+    //应发工资==(岗位工资+职级工资)/2+绩效工资+其他   2
+    var performanceCoefficient = parseFloat($(".performanceCoefficient").val());//绩效系数
+    var wagesPayable = (basePay + positionSalary)/2 + other +  parseFloat(meritPay);
+    wagesPayable = wagesPayable.toFixed(2);
+    $(".wagesPayable").val(wagesPayable);
+
+    //补贴小计=高温补贴+餐补
+    var foodSupplement = parseFloat($(".foodSupplement").val());
+    var highTemperatureSubsidy = Number($(".highTemperatureSubsidy").val());
     var subTotalOfSubsidies = foodSupplement + parseFloat(highTemperatureSubsidy);
+    subTotalOfSubsidies = subTotalOfSubsidies.toFixed(2);
     $(".subTotalOfSubsidies").val(subTotalOfSubsidies);
-    //应发合计
-    var wagesPayable = $("#wagesPayable").val();
-    var subTotalOfSubsidies1 = $("#subTotalOfSubsidies").val();
-    $(".totalPayable").val(Number(wagesPayable)+Number(subTotalOfSubsidies1));
-    //扣款合计
-    var endowmentInsurance = parseFloat($("#endowmentInsurance").val());
-    var medicalInsurance = parseFloat($("#medicalInsurance").val());
-    var accumulationFund = parseFloat($("#accumulationFund").val());
-    var unemploymentBenefits = parseFloat($("#unemploymentBenefits").val());
-    var unionFees = parseFloat($("#unionFees").val());
-    var otherDeductions = parseFloat($("#otherDeductions").val());
+
+    //应发合计=应发工资+补贴小计
+    var totalPayable = Number(wagesPayable) + Number(subTotalOfSubsidies);
+    totalPayable = totalPayable.toFixed(2);
+    $(".totalPayable").val(totalPayable);
+
+    //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
+    var endowmentInsurance = parseFloat($(".endowmentInsurance").val());
+    var medicalInsurance = parseFloat($(".medicalInsurance").val());
+    var accumulationFund = parseFloat($(".accumulationFund").val());
+    var unemploymentBenefits = parseFloat($(".unemploymentBenefits").val());
+    var unionFees = parseFloat($(".unionFees").val());
+    var otherDeductions = parseFloat($(".otherDeductions").val());
     var deduction = endowmentInsurance + medicalInsurance + accumulationFund + unemploymentBenefits + unionFees + otherDeductions;
     deduction = deduction.toFixed(2)
     $(".totalDeduction").val(deduction);
-    //计税合计
-    var totalTax = parseFloat($('#totalPayable').val())-parseFloat($("#totalDeduction").val());
+
+    //计税合计=应发合计-扣款合计
+    var totalTax = Number(totalPayable) - Number(deduction);
     totalTax = totalTax.toFixed(2);
     $(".totalTax").val(totalTax);
+
     $.ajax({
         type: "post",
         url: path + "/wa/wags/taxation",
         data: {
-            currentIncomeTax:$("#totalPayable").val(),
-            other:$("#other").val(),
-            deductionOfExpenses:'5000.00',
-            employeeId:$("#userId").val(),
-            month: $("#monthStart").val(),
-            fiveInsurancesAndOneFund:$("#totalDeduction").val(),
-            totalTax:$("#totalTax").val(),
-            id:$("#wagsId").val(),
-            specialAdditionalDeduction:$("#sixSpecialDeductions").val()
+            employeeId: $("#userId").val(),//员工ID
+            month: $("#monthStart").val(),//月份
+            totalTax: $(".totalTax").val(),//计税合计
+            specialAdditionalDeduction: $(".sixSpecialDeductions").val()//专项扣除  六项专项扣除金额
         },
         dataType: "json",
-        success: function(data){
+        success: function (data) {
             var individualTaxAdjustment = data.tax;
             individualTaxAdjustment = Math.floor(individualTaxAdjustment * 100) / 100;
             $(".individualTaxAdjustment").val(individualTaxAdjustment);
@@ -183,117 +251,147 @@ function sumWages() {
         }
     });
 }
+
 //查询数据
-function showWagsList(m){
+function showWagsList(m) {
     var top = $(".top").css("height");
     var win = $(window).height();
     var tp = top.indexOf("p");
-    var topHeight = top.substring(0,tp);
-    var height = (win-topHeight-20)-20;
+    var topHeight = top.substring(0, tp);
+    var height = (win - topHeight - 20) - 20;
     $("#test15").val(m)
-    layui.use('table', function(){
+    layui.use(['table','form'], function () {
         var table = layui.table;
         table.render({
             elem: '#demo'
-            ,height: height
-            ,url: path + '/wa/wags/getWagsList?month='+ m //数据接口
-            ,toolbar: true
-            ,totalRow: true
-            ,cols: [[ //表头
-                {field: 'userNumber', title: '编号', sort: true,width:70, totalRowText: '合计', align:'center'}
-                ,{field: 'employeeName', title: '姓名',width:100, align:'center'}
-                ,{field: 'departmentName', title: '项目部', sort: true, align:'center'}
-                ,{field: 'isChanged', title: '人事异动', sort: true, align:'center'}
-                ,{field: 'laowupaiqian', title: '劳务派遣', sort: true, align:'center'}
-                ,{field: 'wageSubtotal', title: '工资小计', sort: true, align:'center', totalRow: true}
-                ,{field: 'performanceCoefficient', title: '绩效系数', sort: true, align:'center'}
-                ,{field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align:'center'}
-                ,{field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align:'center'}
-                ,{field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align:'center'}
-                ,{field: 'totalTax', title: '计税合计', sort: true, align:'center', totalRow: true}
-                ,{field: 'individualTaxAdjustment', title: '个调税', sort: true, align:'center', totalRow: true}
-                ,{field: 'netSalary', title: '实发工资', sort: true, totalRow: true, align:'center'}
-                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:120, align:'center'}
+            , height: height
+            , url: path + '/wa/wags/getWagsList?month=' + m //数据接口
+            , toolbar: true
+            , totalRow: true
+            , cols: [[ //表头
+                {field: 'userNumber', title: '编号', sort: true, width: 70, totalRowText: '合计', align: 'center'}
+                , {field: 'employeeName', title: '姓名', width: 100, align: 'center'}
+                , {field: 'departmentName', title: '项目部', sort: true, align: 'center'}
+                , {field: 'isChanged', title: '人事异动', toolbar: '#barisChanged', sort: true, align: 'center'}
+                , {field: 'laowupaiqian', title: '劳务派遣', sort: true, align: 'center'}
+                , {field: 'wagesPostName', title: '岗位等级', sort: true, align: 'center', toolbar: '#barDemoPost'}
+                , {field: 'wageSubtotal', title: '工资小计', sort: true, align: 'center', totalRow: true}
+                , {field: 'performanceCoefficient', title: '绩效系数', sort: true, align: 'center'}
+                , {field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align: 'center'}
+                , {field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align: 'center'}
+                , {field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align: 'center'}
+                , {field: 'totalTax', title: '计税合计', sort: true, align: 'center', totalRow: true}
+                , {field: 'individualTaxAdjustment', title: '个调税', sort: true, align: 'center', totalRow: true}
+                , {field: 'netSalary', title: '实发工资', sort: true, totalRow: true, align: 'center'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120, align: 'center'}
             ]]
-            ,done: function(res, curr, count){
-                /*if (res.count > 0 && hideM != mouth + 1){
+            , done: function (res, curr, count) {
+                var currentYear = date.getFullYear();
+                var currentMonth = date.getMonth() + 1;
+                var selYear = ($("#test15").val()).substr(0,4);
+                var selMonth = ($("#test15").val()).substr(5,2);
+                if (currentYear != selYear || currentMonth != selMonth) {
                     for (var i = 0; i < res.count; i ++) {
                         $('.editBtn').css("display", "none");
                     }
                 }
-                if (res.count > 0 && hideM == mouth + 1 && day > 8) {
-                    for (var i = 0; i < res.count; i ++) {
-                        $('.editBtn').css("display", "none");
-                    }
-                }*/
             }
         });
         //监听行工具事件
-        table.on('tool(test)', function(obj) {
+        table.on('tool(test)', function (obj) {
             var data = obj.data;
             $("#dateHidden").val(data.date);
             $("#wagsId").val(data.id);
-            $("#userId").val(data.employeeId);
-            $(".userNumber").val(data.userNumber);
-            $(".employeeName").val(data.employeeName);
-            $(".basePay").val(data.basePay);
-            $(".skillPay").val(data.skillPay);
-            $(".positionSalary").val(data.positionSalary);
-            $(".seniorityWage").val(data.seniorityWage);
-            $(".wageSubtotal").val(data.wageSubtotal);
-            $(".meritPay").val(data.meritPay);
-            $(".performanceCoefficient").val(data.performanceCoefficient);
-            $(".wagesPayable").val(data.wagesPayable);
+            $("#userId").val(data.employeeId);//员工id
+            $(".userNumber").val(data.userNumber);//员工编号
+            $(".employeeName").val(data.employeeName);//员工姓名
+            layui.use('form',function (){
+                var form = layui.form;
+                $.ajax({
+                    type: "GET",
+                    url: path + "/wa/wags/getPostGradeMap",
+                    data: {id: data.wagesPostId},
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#selPostLevelName").empty();
+                        var option = "<option value='0' >请选择岗位等级</option>";
+                        for (var i = 0; i < data.length; i++) {
+                            option += "<option value='" + data[i].id + "' label='"+data[i].wage+"'>" + data[i].name + "</option>"
+                        }
+                        $('#selPostLevelName').html(option);
+                        form.render();//菜单渲染 把内容加载进去
+                    }
+                });
+                $("#selPostNameHidden").val(data.wagesPostId);
+                $("#selPostName").val(data.wagesPostId);
+                $("#selPostLevelNameHidden").val(data.postGradeId);
+                $("#selPostLevelName").val(data.postGradeId);
+                form.render();
+            });
+            $(".userPost").val(data.wagesPostName);//岗位
+            $(".postLevel").val(data.postGradeName);//岗位等级
+            $(".basePay").val(data.basePay);//岗位工资
+            $(".positionSalary").val(data.positionSalary);//职级工资
+            $(".performanceBase").val(data.meritBase);//绩效基数
+            $(".meritPay").val(data.meritPay);//绩效工资
+            $(".other").val(data.other);//其他
+            $(".wageSubtotal").val(data.wageSubtotal);//工资小计
+            $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
+            $(".wagesPayable").val(data.wagesPayable);//应发工资
             if (data.foodSupplement == "" || data.foodSupplement == null) {
                 data.foodSupplement = 0.00;
             }
             if (data.highTemperatureSubsidy == "" || data.highTemperatureSubsidy == null) {
                 data.highTemperatureSubsidy = 0.00;
             }
-            $(".foodSupplement").val(data.foodSupplement);
-            $(".highTemperatureSubsidy").val(data.highTemperatureSubsidy);
-            $(".totalPayable").val(data.totalPayable);
-            $(".endowmentInsurance").val(data.endowmentInsurance);
-            $(".unemploymentBenefits").val(data.unemploymentBenefits);
-            $(".medicalInsurance").val(data.medicalInsurance);
-            $(".accumulationFund").val(data.accumulationFund);
-            $(".otherDeductions").val(data.otherDeductions);
-            $(".unionFees").val(data.unionFees);
-            $(".totalDeduction").val(data.totalDeduction);
-            $(".totalTax").val(data.totalTax);
-            $(".sixSpecialDeductions").val(data.sixSpecialDeductions);
-            $(".other").val(data.other);
-            $(".remark").val(data.remark);
-            $(".individualTaxAdjustment").val(data.individualTaxAdjustment);
-            $(".netSalary").val(data.netSalary);
+            $(".foodSupplement").val(data.foodSupplement);//餐补
+            $(".highTemperatureSubsidy").val(data.highTemperatureSubsidy);//高温补贴
+            $(".subTotalOfSubsidies").val(data.subTotalOfSubsidies);//补贴小计
+            $(".totalPayable").val(data.totalPayable);//应发合计
+            $(".endowmentInsurance").val(data.endowmentInsurance);//养老保险
+            $(".medicalInsurance").val(data.medicalInsurance);//医疗保险
+            $(".accumulationFund").val(data.accumulationFund);//公积金
+            $(".unemploymentBenefits").val(data.unemploymentBenefits);//失业金
+            $(".unionFees").val(data.unionFees);//工会费
+            $(".otherDeductions").val(data.otherDeductions);//其他扣款
+            $(".totalDeduction").val(data.totalDeduction);//扣款合计
+            $(".totalTax").val(data.totalTax);//计税合计
+            $(".sixSpecialDeductions").val(data.sixSpecialDeductions);//六项专项扣除金额
+            $(".individualTaxAdjustment").val(data.individualTaxAdjustment);//个调税
+            $(".netSalary").val(data.netSalary);//实发工资
+            $(".remark").val(data.remark);//备注
             sumWages();
-            if(obj.event === 'edit'){//修改
+            if (obj.event === 'edit') {//修改
                 layer.open({
                     type: 1
-                    ,id: 'updateFinance' //防止重复弹出
-                    ,content: $(".updateFinance")
-                    ,btnAlign: 'c' //按钮居中
-                    ,shade: 0.5 //不显示遮罩
-                    ,area: ['100%', '100%']
-                    ,yes: function(){}
+                    , id: 'updateFinance' //防止重复弹出
+                    , content: $(".updateFinance")
+                    , btnAlign: 'c' //按钮居中
+                    , shade: 0.5 //不显示遮罩
+                    , area: ['100%', '100%']
+                    , yes: function () {
+                    }
                 });
-            }else if(obj.event === 'detail'){//查看
+            } else if (obj.event === 'detail') {//查看
                 layer.open({
                     type: 1
-                    ,id: 'detailFinance' //防止重复弹出
-                    ,content: $(".detailFinance")
-                    ,btnAlign: 'c' //按钮居中
-                    ,shade: 0.5 //不显示遮罩
-                    ,area: ['80%', '80%']
-                    ,yes: function(){}
+                    , id: 'detailFinance' //防止重复弹出
+                    , content: $(".detailFinance")
+                    , btnAlign: 'c' //按钮居中
+                    , shade: 0.5 //不显示遮罩
+                    , area: ['80%', '80%']
+                    , yes: function () {
+                    }
                 });
             }
         });
     });
 }
+
 //打开复制页面
 function copyWags() {
-    layui.use('form', function(){
+    layui.use('form', function () {
         var form = layui.form;
         $("#test16").val('');
         form.render('select');
@@ -301,33 +399,36 @@ function copyWags() {
     });
     layer.open({
         type: 1
-        ,id: 'copyDiv' //防止重复弹出
-        ,content: $(".copyDiv")
-        ,btnAlign: 'c' //按钮居中
-        ,shade: 0.5 //不显示遮罩
-        ,area: ['320px', '200px']
-        ,yes: function(){}
+        , id: 'copyDiv' //防止重复弹出
+        , content: $(".copyDiv")
+        , btnAlign: 'c' //按钮居中
+        , shade: 0.5 //不显示遮罩
+        , area: ['320px', '200px']
+        , yes: function () {
+        }
     });
 }
+
 //确定复制
 function copyOk() {
     var monthStart = $("#monthStart").val();
     var monthEnd = $("#monthEnd").val();
     $.ajax({
-        url: path+"/wa/wags/copyToThisMonthWags",//请求地址
+        url: path + "/wa/wags/copyToThisMonthWags",//请求地址
         dataType: "json",//数据格式
-        data: {"monthStart": monthStart,"monthEnd": monthEnd},
+        data: {"monthStart": monthStart, "monthEnd": monthEnd},
         type: "get",//请求方式
         success: function (data) {
             if (data == "success") {
                 alert("周期已复制");
-            } else if(data=='fail'){
+            } else if (data == 'fail') {
                 alert("周期已存在");
             }
             layer.closeAll();
         }
     });
 }
+
 //修改
 function updFinance() {
     var wages = {};
@@ -339,30 +440,32 @@ function updFinance() {
     }
     wages.employeeId = $("#userId").val();
     wages.employeeName = $("#employeeName").val();
+    wages.wagesPostId = Number($("#selPostNameHidden").val());
+    wages.postGradeId = Number($("#selPostLevelNameHidden").val());
     wages.userNumber = $("#userNumber").val();
-    wages.basePay = $("#basePay").val();
-    wages.skillPay = $("#skillPay").val();
-    wages.positionSalary = $("#positionSalary").val();
-    wages.seniorityWage = $("#seniorityWage").val();
-    wages.wageSubtotal = $("#wageSubtotal").val();//工资小计
-    wages.meritPay = $("#meritPay").val();
-    wages.performanceCoefficient = $("#performanceCoefficient").val();
-    wages.wagesPayable = $("#wagesPayable").val();//应发工资
-    wages.foodSupplement = $("#foodSupplement").val();
-    wages.highTemperatureSubsidy = $("#highTemperatureSubsidy").val();
-    wages.subTotalOfSubsidies = $("#subTotalOfSubsidies").val();
-    wages.currentIncomeTax = $("#totalPayable").val();//应发合计  本期收入
-    wages.endowmentInsurance = $("#endowmentInsurance").val();
-    wages.unemploymentBenefits = $("#unemploymentBenefits").val();
-    wages.medicalInsurance = $("#medicalInsurance").val();
-    wages.accumulationFund = $("#accumulationFund").val();
-    wages.otherDeductions = $("#otherDeductions").val();
-    wages.unionFees = $("#unionFees").val();
-    wages.fiveInsurancesAndOneFund = $("#totalDeduction").val();//扣款合计  五险一金
-    wages.totalTax = $("#totalTax").val();//计税合计
-    wages.sixSpecialDeductions = $("#sixSpecialDeductions").val();//六项专项扣除金额   专项扣除
-    wages.individualTaxAdjustment = $("#individualTaxAdjustment").val();
-    wages.netSalary = $("#netSalary").val();//实发工资
+    wages.basePay = parseFloat($("#basePay").val());
+    wages.positionSalary = parseFloat($("#positionSalary").val());
+    wages.wageSubtotal = parseFloat($("#wageSubtotal").val());//工资小计
+    wages.meritPay = parseFloat($("#meritPay").val());
+    wages.performanceBase = parseFloat($("#performanceBase").val());
+    wages.performanceCoefficient = parseFloat($("#performanceCoefficient").val());
+    wages.wagesPayable = parseFloat($("#wagesPayable").val());//应发工资
+    wages.foodSupplement = parseFloat($("#foodSupplement").val());
+    wages.highTemperatureSubsidy = parseFloat($("#highTemperatureSubsidy").val());
+    wages.subTotalOfSubsidies = parseFloat($("#subTotalOfSubsidies").val());
+    wages.currentIncomeTax = parseFloat($("#totalPayable").val());//应发合计  本期收入
+    wages.endowmentInsurance = parseFloat($("#endowmentInsurance").val());
+    wages.unemploymentBenefits = parseFloat($("#unemploymentBenefits").val());
+    wages.medicalInsurance = parseFloat($("#medicalInsurance").val());
+    wages.accumulationFund = parseFloat($("#accumulationFund").val());
+    wages.otherDeductions = parseFloat($("#otherDeductions").val());
+    wages.unionFees = parseFloat($("#unionFees").val());
+    wages.fiveInsurancesAndOneFund = parseFloat($("#totalDeduction").val());//五险一金=扣款合计
+    wages.totalDeduction = parseFloat($("#totalDeduction").val());//扣款合计
+    wages.totalTax = parseFloat($("#totalTax").val());//计税合计
+    wages.sixSpecialDeductions = parseFloat($("#sixSpecialDeductions").val());//六项专项扣除金额   专项扣除
+    wages.individualTaxAdjustment = parseFloat($("#individualTaxAdjustment").val());
+    wages.netSalary = parseFloat($("#netSalary").val());//实发工资
     wages.other = $("#other").val();//其他
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
@@ -373,12 +476,13 @@ function updFinance() {
         data: JSON.stringify(wages),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(data){
+        success: function (data) {
             layer.closeAll();
-            showWagsList( $("#test15").val());
+            showWagsList($("#test15").val());
         }
     });
 }
+
 //取消
 function cancel() {
     layer.closeAll();

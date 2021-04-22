@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.WageBaseMapper">
+
+    <resultMap id="wagesPost" type="com.howei.pojo.WagesPost">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="companyId" property="companyId"></result>
+        <result column="isactive" property="isactive"></result>
+        <result column="wagesPostWage" property="wagesPostWage"></result>
+        <collection property="postGrade" resultMap="postGrade"></collection>
+    </resultMap>
+
+    <resultMap id="postGrade" type="com.howei.pojo.PostGrade">
+        <result column="id" property="id"></result>
+        <result column="wagesPostId" property="wagesPostId"></result>
+        <result column="created" property="created"></result>
+        <result column="gradeName" property="gradeName"></result>
+        <result column="postGradeWage" property="postGradeWage"></result>
+    </resultMap>
+
+    <select id="getPostGradeList" resultType="com.howei.pojo.PostGrade">
+        select * from postGrade
+        <where>
+            <if test="wagesPostId!=null">
+                wagesPostId=#{wagesPostId}
+            </if>
+        </where>
+    </select>
+    
+    <select id="findPostGradeByName" resultType="int">
+        select count(*) from postGrade where wagesPostId=#{wagesPostId} and gradeName=#{gradeName}
+    </select>
+
+    <insert id="addPostGrade" keyProperty="id" useGeneratedKeys="true">
+        insert into postGrade(wagesPostId,created,gradeName,postGradeWage) value (#{wagesPostId},#{created},#{gradeName},#{postGradeWage})
+    </insert>
+
+    <select id="getPostBaseById" parameterType="int" resultType="com.howei.pojo.PostGrade">
+        select * from postGrade where id=#{id}
+    </select>
+
+    <select id="findPostGradeByMonth">
+        select count(*) from postGrade where wagesPostId=#{wagesPostId} and gradeName=#{gradeName}
+    </select>
+
+    <select id="getWagesPostList" resultMap="wagesPost">
+        select wp.*,pg.* from wagesPost wp
+        left join postGrade pg on pg.wagesPostId=wp.id
+        where isactive=1 and companyId=1
+    </select>
+
+    <select id="findWagesPostByName" resultType="com.howei.pojo.WagesPost">
+        select * from wagesPost where isactive=1 and companyId=1 and `name`=#{name}
+    </select>
+
+    <insert id="addWagesPost" useGeneratedKeys="true" keyProperty="id" parameterType="com.howei.pojo.WagesPost">
+        insert into wagesPost(`name`,companyId,isactive,wagesPostWage) value (#{name},#{companyId},#{isactive},#{wagesPostWage})
+    </insert>
+
+    <update id="updWagesPost" keyProperty="id" useGeneratedKeys="true">
+        update wagesPost
+        <set>
+            <if test="name!=null and name!=null">
+                `name`=#{name},
+            </if>
+            <if test="isactive!=null">
+                `isactive`=#{isactive},
+            </if>
+            <if test="wagesPostWage!=null">
+                `wagesPostWage`=#{wagesPostWage},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updPostGrade" useGeneratedKeys="true" keyProperty="id">
+        update postGrade
+        <set>
+            <if test="gradeName!=null and gradeName!=null">
+                gradeName=#{gradeName},
+            </if>
+            <if test="postGradeWage!=null">
+                postGradeWage=#{postGradeWage},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="getWagesPostMap" resultType="com.howei.pojo.WagesPost">
+        select id,`name`,wagesPostWage from wagesPost where isactive=1 and companyId=1
+    </select>
+
+    <select id="getPostGradeMap" resultType="com.howei.pojo.PostGrade">
+        select id,`gradeName`,postGradeWage from postGrade where wagesPostId=#{wagesPostId}
+    </select>
+
+    <select id="getWagesPostById" resultType="com.howei.pojo.WagesPost">
+        select * from wagesPost where isactive=1 and companyId=1
+    </select>
+</mapper>
