@@ -51,19 +51,19 @@
     </select>
     <select id="getReimbuseStatistic" resultType="java.util.Map" parameterType="map">
         SELECT
-            subject,
+        subject,
         ROUND( SUM(reimbursementAmount),2) totalAmount
         FROM
-            reimbursement
-        where 1=1
+        reimbursement
+        where  financeResult =3
         <if test="departmentId!=null">
-           and  FIND_IN_SET(departmentId,#{departmentId})
+            and  FIND_IN_SET(departmentId,#{departmentId})
         </if>
         <if test="date!=null">
             and reimbursementDate like concat("%",#{date},"%")
         </if>
         GROUP BY
-            `subject`
+        `subject`
     </select>
 
     <insert id="addReimbursement" useGeneratedKeys="true" keyProperty="id" parameterType="com.howei.pojo.Reimbursement">
