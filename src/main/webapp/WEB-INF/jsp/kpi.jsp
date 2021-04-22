@@ -88,7 +88,7 @@
                 <td style="color: red;" id="averagePoint">&nbsp;</td>
             </tr>
             <tr>
-                <td>方差</td>
+                <td>标准差</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
