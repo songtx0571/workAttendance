@@ -61,7 +61,7 @@
                 </div>
             </div>
         </form>
-        <form class="layui-form" action="">
+      <%--  <form class="layui-form" action="">
             <div class="layui-inline" style="float: left;margin-left: 50px;">
                 <div class="layui-input-inline">
                     <input type="hidden" id="selDepartNameHidden">
@@ -69,7 +69,7 @@
                     </select>
                 </div>
             </div>
-        </form>
+        </form>--%>
     </div>
     <div class="content">
         <table id="demo" lay-filter="test"></table>
