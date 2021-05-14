@@ -7,24 +7,19 @@ import com.howei.util.DateFormat;
 import com.howei.util.Result;
 import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.crypto.hash.Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sun.invoke.empty.Empty;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import static org.apache.shiro.authz.annotation.Logical.OR;
-
 @Controller
 @RequestMapping("/wa/wags")
-public class WagsComtroller {
+public class WagsController {
 
     @Autowired
     private WagsService wagsService;
@@ -92,11 +87,54 @@ public class WagsComtroller {
         List<Wages> list = wagsService.getWagsList(map);
         Result result = new Result();
         result.setCode(0);
-        if (list != null) {
+        if (list == null || list.size()==0) {
             result.setCount(list.size());
             result.setData(list);
+            return result;
         }
+        /*for (int i = 0; i <list.size() ; i++) {
+            Wages wages=list.get(i);
+            //设置绩效系数
+            wages.setPerformanceCoefficient(getAssessmentByEmployeeId(wages.getDate(),wages.getEmployeeId().toString()));
+        }*/
+        result.setCount(list.size());
+        result.setData(list);
         return result;
+    }
+
+    /**
+     * 获取综合绩效
+     * @param cycle
+     * @param employeeId
+     * @return
+     */
+    @RequestMapping("/getPerformanceCoefficientByEmployeeId")
+    @ResponseBody
+    public double getPerformanceCoefficientByEmployeeId(String cycle,String employeeId) {
+        Map map=new HashMap();
+        if(cycle!=null&&!cycle.equals("")){
+            //获取指定日期的上一月份
+            cycle=DateFormat.getYearMonthByMonth(cycle,-1);
+            map.put("cycle",cycle);
+        }
+        if(employeeId!=null&&!employeeId.equals("")){
+            map.put("employeeId",employeeId);
+        }
+        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        if(assessment!=null){
+            double score1=assessment.getScore1();
+            double score2=assessment.getScore2();
+            double jianban=assessment.getJiaban();
+            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            assessment.setNetPerformance(netPerformance);
+            //综合绩效=净绩效+加班*0.01
+            bd = new BigDecimal(netPerformance+jianban*0.01);
+            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            return comprehensivePerformance;
+        }
+        return 0.0;
     }
 
     /**
@@ -155,6 +193,7 @@ public class WagsComtroller {
         }
         return usersId;
     }
+
 
     /**
      * 生成本月工资信息
@@ -250,10 +289,6 @@ public class WagsComtroller {
      */
     public Double taxCalculator(String employeeId, String month,double specialAdditionalDeduction,double totalTaxThisMonth) {
         //累计值
-        Double wageSubtotal=0.00;//工资小计
-        Double wagesPayable=0.00;//应发工资
-        Double totalPayable=0.00;//应发合计
-        Double totalDeduction=0.00;//扣款合计
         Double totalTax=0.00;//计税合计
         Double deductionOfExpensesTaxTotal = 0.00;//累计减除费用
         Double taxableIncome = 0.00;//累计应纳税所得额
@@ -266,19 +301,8 @@ public class WagsComtroller {
         List<Wages> listWages = wagsService.getWagesToTax(map);
         if (listWages != null) {
             for (Wages wages : listWages) {
-                double PerformanceCoefficient=getAssessmentByEmployeeId(wages.getDate(),wages.getEmployeeId()+"");
-                //工资小计=基本工资+职务工资+绩效工资+其他
-                //工资小计=岗位工资+职级工资
-                wageSubtotal=wages.getBasePay()+wages.getPositionSalary()+wages.getMeritPay()+wages.getOther();
-                //应发工资=（基本工资+职务工资+其他）+绩效基数*绩效系数
-                //应发工资==(岗位工资+职级工资)/2+绩效工资+其他
-                wagesPayable=(wages.getBasePay()+wages.getPositionSalary()+wages.getOther())+wages.getMeritPay()*PerformanceCoefficient;
-                //应发合计=基本工资+职务工资+其他+补贴小计
-                totalPayable =wagesPayable+wages.getHighTemperatureSubsidy()+wages.getFoodSupplement();
-                //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
-                totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
                 //计税合计=应发合计-扣款合计
-                totalTax =totalTax+(totalPayable-totalDeduction);
+                totalTax =totalTax+wages.getTotalTax();
                 //累计减除费用
                 deductionOfExpensesTaxTotal += 5000;
                 //累计专项扣除
@@ -286,7 +310,7 @@ public class WagsComtroller {
                 //计算累计应纳税所得额：累计应纳税所得额=累计计税合计-累计专项附加扣除-5000*月份
                 taxableIncome=totalTax-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal;
                 //累计个税
-                personalIncomeTotalTax += taxableIncome(taxableIncome, personalIncomeTotalTax);
+                personalIncomeTotalTax+=wages.getPerformanceCoefficient();
             }
             //计算截至到指定月份
             specialAdditionalDeductionTaxTotal+=specialAdditionalDeduction;
@@ -340,7 +364,6 @@ public class WagsComtroller {
         }
         return tax;
     }
-
 
     /**
      * 修改工资信息

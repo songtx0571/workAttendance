@@ -35,7 +35,8 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        SELECT e.id employeeId,e.isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian,wp.name as wagesPostName,pg.gradeName as postGradeName
+        SELECT e.id employeeId,e.isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
+        ,wp.name as wagesPostName,pg.gradeName as postGradeName
         FROM employee e
         LEFT JOIN (
         SELECT * FROM wages
@@ -72,12 +73,12 @@
     <insert id="addThisMonthWags" parameterType="com.howei.pojo.Wages" useGeneratedKeys="true" keyProperty="id">
         insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
         totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,individualTaxAdjustment,netSalary,remark,`date`,created,
-        wagesPostId,postGradeId)
+        wagesPostId,postGradeId,meritBase)
         values
         (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
         ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.subTotalOfSubsidies},#{wages.totalPayable},#{wages.endowmentInsurance}
         ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
-        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},#{item.wagesPostId},#{item.postGradeId})
+        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},#{item.wagesPostId},#{item.postGradeId},#{meritBase})
     </insert>
 
     <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">

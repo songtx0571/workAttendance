@@ -19,6 +19,7 @@ $(function () {
         month = "0" + month;
     }
     showWagsList(year + "-" + month);
+    $("#test15").val(year + "-" + month);
     getSel();//显示岗位下拉框
 });
 
@@ -44,14 +45,14 @@ function monthUpBtn() {
 
 //点击查看下个月数据
 function monthDownBtn() {
-    if (upBtnMonth > month && upBtnYear >= year) {
+    /*if (upBtnMonth > month && upBtnYear >= year) {
         layui.use('layer', function () {
             layer.msg('<p style="width: 100px;text-align: center;">无数据</p>', {
                 time: 1000
             });
         });
         return;
-    }
+    }*/
     upBtnMonth++;
     if (upBtnMonth > '12') {
         upBtnYear++;
@@ -292,7 +293,7 @@ function showWagsList(m) {
                 var selMonth = ($("#test15").val()).substr(5,2);
                 if (currentYear != selYear || currentMonth != selMonth) {
                     for (var i = 0; i < res.count; i ++) {
-                        $('.editBtn').css("display", "none");
+                        //$('.editBtn').css("display", "none");
                     }
                 }
             }
@@ -361,8 +362,8 @@ function showWagsList(m) {
             $(".individualTaxAdjustment").val(data.individualTaxAdjustment);//个调税
             $(".netSalary").val(data.netSalary);//实发工资
             $(".remark").val(data.remark);//备注
-            sumWages();
             if (obj.event === 'edit') {//修改
+                sumWages();
                 layer.open({
                     type: 1
                     , id: 'updateFinance' //防止重复弹出
@@ -411,8 +412,8 @@ function copyWags() {
 
 //确定复制
 function copyOk() {
-    var monthStart = $("#monthStart").val();
-    var monthEnd = $("#monthEnd").val();
+    var monthStart = $("#test15").val();
+    var monthEnd = $("#test16").val();
     $.ajax({
         url: path + "/wa/wags/copyToThisMonthWags",//请求地址
         dataType: "json",//数据格式

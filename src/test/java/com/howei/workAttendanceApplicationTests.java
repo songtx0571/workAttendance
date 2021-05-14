@@ -5,6 +5,7 @@ import com.howei.pojo.Tax;
 import com.howei.pojo.Wages;
 import com.howei.pojo.WagesPost;
 import com.howei.service.BehaviorService;
+import com.howei.service.EmployeeService;
 import com.howei.service.WageBaseService;
 import com.howei.service.WagsService;
 import com.howei.util.DateFormat;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -28,8 +30,7 @@ class workAttendanceApplicationTests {
     private BehaviorService behaviorService;
 
     @Autowired
-    private WageBaseService wageBaseService;
-
+    private EmployeeService employeeService;
 
     @Test
     void contextLoads() {
@@ -37,15 +38,14 @@ class workAttendanceApplicationTests {
     }
 
     /**
-     * 测试个调税
-     * @return
+     * 4月之前工资计算测试
      */
     //@Test
-    public void taxation() {
-        String month = "2021-04";
-        String employeeId = "230";//测试孔祥宇
-        double specialAdditionalDeduction = 1500;//专项扣除
-        double totalTaxThisMonth = 7651.62;//计税合计
+    public void taxation1() {
+        String month = "2021-02";
+        String employeeId = "318";//员工id
+        double specialAdditionalDeduction = 0;//专项扣除
+        double totalTaxThisMonth = 5733.62;//计税合计
 
         //************************************ 个调税计算 *****************************************
         Double tax = this.taxCalculator(employeeId, month,specialAdditionalDeduction,totalTaxThisMonth);
@@ -54,6 +54,69 @@ class workAttendanceApplicationTests {
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println("个调税计算:"+df.format(tax));
         System.out.println("实发工资:"+df.format(netSalary));
+    }
+
+    /**
+     * 4月之前工资计算
+     */
+    @Test
+    public void taxationBe() {
+        String month = "2021-01";
+        Map map=new HashMap();
+        //获取5月份工资信息
+        map.put("month", month + "-01");
+        List<Wages> listWages=wagsService.getWagsList(map);
+        for (int i = 0; i <listWages.size() ; i++) {
+            Wages wages=listWages.get(i);
+            double sixSpecialDeductions=wages.getSixSpecialDeductions();//六项专项扣除金额
+            double totalTax=wages.getTotalTax();//计税合计
+            String employeeId=wages.getEmployeeId().toString();//员工id
+            System.out.println(i+";当前操作对象："+employeeId);
+            //************************************ 个调税计算 *****************************************
+            Double tax = this.taxCalculator(employeeId, month,sixSpecialDeductions,totalTax);
+            //************************************ 实发工资 *****************************************
+            Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+            DecimalFormat df = new DecimalFormat("0.00");
+            wages.setNetSalary(Double.valueOf(df.format(netSalary)));//实发工资
+            wages.setIndividualTaxAdjustment(Double.valueOf(df.format(tax)));//个调税
+            //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
+            double totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
+            wages.setTotalDeduction(totalDeduction);
+            wagsService.updWags(wages);
+        }
+    }
+
+    /**
+     * 4月包含4月之后工资计算
+     * @return
+     */
+    @Test
+    public void taxation() {
+        String month = "2021-04";
+        //获取在职人员列表
+        Map map=new HashMap();
+        map.put("month", month + "-01");
+        List<Wages> listWages=wagsService.getWagsList(map);
+        for (int i = 0; i <listWages.size() ; i++) {
+            Wages wages=listWages.get(i);
+            double sixSpecialDeductions=wages.getSixSpecialDeductions();//六项专项扣除金额
+            double totalTax=wages.getTotalTax();//计税合计
+            String employeeId=wages.getEmployeeId().toString();//员工id
+            System.out.println(i+";当前操作对象："+employeeId);
+            //4月后计税合计减300
+            double totalTaxSimulation=totalTax-300;
+            //************************************ 个调税计算 *****************************************
+            Double tax = this.taxCalculator(employeeId, month,sixSpecialDeductions,totalTaxSimulation);
+            //************************************ 实发工资 *****************************************
+            Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+            DecimalFormat df = new DecimalFormat("0.00");
+            wages.setNetSalary(Double.valueOf(df.format(netSalary)));//实发工资
+            wages.setIndividualTaxAdjustment(Double.valueOf(df.format(tax)));//个调税
+            //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
+            double totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
+            wages.setTotalDeduction(totalDeduction);
+            wagsService.updWags(wages);
+        }
     }
 
     /**
@@ -92,6 +155,13 @@ class workAttendanceApplicationTests {
                 totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
                 //计税合计=应发合计-扣款合计
                 totalTax =totalTax+(totalPayable-totalDeduction);
+                try {
+                    if(DateFormat.comparetoTime("2021-04-01 00:00:00",wages.getDate()+" 00:00:00")){
+                        totalTax=totalTax-300;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 //累计减除费用
                 deductionOfExpensesTaxTotal += 5000;
                 //累计专项扣除
@@ -100,6 +170,7 @@ class workAttendanceApplicationTests {
                 taxableIncome=totalTax-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal;
                 //累计个税
                 personalIncomeTotalTax += taxableIncome(taxableIncome, personalIncomeTotalTax);
+                System.out.println("个税: "+personalIncomeTotalTax);
             }
             //计算截至到指定月份
             specialAdditionalDeductionTaxTotal+=specialAdditionalDeduction;
@@ -189,10 +260,11 @@ class workAttendanceApplicationTests {
     }
 
     @Test
-    public void a(){
-        List<WagesPost> list=wageBaseService.getWagesPostList(new HashMap());
-        for (WagesPost wagesPost:list){
-            System.out.println(wagesPost.toString());
+    void a() {
+        try {
+            System.out.println(DateFormat.comparetoTime("2021-04-01 00:00:00","2021-04-01 00:00:00"));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 

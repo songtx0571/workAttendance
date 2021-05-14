@@ -140,7 +140,7 @@
                         </div>
                     </form>
                 </td>
-                <td>岗位等级：</td>
+                <td>职级：</td>
                 <td>
                     <form class="layui-form" action="" style="width: 100%;">
                         <div class="layui-inline" style="width: 100%;">
@@ -264,7 +264,7 @@
             <tr>
                 <td style="width: 16%;">岗位：</td>
                 <td><input type="text" class="userPost" name="userPost" readonly></td>
-                <td>岗位等级：</td>
+                <td>职级：</td>
                 <td><input type="text" class="postLevel" name="postLevel" readonly></td>
             </tr>
             <tr>
