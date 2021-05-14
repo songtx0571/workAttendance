@@ -85,13 +85,13 @@ public class ReimbursementController {
             if (departmentId != null && !departmentId.equals("")) {
                 map.put("departmentId", departmentId);
             }
-        }else if(xPermitted){
+        } else if (xPermitted) {
             if (departmentId != null && !departmentId.equals("")) {
                 map.put("departmentId", departmentId);
             } else {
                 if (users != null) {
                     map.put("departmentId", users.getDepartmentId());
-                    map.put("active",1);
+                    map.put("active", 1);
                 }
             }
         }
@@ -142,7 +142,7 @@ public class ReimbursementController {
             return null;
         }
         if (xPermitted) {
-            if(!jPermitted && !gPermitted && !cPermitted ){
+            if (!jPermitted && !gPermitted && !cPermitted) {
                 if (users != null) {
                     map.put("departmentId", users.getDepartmentId());
                 }
@@ -293,6 +293,7 @@ public class ReimbursementController {
 
     /**
      * 获取保险费用统计信息统计信息
+     *
      * @param request
      * @return
      */
@@ -301,46 +302,11 @@ public class ReimbursementController {
     public Result getStatistics(HttpServletRequest request) {
 
         String month = request.getParameter("month");
-        String depart = request.getParameter("depart");
 
         Map<String, Object> map = new HashMap<>();
 
-        String departmentIdSet = "";
 
-
-        if (depart != null && !"".equals(depart.trim())) {
-            departmentIdSet = depart;
-        } else {
-
-            String companyId = "1";
-            Users users = this.getPrincipal();
-            Subject subject = SecurityUtils.getSubject();
-            boolean jPermitted = subject.isPermitted("报销监视员");
-            boolean gPermitted = subject.isPermitted("报销管理员");
-            boolean cPermitted = subject.isPermitted("报销财务员");
-            boolean xPermitted = subject.isPermitted("报销项目部");
-            //判断是否存在这四个权限
-            if (!jPermitted && !gPermitted && !cPermitted && !xPermitted) {
-                departmentIdSet="";
-            }else{
-                //如果有项目部的权限则加上部门id
-                if (xPermitted) {
-                    if(!jPermitted && !gPermitted && !cPermitted ){
-                        if (users != null) {
-                            map.put("departmentId", users.getDepartmentId());
-                        }
-                    }
-                }
-                map.put("companyId", companyId);
-                List<Map<String, String>> departmentIdList = departmentService.getDepartmentMap(map);
-                for (Map<String, String> stringStringMap : departmentIdList) {
-                    departmentIdSet += stringStringMap.get("id") + ",";
-                }
-            }
-
-        }
         map.clear();
-        map.put("departmentId", departmentIdSet);
 
         if (month != null && !"".equals(month.trim())) {
             map.put("date", month);

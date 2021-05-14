@@ -51,19 +51,120 @@
     </select>
     <select id="getReimbuseStatistic" resultType="java.util.Map" parameterType="map">
         SELECT
-        subject,
-        ROUND( SUM(reimbursementAmount),2) totalAmount
-        FROM
-        reimbursement
-        where  financeResult =3
-        <if test="departmentId!=null">
-            and  FIND_IN_SET(departmentId,#{departmentId})
-        </if>
-        <if test="date!=null">
-            and reimbursementDate like concat("%",#{date},"%")
-        </if>
-        GROUP BY
-        `subject`
+            DISTINCT `subject`
+            , IFNULL(jas.amount, 0) jasAmount
+            , IFNULL(tas.amount, 0) tasAmount
+            , IFNULL(lj.amount, 0) ljAmount
+            , IFNULL(pj.amount, 0) pjAmount
+            , IFNULL(sm.amount, 0) smAmount
+            , IFNULL(zh.amount, 0) zhAmount
+            , IFNULL(zg.amount, 0) zgAmount
+            FROM
+                reimbursement
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 17
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) jas ON jas.subjectId = `subject`
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 18
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) tas ON tas.subjectId = `subject`
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 19
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) lj ON lj.subjectId = `subject`
+
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 20
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) pj ON pj.subjectId = `subject`
+
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 78
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) sm ON sm.subjectId = `subject`
+
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 79
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) zh ON zh.subjectId = `subject`
+            LEFT JOIN (
+                SELECT
+                    SUBJECT subjectId,
+                    ROUND(SUM(reimbursementAmount), 2) amount
+                FROM
+                    reimbursement
+                WHERE
+                    financeResult = 3
+                AND departmentId = 80
+                AND reimbursementDate LIKE concat("%", #{date}, "%")
+                GROUP BY
+                    `subject`
+            ) zg ON zg.subjectId = `subject`
+
+            WHERE
+                reimbursementDate LIKE concat("%", #{date}, "%")
+            ORDER BY
+                `subject` ASC
     </select>
 
     <insert id="addReimbursement" useGeneratedKeys="true" keyProperty="id" parameterType="com.howei.pojo.Reimbursement">
