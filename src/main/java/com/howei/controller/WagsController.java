@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.*;
 
 @Controller
@@ -59,10 +60,12 @@ public class WagsController {
         if (month == null || month.equals("")) {
             month = DateFormat.ThisMonth();
         }
-        if (users != null) {
-            employeeId = users.getEmployeeId();
+        //user为空
+        if (users == null) {
+            Result result = new Result(0,null,0,"noUser");
+            return result;
         }
-        employeeId=240;
+        employeeId = users.getEmployeeId();
         Map map = new HashMap<>();
         map.put("month", month + "-01");
         //判断是否存在以下角色，
@@ -92,25 +95,22 @@ public class WagsController {
             result.setData(list);
             return result;
         }
-        /*for (int i = 0; i <list.size() ; i++) {
-            Wages wages=list.get(i);
-            //设置绩效系数
-            wages.setPerformanceCoefficient(getAssessmentByEmployeeId(wages.getDate(),wages.getEmployeeId().toString()));
-        }*/
         result.setCount(list.size());
         result.setData(list);
         return result;
     }
 
     /**
+     * 工资编辑加载数据
      * 获取综合绩效
+     * 获取餐补
      * @param cycle
      * @param employeeId
      * @return
      */
     @RequestMapping("/getPerformanceCoefficientByEmployeeId")
     @ResponseBody
-    public double getPerformanceCoefficientByEmployeeId(String cycle,String employeeId) {
+    public Map getPerformanceCoefficientByEmployeeId(String cycle,String employeeId) {
         Map map=new HashMap();
         if(cycle!=null&&!cycle.equals("")){
             //获取指定日期的上一月份
@@ -124,7 +124,8 @@ public class WagsController {
         if(assessment!=null){
             double score1=assessment.getScore1();
             double score2=assessment.getScore2();
-            double jianban=assessment.getJiaban();
+            double jianban=assessment.getJiaban();//加班
+            int kapqin=assessment.getKaoqin();//考勤
             //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
             BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
             double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -132,9 +133,14 @@ public class WagsController {
             //综合绩效=净绩效+加班*0.01
             bd = new BigDecimal(netPerformance+jianban*0.01);
             double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            return comprehensivePerformance;
+            //餐补=20*考勤
+            double foodSupplement=20*kapqin;
+            Map result=new HashMap();
+            result.put("performanceCoefficient",comprehensivePerformance);
+            result.put("foodSupplement",foodSupplement);
+            return result;
         }
-        return 0.0;
+        return null;
     }
 
     /**
@@ -230,6 +236,7 @@ public class WagsController {
                     wages.setOtherDeductions(0.00);//其他扣款
                     wages.setIndividualTaxAdjustment(0.00);//个调税
                     wages.setNetSalary(0.00);//实发工资
+                    wages.setSubTotalOfSubsidies(0.00);//补贴小计
                     if(wages.getWagesPostId()!=null){
                         WagesPost wagesPost=wageBaseService.getWagesPostById(wages.getWagesPostId());
                         wages.setBasePay(wagesPost.getWagesPostWage());//基本工资
@@ -237,6 +244,7 @@ public class WagsController {
                         wages.setPositionSalary(postGrade.getPostGradeWage());//职级工资
                         //工资小计=岗位工资+职级工资
                         wages.setWageSubtotal(wagesPost.getWagesPostWage()+postGrade.getPostGradeWage());//工资小计
+                        //绩效工资
                         wages.setMeritPay(wages.getWageSubtotal()/2);
                     }
                     wagesList.add(wages);
@@ -392,6 +400,95 @@ public class WagsController {
         } else {
             return JSON.toJSONString(Type.CANCEL);
         }
+    }
+
+    /**
+     * 核算指定月份的工资
+     * @param month
+     * @return
+     */
+    @RequestMapping("thisMonthCalculation")
+    @ResponseBody
+    public String thisMonthCalculation(@RequestParam("month") String month){
+        Users users = this.getPrincipal();
+        if(users==null){
+            return JSON.toJSONString(Type.noUser);
+        }
+
+        if(month!=null && !month.equals("")){
+            Map map = new HashMap<>();
+            //获取指定日期的上一月份
+            String cycle=DateFormat.getYearMonthByMonth(month,-1);
+
+            map.put("month", month + "-01");
+            List<Wages> list = wagsService.getWagsList(map);
+            for (int i = 0; i <list.size() ; i++) {
+                Wages wages=list.get(i);
+                Integer employeeId=wages.getEmployeeId();
+                map.put("cycle",cycle);
+                if(employeeId!=null&&!employeeId.equals("")){
+                    map.put("employeeId",employeeId);
+                }
+                Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+                double comprehensivePerformance=0.00;//综合绩效
+                double foodSupplement=0.00;//餐补
+                if(assessment!=null) {
+                    double score1 = assessment.getScore1();
+                    double score2 = assessment.getScore2();
+                    double jianban = assessment.getJiaban();//加班
+                    int kapqin = assessment.getKaoqin();//考勤
+                    //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+                    BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
+                    double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    assessment.setNetPerformance(netPerformance);
+                    //综合绩效=净绩效+加班*0.01
+                    bd = new BigDecimal(netPerformance + jianban * 0.01);
+                    comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    //餐补=20*考勤
+                    foodSupplement = 20 * kapqin;
+                }
+                //绩效工资=绩效基数*绩效系数
+                BigDecimal bd = new BigDecimal(wages.getMeritBase()*comprehensivePerformance);
+                Double meritPay=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                wages.setMeritPay(meritPay);
+                Double wageSubtotal=wages.getWageSubtotal();//工资小计
+                //应发工资==(岗位工资+职级工资)/2+绩效工资+其他
+                bd = new BigDecimal(wageSubtotal/2+meritPay+wages.getOther());
+                Double wagesPayable=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                wages.setWagesPayable(wagesPayable);
+                //补贴小计=高温补贴+餐补
+                bd = new BigDecimal(wages.getHighTemperatureSubsidy()+foodSupplement);
+                Double subTotalOfSubsidies=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
+                //应发合计=应发工资+补贴小计
+                Double totalPayable=wagesPayable+subTotalOfSubsidies;
+                wages.setTotalPayable(totalPayable);
+                //计税合计=应发合计-扣款合计
+                Double totalTax=totalPayable-wages.getTotalDeduction();
+                //判断此月是否大于等于4月
+                try {
+                    String fourMonth=DateFormat.getAppointDate(wages.getDate(),4);
+                    if(DateFormat.comparetoTime(fourMonth,wages.getDate())){
+                        totalTax=totalTax-300;
+                    }
+                    //************************************ 个调税计算 *****************************************
+                    Double tax = this.taxCalculator(employeeId.toString(), month,wages.getSixSpecialDeductions(),totalTax);
+                    //************************************ 实发工资 *****************************************
+                    Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+                    wages.setIndividualTaxAdjustment(tax);
+                    wages.setNetSalary(netSalary);
+                    wagsService.updWags(wages);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return JSON.toJSONString(Type.error);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return JSON.toJSONString(Type.error);
+                }
+                return JSON.toJSONString(Type.success);
+            }
+        }
+       return JSON.toJSONString(Type.cancel);
     }
 
 

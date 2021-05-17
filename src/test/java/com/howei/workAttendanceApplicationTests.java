@@ -59,7 +59,7 @@ class workAttendanceApplicationTests {
     /**
      * 4月之前工资计算
      */
-    @Test
+    //@Test
     public void taxationBe() {
         String month = "2021-01";
         Map map=new HashMap();
@@ -90,7 +90,7 @@ class workAttendanceApplicationTests {
      * 4月包含4月之后工资计算
      * @return
      */
-    @Test
+    //@Test
     public void taxation() {
         String month = "2021-04";
         //获取在职人员列表
@@ -262,10 +262,13 @@ class workAttendanceApplicationTests {
     @Test
     void a() {
         try {
-            System.out.println(DateFormat.comparetoTime("2021-04-01 00:00:00","2021-04-01 00:00:00"));
+            String fourMonth=DateFormat.getAppointDate("2021-04-01",4);
+            System.out.println(fourMonth);
+            System.out.println(DateFormat.comparetoTime(fourMonth,"2021-04-01"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
     }
 
 }

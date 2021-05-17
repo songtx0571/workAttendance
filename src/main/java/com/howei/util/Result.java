@@ -1,13 +1,21 @@
 package com.howei.util;
 
-import java.util.List;
-
 public class Result {
 
     private int count;//总数
     private Object data;//数据
     private int code;
     private String msg;
+
+    public Result(int count, Object data, int code, String msg) {
+        this.count = count;
+        this.data = data;
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public Result() {
+    }
 
     public int getCount() {
         return count;

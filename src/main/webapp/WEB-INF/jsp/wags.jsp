@@ -50,6 +50,32 @@
         .layui-table-body::-webkit-scrollbar {
             display:none
         }
+        #calculationButton{
+            display: none;
+        }
+        .loading{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgb(0, 0, 0);
+            opacity: 0.8;
+            text-align: center;
+            padding-top: 300px;
+            z-index: 9999999;
+            display: none;
+        }
+        .loading div{
+            animation:turn 1s linear infinite;
+        }
+        @keyframes turn{
+            0%{-webkit-transform:rotate(0deg);}
+            25%{-webkit-transform:rotate(90deg);}
+            50%{-webkit-transform:rotate(180deg);}
+            75%{-webkit-transform:rotate(270deg);}
+            100%{-webkit-transform:rotate(360deg);}
+        }
     </style>
 </head>
 <body>
@@ -65,6 +91,9 @@
         <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn()" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
         <shiro:hasPermission name='工资修改'>
             <button class="layui-btn layui-btn-normal layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="copyWags()" id="copyButton">复制此月数据</button>
+        </shiro:hasPermission>
+        <shiro:hasPermission name='工资修改'>
+            <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
         </shiro:hasPermission>
         <div style="clear: both"></div>
         <div class="copyDiv">
@@ -228,7 +257,7 @@
             </tr>
             <tr>
                 <td style="color: red;">个调税：</td>
-                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00" readonly onchange="twoDecimal('individualTaxAdjustment',this.value);"></td>
+                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00"  onchange="twoDecimal('individualTaxAdjustment',this.value);"></td>
             </tr>
             <tr>
                 <td style="color: dodgerblue;font-weight: bold;">实发工资：</td>
@@ -345,6 +374,11 @@
             </tr>
             </tbody>
         </table>
+    </div>
+</div>
+<div class="loading">
+    <div style="width: 50px;margin: 0 auto;">
+        <i class="layui-icon layui-icon-loading" style="font-size: 60px; color: #fff;"></i>
     </div>
 </div>
 </body>

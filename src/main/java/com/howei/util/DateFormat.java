@@ -83,7 +83,7 @@ public class DateFormat {
      * @return
      */
     public static boolean comparetoTime(String beginTime,String endTime) throws ParseException {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
         Date bt=sdf.parse(beginTime);
         Date et=sdf.parse(endTime);
         if (bt.before(et)){
@@ -242,6 +242,22 @@ public class DateFormat {
         c.add(Calendar.MONTH, interval);
         String time = format.format(c.getTime());
         return time;
+    }
+
+    /**
+     * 获取指定年份的指定月份
+     * @param date
+     * @return
+     * @throws ParseException
+     */
+    public static  String getAppointDate(String date,int month) throws ParseException {
+        Calendar calendar=Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        Date simpDate=simpleDateFormat.parse(date);
+        calendar.setTime(simpDate);
+        int year=calendar.get(Calendar.YEAR);//获取当前年
+        String result=year+"-0"+month+"-01";
+        return result;
     }
 
 }

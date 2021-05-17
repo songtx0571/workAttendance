@@ -41,18 +41,14 @@ function monthUpBtn() {
         form.render(); //更新全部
     });
     showWagsList($("#test15").val());
+    $("#calculationButton").css("display","none");
+    if (upBtnMonth == Number(month)+1) {
+        $("#calculationButton").css("display","block");
+    }
 }
 
 //点击查看下个月数据
 function monthDownBtn() {
-    /*if (upBtnMonth > month && upBtnYear >= year) {
-        layui.use('layer', function () {
-            layer.msg('<p style="width: 100px;text-align: center;">无数据</p>', {
-                time: 1000
-            });
-        });
-        return;
-    }*/
     upBtnMonth++;
     if (upBtnMonth > '12') {
         upBtnYear++;
@@ -69,6 +65,10 @@ function monthDownBtn() {
         form.render(); //更新全部
     });
     showWagsList($("#test15").val());
+    $("#calculationButton").css("display","none");
+    if (upBtnMonth == Number(month)+1) {
+        $("#calculationButton").css("display","block");
+    }
 }
 
 //显示时间
@@ -95,7 +95,6 @@ function showMonth() {
             , type: 'month'
             , trigger: 'click'//呼出事件改成click
             , done: function (value) {
-                $("#monthEnd").val(value);
             }
         });
     })
@@ -190,14 +189,14 @@ function sumWages() {
     meritPay = meritPay.toFixed(2);
     $(".meritPay").val(meritPay);//绩效工资
 
-    //工资小计=岗位工资+职级工资+绩效工资+其他  1
+    //工资小计=岗位工资+职务工资+绩效工资+其他  1
     //工资小计=岗位工资+职级工资  2
     var other = parseFloat($(".other").val());//其他
     var wageSubtotal = basePay + positionSalary;
     wageSubtotal = wageSubtotal.toFixed(2);
     $(".wageSubtotal").val(wageSubtotal);//工资小计
 
-    //应发工资==(岗位工资+职级工资+其他)+绩效工资*绩效系数  1
+    //应发工资==(岗位工资+职务工资+其他)+绩效工资*绩效系数  1
     //应发工资==(岗位工资+职级工资)/2+绩效工资+其他   2
     var performanceCoefficient = parseFloat($(".performanceCoefficient").val());//绩效系数
     var wagesPayable = (basePay + positionSalary)/2 + other +  parseFloat(meritPay);
@@ -281,9 +280,27 @@ function showWagsList(m) {
                 , {field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align: 'center'}
                 , {field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align: 'center'}
                 , {field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align: 'center'}
+                , {field: 'sixSpecialDeductions', title: '六项专项扣除', sort: true, totalRow: true, align: 'center'}
                 , {field: 'totalTax', title: '计税合计', sort: true, align: 'center', totalRow: true}
                 , {field: 'individualTaxAdjustment', title: '个调税', sort: true, align: 'center', totalRow: true}
                 , {field: 'netSalary', title: '实发工资', sort: true, totalRow: true, align: 'center'}
+                , {field: 'basePay', title: '基本工资', align: 'center', hide: true}
+                , {field: 'skillPay', title: '技能工资', align: 'center', hide: true}
+                , {field: 'seniorityWage', title: '工龄工资', align: 'center', hide: true}
+                , {field: 'positionSalary', title: '职务工资', align: 'center', hide: true}
+                , {field: 'other', title: '其他', align: 'center', hide: true}
+                , {field: 'meritPay', title: '绩效工资', align: 'center', hide: true}
+                , {field: 'meritBase', title: '绩效基数', align: 'center', hide: true}
+                , {field: 'totalPayable', title: '应发合计', align: 'center', hide: true}
+                , {field: 'foodSupplement', title: '餐补', align: 'center', hide: true}
+                , {field: 'highTemperatureSubsidy', title: '高温补贴', align: 'center', hide: true}
+                , {field: 'unionFees', title: '工会费', align: 'center', hide: true}
+                , {field: 'accumulationFund', title: '公积金', align: 'center', hide: true}
+                , {field: 'medicalInsurance', title: '医疗保险', align: 'center', hide: true}
+                , {field: 'unemploymentBenefits', title: '失业金', align: 'center', hide: true}
+                , {field: 'endowmentInsurance', title: '养老保险', align: 'center', hide: true}
+                , {field: 'otherDeductions', title: '其他扣款', align: 'center', hide: true}
+                , {field: 'remark', title: '备注', align: 'center', hide: true}
                 , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120, align: 'center'}
             ]]
             , done: function (res, curr, count) {
@@ -291,9 +308,9 @@ function showWagsList(m) {
                 var currentMonth = date.getMonth() + 1;
                 var selYear = ($("#test15").val()).substr(0,4);
                 var selMonth = ($("#test15").val()).substr(5,2);
-                if (currentYear != selYear || currentMonth != selMonth) {
+                if (currentYear == selYear && currentMonth > selMonth) {
                     for (var i = 0; i < res.count; i ++) {
-                        //$('.editBtn').css("display", "none");
+                        $('.editBtn').css("display", "none");
                     }
                 }
             }
@@ -330,6 +347,17 @@ function showWagsList(m) {
                 $("#selPostLevelName").val(data.postGradeId);
                 form.render();
             });
+            $.ajax({
+                type: "GET",
+                url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
+                data: {cycle: m,employeeId:data.employeeId},
+                async: false,
+                dataType: "json",
+                success: function (data) {
+                    $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
+                    $(".foodSupplement").val(data.foodSupplement);//餐补
+                }
+            })
             $(".userPost").val(data.wagesPostName);//岗位
             $(".postLevel").val(data.postGradeName);//岗位等级
             $(".basePay").val(data.basePay);//岗位工资
@@ -338,7 +366,6 @@ function showWagsList(m) {
             $(".meritPay").val(data.meritPay);//绩效工资
             $(".other").val(data.other);//其他
             $(".wageSubtotal").val(data.wageSubtotal);//工资小计
-            $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
             $(".wagesPayable").val(data.wagesPayable);//应发工资
             if (data.foodSupplement == "" || data.foodSupplement == null) {
                 data.foodSupplement = 0.00;
@@ -346,7 +373,6 @@ function showWagsList(m) {
             if (data.highTemperatureSubsidy == "" || data.highTemperatureSubsidy == null) {
                 data.highTemperatureSubsidy = 0.00;
             }
-            $(".foodSupplement").val(data.foodSupplement);//餐补
             $(".highTemperatureSubsidy").val(data.highTemperatureSubsidy);//高温补贴
             $(".subTotalOfSubsidies").val(data.subTotalOfSubsidies);//补贴小计
             $(".totalPayable").val(data.totalPayable);//应发合计
@@ -426,6 +452,39 @@ function copyOk() {
                 alert("周期已存在");
             }
             layer.closeAll();
+        }
+    });
+}
+
+//本月工资核算
+function calculationWags () {
+    layer.open({
+        type: 1
+        ,title: false //不显示标题栏
+        ,closeBtn: false
+        ,area: '300px;'
+        ,shade: 0.8
+        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+        ,btn: ['确定', '取消']
+        ,btnAlign: 'c'
+        ,moveType: 1 //拖拽模式，0或者1
+        ,content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">确认计算该月工资吗？</div>'
+        ,success: function(layero){
+            var btn = layero.find('.layui-layer-btn');
+            btn.find('.layui-layer-btn0').click(function () {
+                $(".loading").css("display",'block');
+                $.ajax({
+                    "type" : 'put',
+                    "url": path + "/wa/wags/thisMonthCalculation",
+                    data: {month:$("#test15").val()},
+                    dataType: "json",
+                    "success":function(data){
+                        if (data == "success"){
+                            $(".loading").css("display",'none');
+                        }
+                    }
+                });
+            });
         }
     });
 }
