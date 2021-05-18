@@ -485,8 +485,8 @@ public class WagsController {
                     e.printStackTrace();
                     return JSON.toJSONString(Type.error);
                 }
-                return JSON.toJSONString(Type.success);
             }
+            return JSON.toJSONString(Type.success);
         }
        return JSON.toJSONString(Type.cancel);
     }

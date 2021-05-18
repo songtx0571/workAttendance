@@ -6,6 +6,7 @@ import com.howei.pojo.Users;
 import com.howei.service.EmployeeService;
 import com.howei.util.Page;
 import com.howei.util.Result;
+import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -55,14 +56,12 @@ public class EmployeeController {
 
     /**
      * 获取员工列表
-     *
-     * @param request
      * @return result
      */
     @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/getEmployeeList")
     @ResponseBody
-    public String getEmployeeList(HttpServletRequest request) {
+    public String getEmployeeList(@RequestParam("sign") String sign) {
         Subject subject = SecurityUtils.getSubject();
         Users users=(Users)subject.getPrincipal();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
@@ -74,6 +73,9 @@ public class EmployeeController {
         }
         if (selectAllFlag) {
             Map map = new HashMap();
+            if(sign!=null && !sign.equals("")){
+                map.put("noDistribution", "noDistribution");
+            }
             list = employeeService.getEmployeeList(map);
         } else {
             List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
@@ -90,6 +92,9 @@ public class EmployeeController {
             }
             Map map = new HashMap();
             map.put("empId", empIdStr);
+            if(sign!=null && !sign.equals("")){
+                map.put("noDistribution", "noDistribution");
+            }
             list = employeeService.getEmployeeList(map);
         }
         Result result = new Result();
@@ -197,6 +202,35 @@ public class EmployeeController {
         result.setCount(list.size());
         result.setData(list);
         return JSON.toJSONString(result);
+    }
+
+    /**-----------------------------------------------获取未分配人员-------------------------------------------*/
+
+    /**
+     * 获取未分配人员列表
+     * @return
+     */
+    @RequestMapping("getNoDistributionList")
+    @ResponseBody
+    public String getNoDistributionList(){
+        Subject subject = SecurityUtils.getSubject();
+        boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
+        Users users=this.getPrincipal();
+        //用户信息过期，重新登录
+        if (users == null) {
+            return JSON.toJSONString(Type.noUser);
+        }
+        //没有查询权限
+        if (!selectAllFlag) {
+            return JSON.toJSONString(null);
+        }
+        Map map = new HashMap();
+        map.put("noDistribution", "noDistribution");
+        List<Employee> list = employeeService.getEmployeeList(map);
+        if(list==null){
+            return JSON.toJSONString(0);
+        }
+        return JSON.toJSONString(list.size());
     }
 
 }
