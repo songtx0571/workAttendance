@@ -1,9 +1,6 @@
 package com.howei;
 
-import com.howei.pojo.Assessment;
-import com.howei.pojo.Tax;
-import com.howei.pojo.Wages;
-import com.howei.pojo.WagesPost;
+import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
 import com.howei.service.WageBaseService;
@@ -260,15 +257,17 @@ class workAttendanceApplicationTests {
     }
 
     @Test
-    void a() {
-        try {
-            String fourMonth=DateFormat.getAppointDate("2021-04-01",4);
-            System.out.println(fourMonth);
-            System.out.println(DateFormat.comparetoTime(fourMonth,"2021-04-01"));
-        } catch (ParseException e) {
-            e.printStackTrace();
+    void getEmployeeList() {
+        String sign="noDistribution";
+        //String sign="distribution";
+        Map map = new HashMap();
+        if (sign != null && !sign.equals("")) {
+            map.put("sign", sign);
         }
-
+        List<Employee> list  = employeeService.getEmployeeList(map);
+        for (Employee emp:list) {
+            System.out.println(emp.getName());
+        }
     }
 
 }

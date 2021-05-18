@@ -55,7 +55,7 @@
         <if test="empId!=null">
             and FIND_IN_SET(e.id,#{empId})
         </if>
-        <if test="noDistribution!=null">
+        <if test="sign!=null and sign=='noDistribution'">
             and (e.manager=NULL or e.manager=0)
         </if>
         <if test="page!=null and pageSize!=null">

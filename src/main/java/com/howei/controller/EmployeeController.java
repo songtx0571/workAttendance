@@ -61,7 +61,7 @@ public class EmployeeController {
     @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/getEmployeeList")
     @ResponseBody
-    public String getEmployeeList(@RequestParam("sign") String sign) {
+    public String getEmployeeList(String sign) {
         Subject subject = SecurityUtils.getSubject();
         Users users=(Users)subject.getPrincipal();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
@@ -74,7 +74,7 @@ public class EmployeeController {
         if (selectAllFlag) {
             Map map = new HashMap();
             if(sign!=null && !sign.equals("")){
-                map.put("noDistribution", "noDistribution");
+                map.put("sign", sign);
             }
             list = employeeService.getEmployeeList(map);
         } else {
@@ -93,7 +93,7 @@ public class EmployeeController {
             Map map = new HashMap();
             map.put("empId", empIdStr);
             if(sign!=null && !sign.equals("")){
-                map.put("noDistribution", "noDistribution");
+                map.put("sign", sign);
             }
             list = employeeService.getEmployeeList(map);
         }
@@ -225,7 +225,7 @@ public class EmployeeController {
             return JSON.toJSONString(null);
         }
         Map map = new HashMap();
-        map.put("noDistribution", "noDistribution");
+        map.put("sign", "noDistribution");
         List<Employee> list = employeeService.getEmployeeList(map);
         if(list==null){
             return JSON.toJSONString(0);
