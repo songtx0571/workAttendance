@@ -18,4 +18,6 @@ public interface DepartmentMapper {
     List<Company> getDepartmentMap(Map map);
 
     List<Company> getCompanyMap();
+
+    List<Map<String, String>> getDepMap();
 }

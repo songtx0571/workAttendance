@@ -138,13 +138,13 @@ function getSel(){
                             form.render();//菜单渲染 把内容加载进去
                         }
                     });
-                    form.on('select(selPostLevelName)', function (data1) {
-                        $("#selPostLevelNameHidden").val(data1.value);
-                        var dom1 = data1.elem[data1.elem.selectedIndex].label;
-                        dom1 = parseFloat(dom1)
-                        $(".positionSalary").val(dom1);
-                        sumWages();
-                    });
+                });
+                form.on('select(selPostLevelName)', function (data1) {
+                    $("#selPostLevelNameHidden").val(data1.value);
+                    var dom1 = data1.elem[data1.elem.selectedIndex].label;
+                    dom1 = parseFloat(dom1)
+                    $(".positionSalary").val(dom1);
+                    sumWages();
                 });
             }
         });
@@ -236,7 +236,7 @@ function sumWages() {
         url: path + "/wa/wags/taxation",
         data: {
             employeeId: $("#userId").val(),//员工ID
-            month: $("#monthStart").val(),//月份
+            month: $("#test15").val(),//月份
             totalTax: $(".totalTax").val(),//计税合计
             specialAdditionalDeduction: $(".sixSpecialDeductions").val()//专项扣除  六项专项扣除金额
         },
@@ -272,7 +272,7 @@ function showWagsList(m) {
                 {field: 'userNumber', title: '编号', sort: true, width: 70, totalRowText: '合计', align: 'center'}
                 , {field: 'employeeName', title: '姓名', width: 100, align: 'center'}
                 , {field: 'departmentName', title: '项目部', sort: true, align: 'center'}
-                , {field: 'isChanged', title: '人事异动', toolbar: '#barisChanged', sort: true, align: 'center'}
+                , {field: 'isChanged', title: '人事异动', sort: true, align: 'center'}
                 , {field: 'laowupaiqian', title: '劳务派遣', sort: true, align: 'center'}
                 , {field: 'wagesPostName', title: '岗位等级', sort: true, align: 'center', toolbar: '#barDemoPost'}
                 , {field: 'wageSubtotal', title: '工资小计', sort: true, align: 'center', totalRow: true}
@@ -280,8 +280,8 @@ function showWagsList(m) {
                 , {field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align: 'center'}
                 , {field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align: 'center'}
                 , {field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align: 'center'}
-                , {field: 'sixSpecialDeductions', title: '六项专项扣除', sort: true, totalRow: true, align: 'center'}
-                , {field: 'totalTax', title: '计税合计', sort: true, align: 'center', totalRow: true}
+                , {field: 'sixSpecialDeductions', title: '六项专项扣除', sort: true, totalRow: true, align: 'center', hide: true}
+                , {field: 'totalTax', title: '计税合计', sort: true, align: 'center', totalRow: true, hide: true}
                 , {field: 'individualTaxAdjustment', title: '个调税', sort: true, align: 'center', totalRow: true}
                 , {field: 'netSalary', title: '实发工资', sort: true, totalRow: true, align: 'center'}
                 , {field: 'basePay', title: '基本工资', align: 'center', hide: true}
@@ -347,17 +347,17 @@ function showWagsList(m) {
                 $("#selPostLevelName").val(data.postGradeId);
                 form.render();
             });
-            $.ajax({
+           /* $.ajax({
                 type: "GET",
                 url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
                 data: {cycle: m,employeeId:data.employeeId},
                 async: false,
                 dataType: "json",
-                success: function (data) {
-                    $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
-                    $(".foodSupplement").val(data.foodSupplement);//餐补
-                }
-            })
+                success: function (data) {*/
+            $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
+            $(".foodSupplement").val(data.foodSupplement);//餐补
+            //     }
+            // })
             $(".userPost").val(data.wagesPostName);//岗位
             $(".postLevel").val(data.postGradeName);//岗位等级
             $(".basePay").val(data.basePay);//岗位工资
@@ -389,7 +389,18 @@ function showWagsList(m) {
             $(".netSalary").val(data.netSalary);//实发工资
             $(".remark").val(data.remark);//备注
             if (obj.event === 'edit') {//修改
-                sumWages();
+                 $.ajax({
+                type: "GET",
+                url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
+                data: {cycle: m,employeeId:data.employeeId},
+                async: false,
+                dataType: "json",
+                success: function (data) {
+                        $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
+                        $(".foodSupplement").val(data.foodSupplement);//餐补
+                        sumWages();
+                    }
+                });
                 layer.open({
                     type: 1
                     , id: 'updateFinance' //防止重复弹出
@@ -481,6 +492,48 @@ function calculationWags () {
                     "success":function(data){
                         if (data == "success"){
                             $(".loading").css("display",'none');
+                        }
+                    }
+                });
+            });
+        }
+    });
+}
+
+//本月工资核算
+function calculationWags () {
+    layer.open({
+        type: 1
+        ,title: false //不显示标题栏
+        ,closeBtn: false
+        ,area: '300px;'
+        ,shade: 0.8
+        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+        ,btn: ['确定', '取消']
+        ,btnAlign: 'c'
+        ,moveType: 1 //拖拽模式，0或者1
+        ,content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">确认计算该月工资吗？</div>'
+        ,success: function(layero){
+            var btn = layero.find('.layui-layer-btn');
+            btn.find('.layui-layer-btn0').click(function () {
+                $(".loading").css("display",'block');
+                $.ajax({
+                    "type" : 'put',
+                    "url": path + "/wa/wags/thisMonthCalculation",
+                    data: {month:$("#test15").val()},
+                    dataType: "json",
+                    "success":function(data){
+                        if (data == "success"){
+                            $(".loading").css("display",'none');
+                        } else if (data == "error"){ //后台错误
+                            $(".loading").css("display",'none');
+                            layer.alert("操作失败");
+                        } else if (data == "noParameters"){ //参数错误
+                            $(".loading").css("display",'none');
+                            layer.alert("前台参数错误");
+                        } else if (data == "noUser"){ //用户信息过期
+                            $(".loading").css("display",'none');
+                            layer.alert("用户信息过期");
                         }
                     }
                 });

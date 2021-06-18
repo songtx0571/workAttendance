@@ -7,6 +7,7 @@ import com.howei.service.EmployeeService;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import com.howei.util.Type;
+import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;

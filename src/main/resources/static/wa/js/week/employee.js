@@ -1,7 +1,7 @@
 var path = "";
 $(function () {
     // 显示员工信息();
-    showEmployeeList();
+    showEmployeeList('distribution');
     //显示绩效管理人
     showManagerName();
     /*根据姓名搜索员工信息*/
@@ -58,8 +58,16 @@ $(function () {
         if (event.keyCode == "13") {
             $("#searchBtn").click();
         }
+    });
+    $.ajax({
+        type: "GET",
+        url: path + "/wa/employee/getNoDistributionList",
+        data: {},
+        dataType: "text",
+        success: function (data) {
+            $("#peopleNum").html(data)
+        }
     })
-
 });
 
 //显示绩效管理人  、 劳务派遣
@@ -94,7 +102,7 @@ function showManagerName() {
 }
 
 /*查询员工信息*/
-function showEmployeeList() {
+function showEmployeeList(type) {
     var top = $(".bodyHeader").css("height");
     var win = $(window).height();
     var tp = top.indexOf("p");
@@ -107,7 +115,7 @@ function showEmployeeList() {
             , height: height
             , toolbar: true
             , totalRow: true
-            , url: path + '/wa/employee/getEmployeeList'  //数据接口
+            , url: path + '/wa/employee/getEmployeeList?sign='+type  //数据接口
             , cols: [[ //表头
                 {field: 'userNumber', title: '编号', width: 80, sort: true}
                 , {field: 'name', title: '姓名', width: 100}
@@ -233,7 +241,7 @@ function updUserInfo() {
         dataType: "json",
         success: function (data) {
             layer.close(index);
-            showEmployeeList();
+            showEmployeeList('distribution');
         }
     });
 }

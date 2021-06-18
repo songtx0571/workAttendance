@@ -95,6 +95,9 @@
         <shiro:hasPermission name='工资修改'>
             <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
         </shiro:hasPermission>
+<%--        <shiro:hasPermission name='工资修改'>--%>
+            <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
+<%--        </shiro:hasPermission>--%>
         <div style="clear: both"></div>
         <div class="copyDiv">
             <input type="hidden" id="monthEnd">
@@ -115,25 +118,6 @@
         <script type="text/html" id="barDemoPost">
             <span>{{= d.wagesPostName}} {{= d.postGradeName}}</span>
         </script>
-        <script type="text/html" id="barisChanged">
-            {{#  if(d.isChanged == '0'){ }}
-            <span>正常</span>
-            {{#  } else if(d.isChanged == '1') { }}
-            <span>当月入职</span>
-            {{#  } else if(d.isChanged == '2') { }}
-            <span>当月离职</span>
-            {{#  } else if(d.isChanged == '3') { }}
-            <span>试用期</span>
-            {{#  } else if(d.isChanged == '4') { }}
-            <span>试用转正</span>
-            {{#  } else if(d.isChanged == '5') { }}
-            <span>派遣调整</span>
-            {{#  } else if(d.isChanged == '6') { }}
-            <span>部门调整</span>
-            {{#  } else if(d.isChanged == '7') { }}
-            <span>薪酬调整</span>
-            {{#  } }}
-        </script>
         <script type="text/html" id="barDemo">
             <a class="layui-btn layui-btn-xs detailBtn" lay-event="detail">详情</a>
             <shiro:hasPermission name='工资修改'>
@@ -143,6 +127,7 @@
     </div>
     <div class="updateFinance">
         <input type="hidden" id="dateHidden">
+
         <table style="margin-top: 20px;" cellspacing="0">
             <thead>
             <tr>
@@ -195,7 +180,7 @@
                 <td>绩效基数：</td>
                 <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase" placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
                 <td>绩效系数：</td>
-                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);sumWages();"></td>
+                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);sumWages();" readonly></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
@@ -205,21 +190,21 @@
             </tr>
             <tr>
                 <td style="color: red;">工资小计：</td>
-                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00" readonly onchange="twoDecimal('wageSubtotal',this.value);"></td>
+                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00" onchange="twoDecimal('wageSubtotal',this.value);" readonly></td>
                 <td style="color: red;">应发工资：</td>
-                <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00" readonly onchange="twoDecimal('wagesPayable',this.value);"></td>
+                <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00" onchange="twoDecimal('wagesPayable',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>餐补：</td>
-                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);sumWages();"></td>
+                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);sumWages();" readonly></td>
                 <td>高温补贴：</td>
                 <td><input type="text" class="highTemperatureSubsidy" id="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td style="color: red;">补贴小计：</td>
-                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly onchange="twoDecimal('subTotalOfSubsidies',this.value);"></td>
+                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" onchange="twoDecimal('subTotalOfSubsidies',this.value);" readonly></td>
                 <td style="color: red;">应发合计：</td>
-                <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00" readonly onchange="twoDecimal('totalPayable',this.value);"></td>
+                <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00" onchange="twoDecimal('totalPayable',this.value);" readonly></td>
             </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">应扣金额</td>
@@ -244,24 +229,24 @@
             </tr>
             <tr>
                 <td style="color: red;">扣款合计：</td>
-                <td><input type="text" class="totalDeduction" id="totalDeduction" name="totalDeduction" placeholder="0.00" readonly  onchange="twoDecimal('totalDeduction',this.value);"></td>
+                <td><input type="text" class="totalDeduction" id="totalDeduction" name="totalDeduction" placeholder="0.00"  onchange="twoDecimal('totalDeduction',this.value);" readonly></td>
             </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">其他</td>
             </tr>
             <tr>
                 <td style="color: red;">计税合计：</td>
-                <td><input type="number" class="totalTax" id="totalTax" name="totalTax" placeholder="0.00" readonly onchange="twoDecimal('totalTax',this.value);"></td>
+                <td><input type="number" class="totalTax" id="totalTax" name="totalTax" placeholder="0.00" onchange="twoDecimal('totalTax',this.value);" readonly></td>
                 <td>六项专项扣除金额：</td>
                 <td><input type="text" class="sixSpecialDeductions" id="sixSpecialDeductions" name="sixSpecialDeductions" placeholder="0.00" onBlur="twoDecimal('sixSpecialDeductions',this.value);sumWages()"></td>
             </tr>
             <tr>
                 <td style="color: red;">个调税：</td>
-                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00"  onchange="twoDecimal('individualTaxAdjustment',this.value);"></td>
+                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00"  onchange="twoDecimal('individualTaxAdjustment',this.value);" readonly></td>
             </tr>
             <tr>
                 <td style="color: dodgerblue;font-weight: bold;">实发工资：</td>
-                <td colspan="3"><input type="text" class="netSalary" id="netSalary" name="netSalary" placeholder="0.00" readonly  onchange="twoDecimal('netSalary',this.value);"></td>
+                <td colspan="3"><input type="text" class="netSalary" id="netSalary" name="netSalary" placeholder="0.00" onchange="twoDecimal('netSalary',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>备注：</td>

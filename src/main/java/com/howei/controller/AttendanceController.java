@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -38,6 +39,17 @@ public class AttendanceController {
     public String toworkHours(HttpServletRequest request){
         request.setAttribute("attendance","workHours");
         return "attendance";
+    }
+
+    /**
+     * 运行工时
+     * @return
+     */
+    @RequestMapping("/toOverhaulHour")
+    public ModelAndView toOverhaulHour(){
+        ModelAndView modelAndView=new ModelAndView();
+        modelAndView.setViewName("overhaulHour");
+        return modelAndView;
     }
 
     /**

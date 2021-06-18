@@ -11,6 +11,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import sun.invoke.empty.Empty;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -141,39 +142,6 @@ public class WagsController {
             return result;
         }
         return null;
-    }
-
-    /**
-     * 计算综合绩效
-     * @param cycle
-     * @param employeeId
-     * @return
-     */
-    public double getAssessmentByEmployeeId(String cycle,String employeeId) {
-        Map map=new HashMap();
-        if(cycle!=null&&!cycle.equals("")){
-            //获取指定日期的上一月份
-            cycle=DateFormat.getYearMonthByMonth(cycle,-1);
-            map.put("cycle",cycle);
-        }
-        if(employeeId!=null&&!employeeId.equals("")){
-            map.put("employeeId",employeeId);
-        }
-        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
-        if(assessment!=null){
-            double score1=assessment.getScore1();
-            double score2=assessment.getScore2();
-            double jianban=assessment.getJiaban();
-            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
-            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            assessment.setNetPerformance(netPerformance);
-            //综合绩效=净绩效+加班*0.01
-            bd = new BigDecimal(netPerformance+jianban*0.01);
-            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            return comprehensivePerformance;
-        }
-        return 0.0;
     }
 
     public String getUsersId(Integer empId, List<Employee> empList) {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.howei.mapper.WorkingMapper" >
+
+    <resultMap id="workingMap" type="com.howei.pojo.OperatingHours">
+        <result column="id" property="id"></result>
+        <result column="scrdailyId" property="scrdailyId"></result>
+        <result column="monthDay" property="monthDay"></result>
+        <result column="tradersTime" property="tradersTime"></result>
+        <result column="successorTime" property="successorTime"></result>
+        <result column="projectId" property="projectId"></result>
+        <result column="other" property="other"></result>
+        <result column="employeeId" property="employeeId"></result>
+        <result column="workingTime" property="workingTime"></result>
+    </resultMap>
+
+    <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
+        select oh.id,oh.scrdailyId,oh.monthDay,oh.tradersTime,oh.successorTime,oh.projectId,oh.other,oh.employeeId
+            ,oh.workingTime,e.name as employeeName,e.userNumber as employeeNumber
+        from operatingHours oh
+        left join employee e on e.id=oh.employeeId
+        <where>
+            <if test="monthDay!=null and monthDay!=''">
+                and date_format(oh.monthDay,'%Y-%m') = date_format(#{monthDay},'%Y-%m')
+            </if>
+            <if test="empIdStr!=null">
+                and FIND_IN_SET(oh.employeeId,#{empIdStr})
+            </if>
+            <if test="projectId!=null">
+                and projectId=#{projectId}
+            </if>
+        </where>
+        ORDER BY oh.monthDay
+    </select>
+</mapper>

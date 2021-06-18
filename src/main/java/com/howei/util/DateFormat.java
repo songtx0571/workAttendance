@@ -1,5 +1,6 @@
 package com.howei.util;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -163,8 +164,8 @@ public class DateFormat {
      * @return
      */
     public static int ThisMonthDay(){
-        Calendar cal = java.util.Calendar.getInstance();
-        int maxDay = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+        Calendar cal = Calendar.getInstance();
+        int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
         return maxDay;
     }
 
@@ -257,6 +258,45 @@ public class DateFormat {
         calendar.setTime(simpDate);
         int year=calendar.get(Calendar.YEAR);//获取当前年
         String result=year+"-0"+month+"-01";
+        return result;
+    }
+
+    /**
+     * 计算两个日期间的间隔时间
+     * 不可使用，仅限考勤使用
+     * @param beginTime
+     * @param endTime
+     * @return
+     * @throws ParseException
+     */
+    public static Double getBothTime(String beginTime,String endTime)throws ParseException{
+        long nd = 1000 * 24 * 60 * 60;
+        long nh = 1000 * 60 * 60;
+        long nm = 1000 * 60;
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        long bt=sdf.parse(beginTime).getTime();
+        long et=sdf.parse(endTime).getTime();
+        long diff=(et-bt);
+        // 计算差多少天
+        long day = diff / nd;
+        // 计算差多少小时
+        long hour = diff % nd / nh;
+        // 计算差多少分钟
+        long min = diff % nd % nh / nm;
+        Double result=0.00;
+        if(day<1&&hour>1&&hour<8){
+            BigDecimal bd = new BigDecimal((double) min/60);
+            double ss=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            result=hour + ss;
+        } else if(day<1&&hour<1){
+            BigDecimal bd = new BigDecimal((double) min/60);
+            double ss=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            result=ss;
+        } else if(hour==1){
+            result=1.0;
+        } else if(day<1&&hour>7){
+            result=8.5;
+        }
         return result;
     }
 

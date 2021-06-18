@@ -7,7 +7,7 @@ public class Assessment {
     private int employeeId;
     private String name;
     private String userNumber;
-    private int jiaban;
+    private double jiaban;
     private int zhiban;
     private int kaoqin;
     private int score1;//合计
@@ -70,11 +70,11 @@ public class Assessment {
         this.name = name;
     }
 
-    public int getJiaban() {
+    public double getJiaban() {
         return jiaban;
     }
 
-    public void setJiaban(int jiaban) {
+    public void setJiaban(double jiaban) {
         this.jiaban = jiaban;
     }
 

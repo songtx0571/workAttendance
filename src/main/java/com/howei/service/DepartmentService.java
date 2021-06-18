@@ -15,4 +15,6 @@ public interface DepartmentService {
     List<Map<String,String>> getDepartmentMap(Map map);
 
     List<Map<String,String>> getCompanyMap();
+
+    List<Map<String, String>> getDepMap();
 }

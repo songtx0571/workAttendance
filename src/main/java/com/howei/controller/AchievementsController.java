@@ -6,6 +6,7 @@ import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
 import com.howei.service.PerformanceService;
+import com.howei.service.WorkingService;
 import com.howei.util.DateFormat;
 import com.howei.util.Page;
 import com.howei.util.Result;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.shiro.authz.annotation.Logical.OR;
 
@@ -28,7 +32,7 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
  */
 @Controller
 @RequestMapping("/wa/achievements")
-//@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
+@CrossOrigin(origins="http://test.hopeop.com:80",allowCredentials = "true")
 public class AchievementsController {
 
     @Autowired
@@ -39,6 +43,10 @@ public class AchievementsController {
 
     @Autowired
     private EmployeeService employeeService;
+
+
+    @Autowired
+    private WorkingService workingService;
 
     @RequestMapping("/toAchievements")
     public String toAchievements(){
@@ -87,6 +95,16 @@ public class AchievementsController {
                 }
             }
         }
+        /*else{//当用户session为空，默认为管理员权限
+            List<Employee> rootList=employeeService.getEmployeeByManager(240);
+            if(rootList!=null){
+                List<Employee> empList=employeeService.getEmployeeByManager(0);
+                for(Employee employee:rootList){
+                    empIdStr+=employee.getId()+",";
+                    empIdStr+=getUsersId(employee.getId(),empList);
+                }
+            }
+        }*/
         if(empIdStr!=null&&!empIdStr.equals("")){
             empIdStr=empIdStr.substring(0,empIdStr.lastIndexOf(","));
         }
@@ -210,12 +228,6 @@ public class AchievementsController {
     }
 
     /**
-     * id：id
-     * 工作任务：workTasks
-     * 考核标准：access
-     * 考核详情：detail
-     * 考核分：score
-     * 权重： weights
      * 修改业绩
      * @return
      */
@@ -349,13 +361,52 @@ public class AchievementsController {
         if(employeeId!=null&&!employeeId.equals("")){
             map.put("employeeId",employeeId);
         }
+
         Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+        map.clear();
+        map.put("monthDay",cycle+"-01");
+        map.put("empIdStr",employeeId);
+        List<OperatingHours> list=workingService.getOperatingHoursList(map);
+        int size=0;
+        if(list!=null && list.size()>0){
+            size=list.size();
+        }
+        //获取此月天数
+        int day=DateFormat.getDaysOfMonth(cycle+"-01");
+        //获取此月（1-31天）数据
+        int workAttendance=0;//考勤天数
+        double workingTotal=0.0;//此月总共工时
+        for (int i = 0; i < day; i++) {
+            if(i<size){
+                OperatingHours operatingHours=list.get(i);
+                double workingTime=operatingHours.getWorkingTime();//工时
+                //考勤天数:工时不为o
+                if(workingTime>0){
+                    workAttendance++;
+                }
+                //此月总共工时
+                workingTotal+=workingTime;
+            }
+        }
+        //本月要求工时数
+        BigDecimal bd = new BigDecimal(40/7*day);
+        double thisMonthRequirementTime=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();//本月工时
+        //判断是否有加班工时
+        double workOvertime=0.0;
+        if(workingTotal>thisMonthRequirementTime){
+            bd = new BigDecimal(workingTotal-thisMonthRequirementTime);
+            workOvertime=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();//加班工时
+        }else{
+            workOvertime=0.0;//加班工时
+        }
+        assessment.setJiaban(workOvertime);
+        assessment.setKaoqin(workAttendance);
         if(assessment!=null){
             double score1=assessment.getScore1();
             double score2=assessment.getScore2();
-            double jianban=assessment.getJiaban();
+            double jianban=assessment.getJiaban();//加班
             //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
+            bd = new BigDecimal((score1*0.5+score2*0.5)/90);
             double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             assessment.setNetPerformance(netPerformance);
             //综合绩效=净绩效+加班*0.01
@@ -407,7 +458,7 @@ public class AchievementsController {
     @RequestMapping(value = "/copyPeAccMonth",method = {RequestMethod.POST})
     @ResponseBody
     public String copyPeAccMonth(@RequestBody String Data){
-         if(Data!=null&&!Data.equals("")){
+        if(Data!=null&&!Data.equals("")){
 
         }
         return JSON.toJSONString("");

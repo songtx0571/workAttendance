@@ -34,5 +34,9 @@
     <select id="getCompanyMap" resultType="com.howei.pojo.Company">
         select * from company where isactive=1 and parent=0
     </select>
+    
+    <select id="getDepMap" resultType="com.howei.pojo.Company">
+        select * from company where isactive=1 and parent=1 and id not in (79,80)
+    </select>
 
 </mapper>

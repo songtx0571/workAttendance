@@ -6,7 +6,7 @@ $(function () {
     //显示考核日期
     showCycleData();
     //显示部门
-    //showCompany();
+    // showCompany();
     // 查询员工绩效信息
     showTable(year, "");
     $("#test2").val(year);
@@ -14,8 +14,8 @@ $(function () {
 
 /*显示考核日期*/
 function showCycleData() {
-    layui.use('laydate', function () {
-        var laydate = layui.laydate;
+    layui.use(['laydate','form'], function () {
+        var laydate = layui.laydate, form = layui.form;
         //查询所有数据日期
         laydate.render({
             elem: '#test2'

@@ -19,7 +19,7 @@ function showTable(){
                 {field: 'id', title: '编号', align: 'center', hide: true}
                 ,{field: 'name', title: '岗位名称', align: 'center', sort: true}
                 ,{field: 'wagesPostWage', title: '岗位工资', align: 'center', sort: true, width: 150, style: 'color:#0c7cd5'}
-                ,{field: 'gradeName', title: '岗位等级', toolbar: '#barGradeName', align: 'center', sort: true}
+                ,{field: 'gradeName', title: '职级等级', toolbar: '#barGradeName', align: 'center', sort: true}
                 ,{fixed: '', title: '操作', toolbar: '#barDemo', align: 'center', width: 150}
             ]]
             , done: function (res, curr, count) {}

@@ -48,4 +48,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         return result;
     }
+
+    @Override
+    public List<Map<String, String>> getDepMap() {
+        return departmentMapper.getDepMap();
+    }
 }

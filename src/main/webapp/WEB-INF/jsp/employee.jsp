@@ -43,21 +43,6 @@
         text-align: center;
     }
 
-    /*ul {
-        margin: 0px 0px 0px 0px;
-        padding: 20px 0px 0px 0px;
-        width: 100%;
-        height: 80%;
-        background-color: #F0F8FF;
-        list-style-type: none;
-    }
-
-    li {
-        height: 100%;
-        float: left;
-        margin-left: 40px;
-    }*/
-
     .updateUser {
         width: 100%;
         padding: 5px;
@@ -109,21 +94,18 @@
     }
 
     .updateUser input[type=button], .bodyHeader input[type=button] {
-        width: 20%;
+        width: 100px;
         height: 35px;
         outline: none;
         font-size: 18px;
         background-color: #1E9FFF;
         color: #fff;
-        margin-right: 5%;
         border: none;
-        border-radius: 8px;
     }
 
     .bodyHeader input[type=text] {
-        width: 70%;
+        width: 500px;
         height: 50px;
-        margin-right: 5%;
         float: left;
         font-size: 20px;
         padding-left: 8px;
@@ -146,9 +128,10 @@
 <body>
 <div class="warp">
     <div class="bodyHeader">
-        <div style="width: 50%;margin: 10px auto;">
+        <div style="width: 750px;margin: 10px auto;">
             <input type="text" placeholder="请输入员工编号/姓名/地址" id="searchName">
             <input type="button" value="搜索" style="height: 50px;" id="searchBtn">
+            <a onclick="showEmployeeList('noDistribution')" style="font-size: 17px;float: right;line-height: 50px;cursor: pointer;">未分配人员&nbsp;&nbsp;&nbsp;<span class="layui-badge" id="peopleNum"></span></a>
         </div>
     </div>
     <%--内容主体--%>
@@ -171,31 +154,31 @@
                     <tbody class="userTbody">
                     <tr>
                         <td style="width: 16%;">编号：</td>
-                        <td><input type="text" id="userNumber" name="userNumber" disabled></td>
+                        <td><input type="text" id="userNumber" name="userNumber" readonly></td>
                         <td>姓名：</td>
-                        <td><input type="text" id="name" name="name" disabled></td>
+                        <td><input type="text" id="name" name="name" readonly></td>
                     </tr>
                     <tr>
                         <td>性别：</td>
-                        <td><input type="text" id="sex" name="sex" disabled></td>
+                        <td><input type="text" id="sex" name="sex" readonly></td>
                         <td>入职日期：</td>
-                        <td><input type="text" id="entryDate" name="entryDate" disabled></td>
+                        <td><input type="text" id="entryDate" name="entryDate" readonly></td>
                     </tr>
                     <tr>
                         <td>部门：</td>
                         <td>
-                            <input type="text" id="departmentName" name="departmentName">
+                            <input type="text" id="departmentName" name="departmentName" readonly>
                         </td>
                         <td>岗位：</td>
                         <td>
-                            <input type="text" id="postName" name="postName">
+                            <input type="text" id="postName" name="postName" readonly>
                         </td>
                     </tr>
                     <tr>
                         <td>电话号码：</td>
-                        <td><input type="tel" id="phone" name="phone" disabled></td>
+                        <td><input type="tel" id="phone" name="phone" readonly></td>
                         <td>邮箱：</td>
-                        <td><input type="text" id="email" name="email" disabled></td>
+                        <td><input type="text" id="email" name="email" readonly></td>
                     </tr>
                     <tr>
                         <td>证书1：</td>
