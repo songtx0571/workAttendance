@@ -1,7 +1,7 @@
 package com.howei.service.impl;
 
 import com.howei.mapper.WorkingMapper;
-import com.howei.pojo.OperatingHours;
+import com.howei.pojo.*;
 import com.howei.service.WorkingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,5 +18,21 @@ public class WorkingServiceImpl implements WorkingService {
     @Override
     public List<OperatingHours> getOperatingHoursList(Map map) {
         return workingMapper.getOperatingHoursList(map);
+    }
+
+    @Override
+    public List<OverhaulRecord> getMaintainRecordByMap(Map<String, Object> map) {
+        return workingMapper.getMaintainRecordByMap(map);
+    }
+
+    @Override
+    public List<OverhaulRecord> getDefectByMap(Map<String, Object> map) {
+        return workingMapper.getDefectRecordByMap(map);
+
+    }
+
+    @Override
+    public List<OverhaulRecord> getMaintenceRecordByMap(Map<String, Object> map) {
+        return workingMapper.getMaintenceRecordByMap(map);
     }
 }

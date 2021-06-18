@@ -48,4 +48,27 @@ public class Result {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+    public static Result ok(int count, Object data) {
+        Result result = new Result();
+        result.setCount(count);
+        result.setData(data);
+        result.setMsg("成功");
+        return result;
+    }
+
+    public static Result ok() {
+        return ok(0, null);
+    }
+
+    public static Result fail(String msg) {
+        Result result = new Result();
+        result.setMsg(msg);
+        return result;
+    }
+
+    public static Result fail() {
+        return fail("操作失败");
+    }
+
 }

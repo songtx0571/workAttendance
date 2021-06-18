@@ -49,10 +49,6 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
-        body {
-            overflow-x: scroll;
-            overflow-y: hidden;
-        }
     </style>
 </head>
 <body>

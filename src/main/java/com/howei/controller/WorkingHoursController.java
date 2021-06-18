@@ -2,6 +2,7 @@ package com.howei.controller;
 
 import com.howei.pojo.Employee;
 import com.howei.pojo.OperatingHours;
+import com.howei.pojo.OverhaulRecord;
 import com.howei.pojo.Users;
 import com.howei.service.DepartmentService;
 import com.howei.service.EmployeeService;
@@ -12,19 +13,20 @@ import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("wa/working")
+@RequestMapping("/wa/working")
 public class WorkingHoursController {
 
     @Autowired
@@ -48,6 +50,19 @@ public class WorkingHoursController {
     }
 
     /**
+     * 检修工时
+     * @return
+     */
+    @RequestMapping("/toOverhaulHours")
+    public ModelAndView toOverHaulHours() {
+        ModelAndView modelAndView=new ModelAndView();
+        modelAndView.setViewName("overhaulHour");
+        return modelAndView;
+    }
+
+
+
+    /**
      *
      * @param month 月份
      * @param projectId 项目部
@@ -65,6 +80,8 @@ public class WorkingHoursController {
         if(users==null){
             result.setCode(0);
             result.setMsg(Type.noUser.toString());
+            result.setData(new ArrayList<>());
+            return  result;
         }
 
         //Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
@@ -77,7 +94,7 @@ public class WorkingHoursController {
             List<Employee> empList = employeeService.getEmployeeByManager(0);
             for (Employee employee : rootList) {
                 empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
+                empIdStr += getUsersId1(employee.getId(), empList);
             }
         }
         //去除剩余 ','
@@ -146,7 +163,166 @@ public class WorkingHoursController {
         return result;
     }
 
-    public String getUsersId(Integer empId, List<Employee> empList) {
+
+
+
+
+
+    /**
+     * 检修工时统计
+     *
+     * @return
+     */
+    @GetMapping("/getOverhaulHours")
+    public Result getOverHaulHours(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Integer departmentId
+    ) {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail("用户失效");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        if (date == null) {
+            date = sdf.format(new Date());
+        }
+
+        Map<String, Object> paramsMap = new HashMap<>();
+        if (date != null) {
+            paramsMap.put("date", date);
+        }
+        if (departmentId == null && !subject.isPermitted("查询所有部门")) {
+            departmentId = users.getDepartmentId();
+        }
+        if (departmentId != null) {
+            paramsMap.put("departmentId", departmentId);
+        }
+        List<String> employeeIdList = new ArrayList<>();
+        List<String> userNumberList = new ArrayList<>();
+
+        Integer usersEmployeeId = users.getEmployeeId();
+        String userNumber = users.getUserNumber();
+        List<Employee> rootList = employeeService.getEmployeeByManager(usersEmployeeId);
+        if (rootList != null) {
+            employeeIdList.add(usersEmployeeId.toString());
+            userNumberList.add(userNumber);
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            for (Employee employee : rootList) {
+                employeeIdList.add(String.valueOf(employee.getId()));
+                userNumberList.add(employee.getUserNumber());
+                Map<String, List<String>> usersidMap = getUsersId(employee.getId(), empList);
+                List<String> employeeIdByUserId = usersidMap.get("employeeId");
+                if (employeeIdByUserId != null && employeeIdByUserId.size() > 0) {
+                    employeeIdList.addAll(employeeIdByUserId);
+                }
+                List<String> userNumberByUserId = usersidMap.get("userNumber");
+                if (userNumberByUserId != null && userNumberByUserId.size() > 0) {
+                    userNumberList.addAll(userNumberByUserId);
+                }
+
+            }
+        }
+        if (employeeIdList.size() > 0) {
+            paramsMap.put("employeeIdList", employeeIdList);
+        }
+        if (userNumberList.size() > 0) {
+            paramsMap.put("userNumberList", userNumberList);
+        }
+
+        List<OverhaulRecord> overhaulRecordList = new ArrayList<>();
+        //查询维护记录
+        List<OverhaulRecord> maintainRecordList = workingService.getMaintainRecordByMap(paramsMap);
+        if (maintainRecordList != null && maintainRecordList.size() > 0) {
+            overhaulRecordList.addAll(maintainRecordList);
+        }
+        //查询缺陷记录
+        List<OverhaulRecord> defectList = workingService.getDefectByMap(paramsMap);
+        if (defectList != null && defectList.size() > 0) {
+            overhaulRecordList.addAll(defectList);
+        }
+        //查询检修记录
+        List<OverhaulRecord> maintenanceRecordList = workingService.getMaintenceRecordByMap(paramsMap);
+        if (maintenanceRecordList != null && maintenanceRecordList.size() > 0) {
+            overhaulRecordList.addAll(maintenanceRecordList);
+        }
+        System.out.println(overhaulRecordList);
+        int daysOfMonth = DateFormat.getDaysOfMonth(date + "-1");
+        Map<String, Object> resultMap = new HashMap<>();
+        //循环每一条记录,
+        for (OverhaulRecord overhaulRecord : maintenanceRecordList) {
+            Integer employeeId = overhaulRecord.getEmployeeId();
+
+            if (!resultMap.containsKey(employeeId.toString())) {
+                Map<String, Object> mapMap = new HashMap<>();
+                Map<String, Double> map = this.initMap(daysOfMonth);
+                map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour());
+                mapMap.put("all", overhaulRecord.getWorkingHour());
+                mapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime());
+                mapMap.put("data", map);
+                mapMap.put("employeeId", employeeId);
+                mapMap.put("userName", overhaulRecord.getUserName());
+                mapMap.put("userNumber", overhaulRecord.getUserNumber());
+                resultMap.put(employeeId.toString(), mapMap);
+            } else {
+                Map<String, Object> mapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
+                Map<String, Double> map = (Map<String, Double>) mapMap.get("data");
+                map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour() + map.get(overhaulRecord.getFinishDay()));
+                mapMap.put("all", overhaulRecord.getWorkingHour() + Double.valueOf(mapMap.get("all").toString()));
+                mapMap.put("over", (overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMap.get("over").toString()));
+                mapMap.put("data", map);
+                resultMap.put(employeeId.toString(), mapMap);
+            }
+        }
+        return Result.ok(daysOfMonth, resultMap.values());
+    }
+
+    //初始化当月
+    private Map<String, Double> initMap(int n) {
+        Map<String, Double> map = new HashMap<>();
+        DecimalFormat df = new DecimalFormat("00");
+        for (Integer i = 1; i <= n; i++) {
+            map.put(df.format(i), 0D);
+        }
+        return map;
+    }
+
+    public Map<String, List<String>> getUsersId(Integer empId, List<Employee> empList) {
+        Map<String, List<String>> resultMap = new HashMap<>();
+        List<String> employeeIdList = new ArrayList<>();
+        List<String> userNumberList = new ArrayList<>();
+
+        List<String> result = new ArrayList<>();
+
+        for (Employee employee : empList) {
+            if (employee.getManager() != null || employee.getManager() != 0) {
+                if (employee.getManager().equals(empId)) {
+                    employeeIdList.add(employee.getId() + ",");
+                    userNumberList.add(employee.getUserNumber());
+
+                    result.add(employee.getId() + "");
+                }
+            }
+        }
+        for (String str : result) {
+            Map<String, List<String>> middleMap = getUsersId(Integer.parseInt(str), empList);
+            List<String> employeeIdListNew = middleMap.get("employeeId");
+            List<String> userNumberListNew = middleMap.get("userNumber");
+            if (employeeIdListNew != null && employeeIdListNew.size() > 0) {
+                employeeIdList.addAll(employeeIdListNew);
+            }
+            if (userNumberListNew != null && userNumberListNew.size() > 0) {
+                userNumberList.addAll(userNumberListNew);
+            }
+        }
+        resultMap.put("employeeId", employeeIdList);
+        resultMap.put("userNumber", userNumberList);
+
+        return resultMap;
+    }
+
+
+    public String getUsersId1(Integer empId, List<Employee> empList) {
         List<String> result = new ArrayList<>();
         String userId = "";
         String usersId = "";
@@ -159,7 +335,7 @@ public class WorkingHoursController {
             }
         }
         for (String str : result) {
-            String userId1 = getUsersId(Integer.parseInt(str), empList);
+            String userId1 = getUsersId1(Integer.parseInt(str), empList);
             if (userId1 != null && !userId1.equals("")) {
                 userId += userId1;
             }
@@ -169,6 +345,7 @@ public class WorkingHoursController {
         }
         return usersId;
     }
+
 
 
     /**----------------------------------下拉框------------------------------------------*/
@@ -185,4 +362,5 @@ public class WorkingHoursController {
         result.setCode(0);
         return result;
     }
+
 }

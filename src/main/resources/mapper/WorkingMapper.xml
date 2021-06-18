@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.howei.mapper.WorkingMapper" >
+<mapper namespace="com.howei.mapper.WorkingMapper">
 
     <resultMap id="workingMap" type="com.howei.pojo.OperatingHours">
         <result column="id" property="id"></result>
@@ -11,7 +11,15 @@
         <result column="projectId" property="projectId"></result>
         <result column="other" property="other"></result>
         <result column="employeeId" property="employeeId"></result>
-        <result column="workingTime" property="workingTime"></result>
+    </resultMap>
+    <resultMap id="overhaulMap" type="com.howei.pojo.OverhaulRecord">
+        <result column="employeeId" property="employeeId"></result>
+        <result column="userNumber" property="userNumber"></result>
+        <result column="userName" property="userName"></result>
+        <result column="finish_date_time" property="finishDateTime"></result>
+        <result column="finish_year_month" property="finishYearMonth"></result>
+        <result column="finish_day" property="finishDay"></result>
+        <result column="working_hour" property="workingHour" ></result>
     </resultMap>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
@@ -31,5 +39,147 @@
             </if>
         </where>
         ORDER BY oh.monthDay
+    </select>
+    <select id="getMaintainRecordByMap" resultMap="overhaulMap">
+        SELECT
+        DISTINCT
+        substring_index(
+        substring_index(
+        mr.employee_id,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
+        ) AS employeeId,
+        u.userNumber userNumber,
+        u.userName,
+        mr.end_time finish_date_time,
+        DATE_FORMAT(mr.end_time,"%Y-%m") finish_year_month,
+        DATE_FORMAT(mr.end_time,"%d") finish_day,
+        mr.working_hour
+        FROM
+        maintain_record mr
+        JOIN mysql.help_topic b ON b.help_topic_id &lt; (
+        length(mr.employee_id) - length(
+        REPLACE (mr.employee_id, ',', '')
+        ) + 1
+        )
+        JOIN users u ON u.employeeId = substring_index(
+        substring_index(
+        mr.employee_id,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
+        )
+        WHERE
+        mr.status='2'
+        <if test="departmentId!=null">and mr.department_id=#{departmentId}</if>
+        <if test="date!=null">
+            and mr.end_time like concat("%",#{date},"%")
+        </if>
+
+        <if test="employeeIdList!=null">
+            and
+            <foreach collection="employeeIdList" item="employeeId" open="(" close=")" separator=" or">
+                mr.employee_id like concat("%",#{employeeId},"%")
+            </foreach>
+        </if>
+    </select>
+    <select id="getDefectRecordByMap" resultMap="overhaulMap">
+        SELECT
+        DISTINCT
+            substring_index(
+                substring_index(
+                de.empIds,
+                    ',',
+                    b.help_topic_id + 1
+                ),
+                ',' ,- 1
+            ) AS employeeId,
+            u.userNumber userNumber,
+            u.userName,
+            de.confirmer1Time finish_date_time,
+            DATE_FORMAT(de.confirmer1Time,"%Y-%m") finish_year_month,
+            DATE_FORMAT(de.confirmer1Time,"%d") finish_day,
+            de.realExecuteTime working_hour,
+            de.overtime
+        FROM
+            defect de
+        JOIN mysql.help_topic b ON b.help_topic_id &lt; (
+            length(de.empIds) - length(
+                REPLACE (de.empIds, ',', '')
+            ) + 1
+        )
+        JOIN users u ON u.employeeId = substring_index(
+            substring_index(
+                de.empIds,
+                ',',
+                b.help_topic_id + 1
+            ),
+            ',' ,- 1
+        )
+         WHERE
+         de.type=4
+        <if test="departmentId!=null">and de.departmentId=#{departmentId}</if>
+        <if test="date!=null">
+            and de.confirmer1Time like concat("%",#{date},"%")
+        </if>
+
+        <if test="employeeIdList!=null">
+            and
+            <foreach collection="employeeIdList" item="employeeId" open="(" close=")" separator=" or">
+                de.empIds like concat("%",#{employeeId},"%")
+            </foreach>
+        </if>
+
+    </select>
+    <select id="getMaintenceRecordByMap" resultMap="overhaulMap">
+        SELECT
+            DISTINCT
+                u.employeeId employeeId,
+                substring_index(
+                    substring_index(
+                    mr.people,
+                        ',',
+                        b.help_topic_id + 1
+                    ),
+                    ',' ,- 1
+                ) AS userNumber,
+                u.userName,
+                mr.datetime finish_date_time,
+                DATE_FORMAT(mr.datetime,"%Y-%m") finish_year_month,
+                DATE_FORMAT(mr.datetime,"%d") finish_day,
+                mr.workingHours working_hour
+            FROM
+                maintenanceRecord mr
+            JOIN mysql.help_topic b ON b.help_topic_id &lt; (
+                length(mr.people) - length(
+                    REPLACE (mr.people, ',', '')
+                ) + 1
+            )
+            JOIN users u ON u.userNumber = substring_index(
+                substring_index(
+                    mr.people,
+                    ',',
+                    b.help_topic_id + 1
+                ),
+                ',' ,- 1
+            )
+            where
+            mr.type=1
+
+            <if test="departmentId!=null">and u.departmentId=#{departmentId}</if>
+            <if test="date!=null">
+                and mr.datetime like concat("%",#{date},"%")
+            </if>
+
+            <if test="userNumberList!=null">
+                and
+                <foreach collection="userNumberList" item="userNumber" open="(" close=")" separator=" or">
+                    mr.people like concat("%",#{userNumber},"%")
+                </foreach>
+            </if>
+
     </select>
 </mapper>
