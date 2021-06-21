@@ -1,5 +1,7 @@
 package com.howei.pojo;
 
+import com.howei.util.Type;
+
 public class OverhaulRecord {
 
     private Integer employeeId;
@@ -10,6 +12,7 @@ public class OverhaulRecord {
     private String finishDay;
     private Double workingHour;
     private Double overtime;
+    private String type; //该记录类型 0维护,1缺陷,2维修
 
     @Override
     public String toString() {
@@ -22,7 +25,16 @@ public class OverhaulRecord {
                 ", finishDay='" + finishDay + '\'' +
                 ", workingHour=" + workingHour +
                 ", overtime=" + overtime +
+                ", type='" + type + '\'' +
                 '}';
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Double getOvertime() {

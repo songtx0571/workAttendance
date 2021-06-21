@@ -246,16 +246,16 @@ public class WorkingHoursController {
         if (maintenanceRecordList != null && maintenanceRecordList.size() > 0) {
             overhaulRecordList.addAll(maintenanceRecordList);
         }
-        System.out.println(overhaulRecordList);
         int daysOfMonth = DateFormat.getDaysOfMonth(date + "-1");
         Map<String, Object> resultMap = new HashMap<>();
         //循环每一条记录,
-        for (OverhaulRecord overhaulRecord : maintenanceRecordList) {
+        for (OverhaulRecord overhaulRecord : overhaulRecordList) {
             Integer employeeId = overhaulRecord.getEmployeeId();
-
+            Map<String, Object> mapMap;
+            Map<String, Double> map;
             if (!resultMap.containsKey(employeeId.toString())) {
-                Map<String, Object> mapMap = new HashMap<>();
-                Map<String, Double> map = this.initMap(daysOfMonth);
+                mapMap = new HashMap<>();
+                map = this.initMap(daysOfMonth);
                 map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour());
                 mapMap.put("all", overhaulRecord.getWorkingHour());
                 mapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime());
@@ -263,16 +263,16 @@ public class WorkingHoursController {
                 mapMap.put("employeeId", employeeId);
                 mapMap.put("userName", overhaulRecord.getUserName());
                 mapMap.put("userNumber", overhaulRecord.getUserNumber());
-                resultMap.put(employeeId.toString(), mapMap);
             } else {
-                Map<String, Object> mapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
-                Map<String, Double> map = (Map<String, Double>) mapMap.get("data");
+                mapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
+                map = (Map<String, Double>) mapMap.get("data");
                 map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour() + map.get(overhaulRecord.getFinishDay()));
                 mapMap.put("all", overhaulRecord.getWorkingHour() + Double.valueOf(mapMap.get("all").toString()));
                 mapMap.put("over", (overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMap.get("over").toString()));
                 mapMap.put("data", map);
-                resultMap.put(employeeId.toString(), mapMap);
+
             }
+            resultMap.put(employeeId.toString(), mapMap);
         }
         return Result.ok(daysOfMonth, resultMap.values());
     }
