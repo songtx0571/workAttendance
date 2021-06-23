@@ -40,52 +40,52 @@ public class WorkingHoursController {
 
     /**
      * 运行工时
+     *
      * @return
      */
     @RequestMapping("/tooperatingHours")
-    public ModelAndView toOperatingHours(){
-        ModelAndView modelAndView=new ModelAndView();
+    public ModelAndView toOperatingHours() {
+        ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("operatingHours");
         return modelAndView;
     }
 
     /**
      * 检修工时
+     *
      * @return
      */
     @RequestMapping("/toOverhaulHours")
     public ModelAndView toOverHaulHours() {
-        ModelAndView modelAndView=new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("overhaulHour");
         return modelAndView;
     }
 
 
-
     /**
-     *
-     * @param month 月份
+     * @param month     月份
      * @param projectId 项目部
      * @return
      */
     @RequestMapping("getOperatingHoursList")
-    public Result getOperatingHoursList(String month,Integer projectId){
-        month="2021-06";
-        projectId=17;
-        Subject subject= SecurityUtils.getSubject();
-        Users users=(Users)subject.getPrincipal();
-        Result result=new Result();
-        List<Map<String,Object>> resultList=new ArrayList<>();
+    public Result getOperatingHoursList(String month, Integer projectId) {
+        month = "2021-06";
+        projectId = 17;
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        Result result = new Result();
+        List<Map<String, Object>> resultList = new ArrayList<>();
         //登录信息失效
-        if(users==null){
+        if (users == null) {
             result.setCode(0);
             result.setMsg(Type.noUser.toString());
             result.setData(new ArrayList<>());
-            return  result;
+            return result;
         }
 
         //Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
-        Integer employeeId =230;
+        Integer employeeId = 230;
         String empIdStr = "";//拼接请假人字符串
         //根据绩效管理人获取被绩效管理人
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
@@ -103,69 +103,65 @@ public class WorkingHoursController {
         }
 
         //遍历集合，整理返回此月数据
-        String[] empArr=empIdStr.split(",");
+        String[] empArr = empIdStr.split(",");
         //
-        for(int k=0;k<empArr.length;k++){
+        for (int k = 0; k < empArr.length; k++) {
             //获取此月天数
-            int day=DateFormat.getDaysOfMonth(month+"-01");
-            Double[] dayArr=new Double[day];
-            Map<String,Object> map1=new HashMap<>();
-            String emp=empArr[k];
+            int day = DateFormat.getDaysOfMonth(month + "-01");
+            Double[] dayArr = new Double[day];
+            Map<String, Object> map1 = new HashMap<>();
+            String emp = empArr[k];
             //获取此人指定月份的运行工时数据
-            Map map =new HashMap();
-            map.put("monthDay",month+"-01");
-            map.put("empIdStr",emp);
-            map.put("projectId",projectId);
-            List<OperatingHours> list=workingService.getOperatingHoursList(map);
-            int size=0;
-            if(list!=null && list.size()>0){
-                size=list.size();
-            }else{
+            Map map = new HashMap();
+            map.put("monthDay", month + "-01");
+            map.put("empIdStr", emp);
+            map.put("projectId", projectId);
+            List<OperatingHours> list = workingService.getOperatingHoursList(map);
+            int size = 0;
+            if (list != null && list.size() > 0) {
+                size = list.size();
+            } else {
                 continue;
             }
             //获取此月（1-31天）数据
-            int workAttendance=0;//考勤天数
-            double workingTotal=0.0;//此月总共工时
+            int workAttendance = 0;//考勤天数
+            double workingTotal = 0.0;//此月总共工时
             for (int i = 0; i < day; i++) {
-                if(i<size){
-                    OperatingHours operatingHours=list.get(i);
-                    double workingTime=operatingHours.getWorkingTime();//工时
-                    dayArr[i]=workingTime;
+                if (i < size) {
+                    OperatingHours operatingHours = list.get(i);
+                    double workingTime = operatingHours.getWorkingTime();//工时
+                    dayArr[i] = workingTime;
                     //考勤天数:工时不为o
-                    if(workingTime>0){
+                    if (workingTime > 0) {
                         workAttendance++;
                     }
                     //此月总共工时
-                    workingTotal+=workingTime;
-                    map1.put("employeeNumber",operatingHours.getEmployeeNumber());//员工编号
-                    map1.put("employeeName",operatingHours.getEmployeeName());//员工名称
-                }else {
-                    dayArr[i]=0.0;
+                    workingTotal += workingTime;
+                    map1.put("employeeNumber", operatingHours.getEmployeeNumber());//员工编号
+                    map1.put("employeeName", operatingHours.getEmployeeName());//员工名称
+                } else {
+                    dayArr[i] = 0.0;
                 }
             }
-            map1.put("workAttendance",workAttendance);
-            map1.put("data",dayArr);//1-31天数据
+            map1.put("workAttendance", workAttendance);
+            map1.put("data", dayArr);//1-31天数据
             //本月要求工时数
-            BigDecimal bd = new BigDecimal(40/7*day);
-            double thisMonthRequirementTime=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            map1.put("monthTime",thisMonthRequirementTime);//本月工时
+            BigDecimal bd = new BigDecimal(40 / 7 * day);
+            double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            map1.put("monthTime", thisMonthRequirementTime);//本月工时
             //判断是否有加班工时
-            if(workingTotal>thisMonthRequirementTime){
-                bd = new BigDecimal(workingTotal-thisMonthRequirementTime);
-                double workOvertime=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                map1.put("workOvertime",workOvertime);//加班工时
-            }else{
-                map1.put("workOvertime",0);//加班工时
+            if (workingTotal > thisMonthRequirementTime) {
+                bd = new BigDecimal(workingTotal - thisMonthRequirementTime);
+                double workOvertime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                map1.put("workOvertime", workOvertime);//加班工时
+            } else {
+                map1.put("workOvertime", 0);//加班工时
             }
             resultList.add(map1);
         }
         result.setData(resultList);
         return result;
     }
-
-
-
-
 
 
     /**
@@ -203,6 +199,7 @@ public class WorkingHoursController {
 
         Integer usersEmployeeId = users.getEmployeeId();
         String userNumber = users.getUserNumber();
+        //根据id查询被管理人的员工信息
         List<Employee> rootList = employeeService.getEmployeeByManager(usersEmployeeId);
         if (rootList != null) {
             employeeIdList.add(usersEmployeeId.toString());
@@ -249,6 +246,7 @@ public class WorkingHoursController {
         int daysOfMonth = DateFormat.getDaysOfMonth(date + "-1");
         Map<String, Object> resultMap = new HashMap<>();
         //循环每一条记录,
+        DecimalFormat df = new DecimalFormat("0.0");
         for (OverhaulRecord overhaulRecord : overhaulRecordList) {
             Integer employeeId = overhaulRecord.getEmployeeId();
             Map<String, Object> mapMap;
@@ -257,8 +255,8 @@ public class WorkingHoursController {
                 mapMap = new HashMap<>();
                 map = this.initMap(daysOfMonth);
                 map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour());
-                mapMap.put("all", overhaulRecord.getWorkingHour());
-                mapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime());
+                mapMap.put("all", overhaulRecord.getWorkingHour() == null ? 0 : df.format(overhaulRecord.getWorkingHour()));
+                mapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
                 mapMap.put("data", map);
                 mapMap.put("employeeId", employeeId);
                 mapMap.put("userName", overhaulRecord.getUserName());
@@ -267,8 +265,8 @@ public class WorkingHoursController {
                 mapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
                 map = (Map<String, Double>) mapMap.get("data");
                 map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour() + map.get(overhaulRecord.getFinishDay()));
-                mapMap.put("all", overhaulRecord.getWorkingHour() + Double.valueOf(mapMap.get("all").toString()));
-                mapMap.put("over", (overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMap.get("over").toString()));
+                mapMap.put("all", df.format(overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour() + Double.valueOf(mapMap.get("all").toString())));
+                mapMap.put("over", df.format((overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMap.get("over").toString())));
                 mapMap.put("data", map);
 
             }
@@ -347,17 +345,17 @@ public class WorkingHoursController {
     }
 
 
-
     /**----------------------------------下拉框------------------------------------------*/
 
     /**
      * 部门下拉框列表
+     *
      * @return
      */
     @RequestMapping("getDepMap")
-    public Result getDepMap(){
-        Result result=new Result();
-        List<Map<String,String>> map=departmentService.getDepMap();
+    public Result getDepMap() {
+        Result result = new Result();
+        List<Map<String, String>> map = departmentService.getDepMap();
         result.setData(map);
         result.setCode(0);
         return result;
