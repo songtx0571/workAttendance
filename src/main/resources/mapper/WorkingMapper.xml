@@ -37,7 +37,7 @@
                 and FIND_IN_SET(oh.employeeId,#{empIdStr})
             </if>
             <if test="projectId!=null">
-                and projectId=#{projectId}
+                and oh.projectId=#{projectId}
             </if>
         </where>
         ORDER BY oh.monthDay
