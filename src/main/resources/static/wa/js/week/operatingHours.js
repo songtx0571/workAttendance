@@ -71,23 +71,31 @@ function  showTableList (month,projectId) {
         type: "get",//请求方式
         data: {month: month,projectId:projectId},
         success: function (data) {
-            if (data.data == "") {
+            var tian = data.count;
+            data = data.data;
+            for (var i = 0; i < tian; i ++) {
+                table += "<th>"+(i+1)+"日</th>"
+            }
+            table += "<th style='font-weight: bold;'>本月工时</th><th style='font-weight: bold;'>考勤天数</th><th style='font-weight: bold;'>加班工时</th></tr></thead><tbody><tr>";
+            if (data == "") {
                 $(".loading").css("display","none");
-                div.html("<p>无数据</p>");
+                table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;'>无数据！</td></tr></tbody></table>";
+                div.html(table);
                 return false;
             }
-            var data = data.data;
-            for (var j = 0; j < data[0].data.length; j ++) {
-                table += "<th>" + (j + 1) + "日</th>"
-            }
-            table += "<th style='font-weight: bold;'>本月工时</th><th style='font-weight: bold;'>考勤天数</th><th style='font-weight: bold;'>加班工时</th></tr></thead>"
-            for (var i = 0; i < data.length; i ++) {
-                table += "<tr><td>"+data[i].employeeNumber+"</td><td>"+data[i].employeeName+"</td>"
-                for (var j = 0; j < data[i].data.length; j ++) {
-                    table+= "<td>"+data[i].data[j]+"</td>"
+
+            for (var item in data) {
+                var data1 = data[item]
+                table += "<td>"+data1.employeeNumber+"</td><td>"+data1.employeeName+"</td>";
+                for (var i = 1; i <= tian; i ++) {
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    table += "<th>"+data1.data[i]+"</th>"
                 }
-                table += "<td style='font-weight: bold;color: red;'>"+data[i].monthTime+"</td><td style='font-weight: bold;color: red;'>"+data[i].workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data[i].workOvertime+"</td></tr>"
+                table += "<td style='font-weight: bold;color: red;'>"+data1.monthTime+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.workOvertime+"</td></tr>"
             }
+            table += "</tbody></table>";
             div.html(table);
             $(".loading").css("display","none");
         }

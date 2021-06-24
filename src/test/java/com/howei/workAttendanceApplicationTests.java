@@ -45,12 +45,12 @@ class workAttendanceApplicationTests {
         double totalTaxThisMonth = 5733.62;//计税合计
 
         //************************************ 个调税计算 *****************************************
-        Double tax = this.taxCalculator(employeeId, month,specialAdditionalDeduction,totalTaxThisMonth);
+        Double tax = this.taxCalculator(employeeId, month, specialAdditionalDeduction, totalTaxThisMonth);
         //************************************ 实发工资 *****************************************
         Double netSalary = Double.valueOf(totalTaxThisMonth) - tax;//实发工资
         DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("个调税计算:"+df.format(tax));
-        System.out.println("实发工资:"+df.format(netSalary));
+        System.out.println("个调税计算:" + df.format(tax));
+        System.out.println("实发工资:" + df.format(netSalary));
     }
 
     /**
@@ -59,25 +59,25 @@ class workAttendanceApplicationTests {
     //@Test
     public void taxationBe() {
         String month = "2021-01";
-        Map map=new HashMap();
+        Map map = new HashMap();
         //获取5月份工资信息
         map.put("month", month + "-01");
-        List<Wages> listWages=wagsService.getWagsList(map);
-        for (int i = 0; i <listWages.size() ; i++) {
-            Wages wages=listWages.get(i);
-            double sixSpecialDeductions=wages.getSixSpecialDeductions();//六项专项扣除金额
-            double totalTax=wages.getTotalTax();//计税合计
-            String employeeId=wages.getEmployeeId().toString();//员工id
-            System.out.println(i+";当前操作对象："+employeeId);
+        List<Wages> listWages = wagsService.getWagsList(map);
+        for (int i = 0; i < listWages.size(); i++) {
+            Wages wages = listWages.get(i);
+            double sixSpecialDeductions = wages.getSixSpecialDeductions();//六项专项扣除金额
+            double totalTax = wages.getTotalTax();//计税合计
+            String employeeId = wages.getEmployeeId().toString();//员工id
+            System.out.println(i + ";当前操作对象：" + employeeId);
             //************************************ 个调税计算 *****************************************
-            Double tax = this.taxCalculator(employeeId, month,sixSpecialDeductions,totalTax);
+            Double tax = this.taxCalculator(employeeId, month, sixSpecialDeductions, totalTax);
             //************************************ 实发工资 *****************************************
             Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
             DecimalFormat df = new DecimalFormat("0.00");
             wages.setNetSalary(Double.valueOf(df.format(netSalary)));//实发工资
             wages.setIndividualTaxAdjustment(Double.valueOf(df.format(tax)));//个调税
             //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
-            double totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
+            double totalDeduction = wages.getEndowmentInsurance() + wages.getMedicalInsurance() + wages.getAccumulationFund() + wages.getUnemploymentBenefits() + wages.getUnionFees() + wages.getOtherDeductions();
             wages.setTotalDeduction(totalDeduction);
             wagsService.updWags(wages);
         }
@@ -85,32 +85,33 @@ class workAttendanceApplicationTests {
 
     /**
      * 4月包含4月之后工资计算
+     *
      * @return
      */
     //@Test
     public void taxation() {
         String month = "2021-04";
         //获取在职人员列表
-        Map map=new HashMap();
+        Map map = new HashMap();
         map.put("month", month + "-01");
-        List<Wages> listWages=wagsService.getWagsList(map);
-        for (int i = 0; i <listWages.size() ; i++) {
-            Wages wages=listWages.get(i);
-            double sixSpecialDeductions=wages.getSixSpecialDeductions();//六项专项扣除金额
-            double totalTax=wages.getTotalTax();//计税合计
-            String employeeId=wages.getEmployeeId().toString();//员工id
-            System.out.println(i+";当前操作对象："+employeeId);
+        List<Wages> listWages = wagsService.getWagsList(map);
+        for (int i = 0; i < listWages.size(); i++) {
+            Wages wages = listWages.get(i);
+            double sixSpecialDeductions = wages.getSixSpecialDeductions();//六项专项扣除金额
+            double totalTax = wages.getTotalTax();//计税合计
+            String employeeId = wages.getEmployeeId().toString();//员工id
+            System.out.println(i + ";当前操作对象：" + employeeId);
             //4月后计税合计减300
-            double totalTaxSimulation=totalTax-300;
+            double totalTaxSimulation = totalTax - 300;
             //************************************ 个调税计算 *****************************************
-            Double tax = this.taxCalculator(employeeId, month,sixSpecialDeductions,totalTaxSimulation);
+            Double tax = this.taxCalculator(employeeId, month, sixSpecialDeductions, totalTaxSimulation);
             //************************************ 实发工资 *****************************************
             Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
             DecimalFormat df = new DecimalFormat("0.00");
             wages.setNetSalary(Double.valueOf(df.format(netSalary)));//实发工资
             wages.setIndividualTaxAdjustment(Double.valueOf(df.format(tax)));//个调税
             //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
-            double totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
+            double totalDeduction = wages.getEndowmentInsurance() + wages.getMedicalInsurance() + wages.getAccumulationFund() + wages.getUnemploymentBenefits() + wages.getUnionFees() + wages.getOtherDeductions();
             wages.setTotalDeduction(totalDeduction);
             wagsService.updWags(wages);
         }
@@ -119,17 +120,17 @@ class workAttendanceApplicationTests {
     /**
      * 个税计算
      *
-     * @param employeeId           员工id
-     * @param month                月份
+     * @param employeeId 员工id
+     * @param month      月份
      * @return wages
      */
-    public Double taxCalculator(String employeeId, String month,double specialAdditionalDeduction,double totalTaxThisMonth) {
+    public Double taxCalculator(String employeeId, String month, double specialAdditionalDeduction, double totalTaxThisMonth) {
         //累计值
-        Double wageSubtotal=0.00;//工资小计
-        Double wagesPayable=0.00;//应发工资
-        Double totalPayable=0.00;//应发合计
-        Double totalDeduction=0.00;//扣款合计
-        Double totalTax=0.00;//计税合计
+        Double wageSubtotal = 0.00;//工资小计
+        Double wagesPayable = 0.00;//应发工资
+        Double totalPayable = 0.00;//应发合计
+        Double totalDeduction = 0.00;//扣款合计
+        Double totalTax = 0.00;//计税合计
         Double deductionOfExpensesTaxTotal = 0.00;//累计减除费用
         Double taxableIncome = 0.00;//累计应纳税所得额
         Double personalIncomeTotalTax = 0.00;//累计个税
@@ -141,20 +142,20 @@ class workAttendanceApplicationTests {
         List<Wages> listWages = wagsService.getWagesToTax(map);
         if (listWages != null) {
             for (Wages wages : listWages) {
-                double PerformanceCoefficient=getAssessmentByEmployeeId(wages.getDate(),wages.getEmployeeId()+"");
+                double PerformanceCoefficient = getAssessmentByEmployeeId(wages.getDate(), wages.getEmployeeId() + "");
                 //工资小计=基本工资+职务工资+绩效工资+其他
-                wageSubtotal=wages.getBasePay()+wages.getPositionSalary()+wages.getMeritPay()+wages.getOther();
+                wageSubtotal = wages.getBasePay() + wages.getPositionSalary() + wages.getMeritPay() + wages.getOther();
                 //应发工资=（基本工资+职务工资+其他）+绩效工资*绩效系数
-                wagesPayable=(wages.getBasePay()+wages.getPositionSalary()+wages.getOther())+wages.getMeritPay()*PerformanceCoefficient;
+                wagesPayable = (wages.getBasePay() + wages.getPositionSalary() + wages.getOther()) + wages.getMeritPay() * PerformanceCoefficient;
                 //应发合计=应发工资+补贴小计
-                totalPayable =wagesPayable+wages.getFoodSupplement()+wages.getHighTemperatureSubsidy();
+                totalPayable = wagesPayable + wages.getFoodSupplement() + wages.getHighTemperatureSubsidy();
                 //扣款合计=养老保险+医疗保险+公积金+失业金+工会费+其他扣款
-                totalDeduction=wages.getEndowmentInsurance()+wages.getMedicalInsurance()+wages.getAccumulationFund()+wages.getUnemploymentBenefits()+wages.getUnionFees()+wages.getOtherDeductions();
+                totalDeduction = wages.getEndowmentInsurance() + wages.getMedicalInsurance() + wages.getAccumulationFund() + wages.getUnemploymentBenefits() + wages.getUnionFees() + wages.getOtherDeductions();
                 //计税合计=应发合计-扣款合计
-                totalTax =totalTax+(totalPayable-totalDeduction);
+                totalTax = totalTax + (totalPayable - totalDeduction);
                 try {
-                    if(DateFormat.comparetoTime("2021-04-01 00:00:00",wages.getDate()+" 00:00:00")){
-                        totalTax=totalTax-300;
+                    if (DateFormat.comparetoTime("2021-04-01 00:00:00", wages.getDate() + " 00:00:00")) {
+                        totalTax = totalTax - 300;
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -164,17 +165,17 @@ class workAttendanceApplicationTests {
                 //累计专项扣除
                 specialAdditionalDeductionTaxTotal += wages.getSixSpecialDeductions();
                 //计算累计应纳税所得额：累计应纳税所得额=累计计税合计-累计专项附加扣除-5000*月份
-                taxableIncome=totalTax-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal;
+                taxableIncome = totalTax - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
                 //累计个税
                 personalIncomeTotalTax += taxableIncome(taxableIncome, personalIncomeTotalTax);
-                System.out.println("个税: "+personalIncomeTotalTax);
+                System.out.println("个税: " + personalIncomeTotalTax);
             }
             //计算截至到指定月份
-            specialAdditionalDeductionTaxTotal+=specialAdditionalDeduction;
-            totalTax+=totalTaxThisMonth;
+            specialAdditionalDeductionTaxTotal += specialAdditionalDeduction;
+            totalTax += totalTaxThisMonth;
             deductionOfExpensesTaxTotal += 5000;
             //计算累计应纳税所得额：累计应纳税所得额=累计计税合计-累计专项附加扣除-5000*月份
-            taxableIncome=totalTax-specialAdditionalDeductionTaxTotal-deductionOfExpensesTaxTotal;
+            taxableIncome = totalTax - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
             //指定月份的个税
             return taxableIncome(taxableIncome, personalIncomeTotalTax);
         }
@@ -183,32 +184,33 @@ class workAttendanceApplicationTests {
 
     /**
      * 计算综合绩效
+     *
      * @param cycle
      * @param employeeId
      * @return
      */
-    public double getAssessmentByEmployeeId(String cycle,String employeeId) {
-        Map map=new HashMap();
-        if(cycle!=null&&!cycle.equals("")){
+    public double getAssessmentByEmployeeId(String cycle, String employeeId) {
+        Map map = new HashMap();
+        if (cycle != null && !cycle.equals("")) {
             //获取指定日期的上一月份
-            cycle=DateFormat.getYearMonthByMonth(cycle,-1);
-            map.put("cycle",cycle);
+            cycle = DateFormat.getYearMonthByMonth(cycle, -1);
+            map.put("cycle", cycle);
         }
-        if(employeeId!=null&&!employeeId.equals("")){
-            map.put("employeeId",employeeId);
+        if (employeeId != null && !employeeId.equals("")) {
+            map.put("employeeId", employeeId);
         }
-        Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
-        if(assessment!=null){
-            double score1=assessment.getScore1();
-            double score2=assessment.getScore2();
-            double jianban=assessment.getJiaban();
+        Assessment assessment = behaviorService.getAssessmentByEmployeeId(map);
+        if (assessment != null) {
+            double score1 = assessment.getScore1();
+            double score2 = assessment.getScore2();
+            double jianban = assessment.getJiaban();
             //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-            BigDecimal bd = new BigDecimal((score1*0.5+score2*0.5)/90);
-            double netPerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
+            double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             assessment.setNetPerformance(netPerformance);
             //综合绩效=净绩效+加班*0.01
-            bd = new BigDecimal(netPerformance+jianban*0.01);
-            double comprehensivePerformance=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            bd = new BigDecimal(netPerformance + jianban * 0.01);
+            double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             return comprehensivePerformance;
         }
         return 0.0;
@@ -257,16 +259,31 @@ class workAttendanceApplicationTests {
     }
 
     @Test
-    void getEmployeeList() {
-        String sign="noDistribution";
-        //String sign="distribution";
-        Map map = new HashMap();
-        if (sign != null && !sign.equals("")) {
-            map.put("sign", sign);
+    public void a(){
+        System.out.println(new Date());
+        Map<String,Double> mapDayData=new HashMap<>();//初始化日期
+        defaultMothData(mapDayData);
+        System.out.println(mapDayData.hashCode());
+        for (Integer i = 1; i <= 30; i++) {
         }
-        List<Employee> list  = employeeService.getEmployeeList(map);
-        for (Employee emp:list) {
-            System.out.println(emp.getName());
+        System.out.println(new Date());
+    }
+
+    //设置当月数据默认为0
+    private void defaultMothData(Map map) {
+        DecimalFormat df = new DecimalFormat("00");
+        for (Integer i = 1; i <= 30; i++) {
+            map.put(df.format(i), 0D);
+        }
+        System.out.println(map.hashCode());
+    }
+
+    //设置当月数据默认为0
+    private void defaultMothData1(int day) {
+        DecimalFormat df = new DecimalFormat("00");
+        Map<String, Double> map = new HashMap<>();
+        for (Integer i = 1; i <= day; i++) {
+            map.put(df.format(i), 0D);
         }
     }
 
