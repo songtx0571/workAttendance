@@ -91,21 +91,11 @@ function  showTableList (month,projectId) {
                     if (i < 10) {
                         i = "0" + i;
                     }
-                    var time = "'"+"2021-05-06 12:00:00,2021-05-07 12:00:00"+"'";
-
-
                     var content = "'";
-                    // for (var z= 0; z < data1.data[i].detail.length; z ++) {
-                    //
-                    //     if (data1.data[i].detail[z].successorTime == "" || data1.data[i].detail[z].successorTime == null) {
-                    //         data1.data[i].detail[z].successorTime = "无"
-                    //     }
-                    //     if (data1.data[i].detail[z].tradersTime == "" || data1.data[i].detail[z].tradersTime == null) {
-                    //         data1.data[i].detail[z].tradersTime = "无"
-                    //     }
-                    //
-                    //     content += ""+"<p>接班时间:"+data1.data[i].detail[z].successorTime+"；</p><p>交班时间:"+data1.data[i].detail[z].tradersTime+"</p><br>";
-                    // }
+                    if (data1.data[i].detail.length < 3) {
+                        data1.data[i].detail.successorTime = "无";
+                        data1.data[i].detail.tradersTime = "无";
+                    }
                     content += ""+"<p>接班时间:"+data1.data[i].detail.successorTime+"；</p><p>交班时间:"+data1.data[i].detail.tradersTime+"</p><br>";
                     content += "'"
 

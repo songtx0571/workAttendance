@@ -50,9 +50,9 @@
             100%{-webkit-transform:rotate(360deg);}
         }
         .operaHourTd{
-             text-align: center;
-             cursor: pointer;
-         }
+            text-align: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
