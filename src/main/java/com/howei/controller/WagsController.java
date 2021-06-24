@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.howei.pojo.*;
 import com.howei.service.*;
 import com.howei.util.DateFormat;
+import com.howei.util.ListUtils;
 import com.howei.util.Result;
 import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
@@ -74,14 +75,16 @@ public class WagsController {
         if (subject.hasRole("财务") || subject.hasRole("总部管理员")) {
             empIdStr = null;
         } else {
-            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-            if (rootList != null) {
-                empIdStr += employeeId + ",";
-                List<Employee> empList = employeeService.getEmployeeByManager(0);
-                for (Employee employee : rootList) {
-                    empIdStr += employee.getId() + ",";
-                    empIdStr += getUsersId(employee.getId(), empList);
-                }
+            empIdStr += users.getEmployeeId() + ",";
+            List<String> employeeIdList = new ArrayList<>();
+
+            List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
+
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
+
+            for (String employeeIdStr : employeeIdList) {
+                empIdStr += employeeIdStr + ",";
             }
             if (empIdStr != null && !empIdStr.equals("")) {
                 empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
@@ -142,30 +145,6 @@ public class WagsController {
             return result;
         }
         return null;
-    }
-
-    public String getUsersId(Integer empId, List<Employee> empList) {
-        List<String> result = new ArrayList<>();
-        String userId = "";
-        String usersId = "";
-        for (Employee employee : empList) {
-            if (employee.getManager() != null || employee.getManager() != 0) {
-                if (employee.getManager().equals(empId)) {
-                    usersId += employee.getId() + ",";
-                    result.add(employee.getId() + "");
-                }
-            }
-        }
-        for (String str : result) {
-            String userId1 = getUsersId(Integer.parseInt(str), empList);
-            if (userId1 != null && !userId1.equals("")) {
-                userId += userId1;
-            }
-        }
-        if (userId != null && !userId.equals("null")) {
-            usersId += userId;
-        }
-        return usersId;
     }
 
 

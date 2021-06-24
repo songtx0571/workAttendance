@@ -3,6 +3,7 @@ package com.howei.controller;
 import com.howei.pojo.*;
 import com.howei.service.*;
 import com.howei.util.DateFormat;
+import com.howei.util.ListUtils;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import org.apache.ibatis.annotations.Param;
@@ -101,17 +102,11 @@ public class KPIController {
         if (selectAllFlag) {
             employeeId = 0;
         }
+        List<String > employeeIdList=new ArrayList<>();
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
-            }
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-        }
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
         // map.put("empId", empIdStr);
 
 
@@ -175,29 +170,6 @@ public class KPIController {
         return result;
     }
 
-    public String getUsersId(Integer empId, List<Employee> empList) {
-        List<String> result = new ArrayList<>();
-        String userId = "";
-        String usersId = "";
-        for (Employee employee : empList) {
-            if (employee.getManager() != null || employee.getManager() != 0) {
-                if (employee.getManager().equals(empId)) {
-                    usersId += employee.getId() + ",";
-                    result.add(employee.getId() + "");
-                }
-            }
-        }
-        for (String str : result) {
-            String userId1 = getUsersId(Integer.parseInt(str), empList);
-            if (userId1 != null && !userId1.equals("")) {
-                userId += userId1;
-            }
-        }
-        if (userId != null && !userId.equals("null")) {
-            usersId += userId;
-        }
-        return usersId;
-    }
 
     /**
      * 跳转当月巡检次数页面
@@ -476,23 +448,22 @@ public class KPIController {
         Users user = (Users) subject.getPrincipal();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         Integer employeeId = user.getEmployeeId();
+
         String empIdStr = null;
         if (selectAllFlag) {
             employeeId = 0;
         }
+        List<String > employeeIdList=new ArrayList<>();
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            empIdStr = user.getEmployeeId() + ",";
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
-            }
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-        }
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
         map = new HashMap();
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr+=employeeIdStr+",";
+        }
         map.put("empId", empIdStr);
 
         List<Map> users = userService.getNameByEmployeeIds(empIdStr);
@@ -634,19 +605,18 @@ public class KPIController {
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         String empIdStr = "";
         if (!selectAllFlag) {
-            List<Employee> rootList = employeeService.getEmployeeByManager(0);
-            if (rootList != null) {
-                List<Employee> empList = employeeService.getEmployeeByManager(0);
-                for (Employee employee : rootList) {
-                    empIdStr += employee.getId() + ",";
-                    empIdStr += getUsersId(employee.getId(), empList);
-                }
-            }
-            if (empIdStr != null && !empIdStr.equals("")) {
-                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+            List<String > employeeIdList=new ArrayList<>();
+
+            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
+
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
+            map = new HashMap();
+            for (String employeeIdStr : employeeIdList) {
+                empIdStr+=employeeIdStr+",";
             }
             map.put("empId", empIdStr);
-            System.out.println("empId::"+empIdStr);
         }
 
         List<Map> list = examinationServive.getExamKpiList(map);

@@ -8,6 +8,7 @@ import com.howei.service.DepartmentService;
 import com.howei.service.EmployeeService;
 import com.howei.service.WorkingService;
 import com.howei.util.DateFormat;
+import com.howei.util.ListUtils;
 import com.howei.util.Result;
 import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
@@ -88,14 +89,15 @@ public class WorkingHoursController {
         Integer employeeId = 230;
         String empIdStr = "";//拼接请假人字符串
         //根据绩效管理人获取被绩效管理人
+        List<String > employeeIdList=new ArrayList<>();
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            empIdStr += employeeId + ",";
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId1(employee.getId(), empList);
-            }
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr+=employeeIdStr+",";
         }
         //去除剩余 ','
         if (empIdStr != null && !empIdStr.equals("")) {
@@ -198,28 +200,12 @@ public class WorkingHoursController {
         List<String> userNumberList = new ArrayList<>();
 
         Integer usersEmployeeId = users.getEmployeeId();
-        String userNumber = users.getUserNumber();
         //根据id查询被管理人的员工信息
-        List<Employee> rootList = employeeService.getEmployeeByManager(usersEmployeeId);
-        if (rootList != null) {
-            employeeIdList.add(usersEmployeeId.toString());
-            userNumberList.add(userNumber);
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                employeeIdList.add(String.valueOf(employee.getId()));
-                userNumberList.add(employee.getUserNumber());
-                Map<String, List<String>> usersidMap = getUsersId(employee.getId(), empList);
-                List<String> employeeIdByUserId = usersidMap.get("employeeId");
-                if (employeeIdByUserId != null && employeeIdByUserId.size() > 0) {
-                    employeeIdList.addAll(employeeIdByUserId);
-                }
-                List<String> userNumberByUserId = usersidMap.get("userNumber");
-                if (userNumberByUserId != null && userNumberByUserId.size() > 0) {
-                    userNumberList.addAll(userNumberByUserId);
-                }
 
-            }
-        }
+        List<Employee> rootList = employeeService.getEmployeeByManager(usersEmployeeId);
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,userNumberList);
         if (employeeIdList.size() > 0) {
             paramsMap.put("employeeIdList", employeeIdList);
         }
@@ -249,100 +235,59 @@ public class WorkingHoursController {
         DecimalFormat df = new DecimalFormat("0.0");
         for (OverhaulRecord overhaulRecord : overhaulRecordList) {
             Integer employeeId = overhaulRecord.getEmployeeId();
+            Map<String, Object> mapMapMap;
             Map<String, Object> mapMap;
-            Map<String, Double> map;
             if (!resultMap.containsKey(employeeId.toString())) {
-                mapMap = new HashMap<>();
-                map = this.initMap(daysOfMonth);
-                map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour());
-                mapMap.put("all", overhaulRecord.getWorkingHour() == null ? 0 : df.format(overhaulRecord.getWorkingHour()));
-                mapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
-                mapMap.put("data", map);
-                mapMap.put("employeeId", employeeId);
-                mapMap.put("userName", overhaulRecord.getUserName());
-                mapMap.put("userNumber", overhaulRecord.getUserNumber());
-            } else {
-                mapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
-                map = (Map<String, Double>) mapMap.get("data");
-                map.put(overhaulRecord.getFinishDay(), overhaulRecord.getWorkingHour() + map.get(overhaulRecord.getFinishDay()));
-                mapMap.put("all", df.format(overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour() + Double.valueOf(mapMap.get("all").toString())));
-                mapMap.put("over", df.format((overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMap.get("over").toString())));
-                mapMap.put("data", map);
+                mapMapMap = new HashMap<>();
+                mapMap = this.initMap(daysOfMonth);
+                Map<String, Object> map = (Map<String, Object>) mapMap.get(overhaulRecord.getFinishDay());
+                map.put("total", df.format(Double.valueOf(map.get("total").toString()) + (overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour())));
+                List detailList = (ArrayList) map.get("detail");
+                detailList.add(overhaulRecord);
+                map.put("detail",detailList );
+                mapMap.put(overhaulRecord.getFinishDay(), map);
+                mapMapMap.put("data", mapMap);
 
+                mapMapMap.put("all", overhaulRecord.getWorkingHour() == null ? 0 : df.format(overhaulRecord.getWorkingHour()));
+                mapMapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
+
+                mapMapMap.put("employeeId", employeeId);
+                mapMapMap.put("userName", overhaulRecord.getUserName());
+                mapMapMap.put("userNumber", overhaulRecord.getUserNumber());
+            } else {
+                mapMapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
+                mapMap = (Map<String, Object>) mapMapMap.get("data");
+                Map<String, Object> map = (Map<String, Object>) mapMap.get(overhaulRecord.getFinishDay());
+                map.put("total", df.format(Double.valueOf(map.get("total").toString()) + (overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour())));
+                List detailList = (ArrayList) map.get("detail");
+                detailList.add(overhaulRecord);
+                map.put("detail",detailList );
+                mapMap.put(overhaulRecord.getFinishDay(), map);
+
+                mapMapMap.put("data", mapMap);
+                mapMapMap.put("all", df.format(overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour() + Double.valueOf(mapMapMap.get("all").toString())));
+                mapMapMap.put("over", df.format((overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMapMap.get("over").toString())));
             }
-            resultMap.put(employeeId.toString(), mapMap);
+            resultMap.put(employeeId.toString(), mapMapMap);
         }
         return Result.ok(daysOfMonth, resultMap.values());
     }
 
     //初始化当月
-    private Map<String, Double> initMap(int n) {
-        Map<String, Double> map = new HashMap<>();
+    private Map<String, Object> initMap(int n) {
+        Map<String, Object> resultMap = new HashMap<>();
         DecimalFormat df = new DecimalFormat("00");
         for (Integer i = 1; i <= n; i++) {
-            map.put(df.format(i), 0D);
+            Map<String, Object> map = new HashMap<>();
+            map.put("total", 0);
+            map.put("detail", new ArrayList<>());
+            resultMap.put(df.format(i), map);
         }
-        return map;
-    }
-
-    public Map<String, List<String>> getUsersId(Integer empId, List<Employee> empList) {
-        Map<String, List<String>> resultMap = new HashMap<>();
-        List<String> employeeIdList = new ArrayList<>();
-        List<String> userNumberList = new ArrayList<>();
-
-        List<String> result = new ArrayList<>();
-
-        for (Employee employee : empList) {
-            if (employee.getManager() != null || employee.getManager() != 0) {
-                if (employee.getManager().equals(empId)) {
-                    employeeIdList.add(employee.getId() + ",");
-                    userNumberList.add(employee.getUserNumber());
-
-                    result.add(employee.getId() + "");
-                }
-            }
-        }
-        for (String str : result) {
-            Map<String, List<String>> middleMap = getUsersId(Integer.parseInt(str), empList);
-            List<String> employeeIdListNew = middleMap.get("employeeId");
-            List<String> userNumberListNew = middleMap.get("userNumber");
-            if (employeeIdListNew != null && employeeIdListNew.size() > 0) {
-                employeeIdList.addAll(employeeIdListNew);
-            }
-            if (userNumberListNew != null && userNumberListNew.size() > 0) {
-                userNumberList.addAll(userNumberListNew);
-            }
-        }
-        resultMap.put("employeeId", employeeIdList);
-        resultMap.put("userNumber", userNumberList);
-
         return resultMap;
     }
 
 
-    public String getUsersId1(Integer empId, List<Employee> empList) {
-        List<String> result = new ArrayList<>();
-        String userId = "";
-        String usersId = "";
-        for (Employee employee : empList) {
-            if (employee.getManager() != null || employee.getManager() != 0) {
-                if (employee.getManager().equals(empId)) {
-                    usersId += employee.getId() + ",";
-                    result.add(employee.getId() + "");
-                }
-            }
-        }
-        for (String str : result) {
-            String userId1 = getUsersId1(Integer.parseInt(str), empList);
-            if (userId1 != null && !userId1.equals("")) {
-                userId += userId1;
-            }
-        }
-        if (userId != null && !userId.equals("null")) {
-            usersId += userId;
-        }
-        return usersId;
-    }
+
 
 
     /**----------------------------------下拉框------------------------------------------*/

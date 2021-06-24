@@ -22,6 +22,7 @@
         <result column="working_hour" property="workingHour" ></result>
         <result column="overtime" property="overtime" ></result>
         <result column="type" property="type"></result>
+        <result column="overhaul_no" property="overhaulNo"></result>
     </resultMap>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
@@ -59,7 +60,8 @@
         DATE_FORMAT(mr.end_time,"%Y-%m") finish_year_month,
         DATE_FORMAT(mr.end_time,"%d") finish_day,
         mr.working_hour,
-        "0" as type
+        "0" as type,
+        mr.maintain_record_no as overhaul_no
         FROM
         maintain_record mr
         JOIN mysql.help_topic b ON b.help_topic_id &lt; (
@@ -107,7 +109,8 @@
             DATE_FORMAT(de.confirmer1Time,"%d") finish_day,
             de.realExecuteTime working_hour,
             de.overtime,
-            "1" as type
+            "1" as type,
+            de.number as  overhaul_no
         FROM
             defect de
         JOIN mysql.help_topic b ON b.help_topic_id &lt; (
