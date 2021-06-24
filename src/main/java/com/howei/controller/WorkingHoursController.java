@@ -71,8 +71,6 @@ public class WorkingHoursController {
      */
     @RequestMapping("getOperatingHoursList")
     public Result getOperatingHoursList(String month, Integer projectId) {
-        month = "2021-06";
-        projectId = 17;
         Subject subject = SecurityUtils.getSubject();
         Users users = (Users) subject.getPrincipal();
         Result result = new Result();

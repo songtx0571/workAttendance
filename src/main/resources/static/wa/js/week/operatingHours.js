@@ -96,6 +96,12 @@ function  showTableList (month,projectId) {
                         data1.data[i].detail.successorTime = "无";
                         data1.data[i].detail.tradersTime = "无";
                     }
+                    if (data1.data[i].detail.successorTime == "" || data1.data[i].detail.successorTime == null) {
+                        data1.data[i].detail.successorTime ="无";
+                    }
+                    if (data1.data[i].detail.tradersTime == "" || data1.data[i].detail.tradersTime == null) {
+                        data1.data[i].detail.tradersTime ="无";
+                    }
                     content += ""+"<p>接班时间:"+data1.data[i].detail.successorTime+"；</p><p>交班时间:"+data1.data[i].detail.tradersTime+"</p><br>";
                     content += "'"
 
