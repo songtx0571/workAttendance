@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.howei.pojo.Employee;
 import com.howei.pojo.Users;
 import com.howei.service.EmployeeService;
+import com.howei.util.ListUtils;
 import com.howei.util.Page;
 import com.howei.util.Result;
 import com.howei.util.Type;
@@ -79,14 +80,16 @@ public class EmployeeController {
             }
             list = employeeService.getEmployeeList(map);
         } else {
-            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-            if (rootList != null) {
-                empIdStr += employeeId + ",";
-                List<Employee> empList = employeeService.getEmployeeByManager(0);
-                for (Employee employee : rootList) {
-                    empIdStr += employee.getId() + ",";
-                    empIdStr += getUsersId(employee.getId(), empList);
-                }
+            empIdStr += users.getEmployeeId() + ",";
+            List<String> employeeIdList = new ArrayList<>();
+
+            List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
+
+            List<Employee> empList = employeeService.getEmployeeByManager(0);
+            ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
+
+            for (String employeeIdStr : employeeIdList) {
+                empIdStr += employeeIdStr + ",";
             }
             if (empIdStr != null && !empIdStr.equals("")) {
                 empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
@@ -105,29 +108,6 @@ public class EmployeeController {
         return JSON.toJSONString(result);
     }
 
-    public String getUsersId(Integer empId,List<Employee> empList){
-        List<String> result=new ArrayList<>();
-        String userId="";
-        String usersId="";
-        for(Employee employee:empList){
-            if(employee.getManager()!=null||employee.getManager()!=0){
-                if(employee.getManager().equals(empId)){
-                    usersId+=employee.getId()+",";
-                    result.add(employee.getId()+"");
-                }
-            }
-        }
-        for(String str:result){
-            String userId1=getUsersId(Integer.parseInt(str),empList);
-            if(userId1!=null&&!userId1.equals("")){
-                userId+=userId1;
-            }
-        }
-        if(userId!=null&&!userId.equals("null")){
-            usersId+=userId;
-        }
-        return usersId;
-    }
 
     /**
      * 下拉框员工
@@ -181,14 +161,16 @@ public class EmployeeController {
         if (users != null) {
             employeeId = users.getEmployeeId();
         }
-        List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            empIdStr += employeeId + ",";
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
-            }
+        empIdStr += users.getEmployeeId() + ",";
+        List<String> employeeIdList = new ArrayList<>();
+
+        List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
+
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr += employeeIdStr + ",";
         }
         if (empIdStr != null && !empIdStr.equals("")) {
             empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));

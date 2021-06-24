@@ -91,7 +91,7 @@ function  showTableList (month,projectId) {
                     if (i < 10) {
                         i = "0" + i;
                     }
-                    table += "<th>"+data1.data[i]+"</th>"
+                    table += "<td id='key_'+item+'_'+i >"+data1.data[i].total+"</td>"
                 }
                 table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
             }

@@ -5,10 +5,7 @@ import com.howei.pojo.*;
 import com.howei.service.EmployeeService;
 import com.howei.service.LeaveService;
 import com.howei.service.UserService;
-import com.howei.util.DateFormat;
-import com.howei.util.Page;
-import com.howei.util.Result;
-import com.howei.util.Type;
+import com.howei.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -205,21 +202,15 @@ public class LeaveController {
         }
         int rows = Page.getOffSet(page, pageSize);
         //获取请假人信息
-        Employee emp = employeeService.getEmployeeById(employeeId + "");
-        if (emp != null && emp.getManager() != null) {
-            empManager = emp.getManager();
-        }
+        List<String > employeeIdList=new ArrayList<>();
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            empIdStr += employeeId + ",";
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
-            }
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr+=employeeIdStr+",";
         }
         Map map = new HashMap();
         Result result = null;
@@ -326,48 +317,22 @@ public class LeaveController {
     public String getEmployeeName() {
         Users users = this.getPrincipal();
         List<Map<String, String>> list = null;
+        Integer empId = users.getEmployeeId();
         String empIdStr = "";
-        if (users != null) {
-            Integer empId = users.getEmployeeId();
-            List<Employee> rootList = employeeService.getEmployeeByManager(empId);
-            if (rootList != null) {
-                List<Employee> empList = employeeService.getEmployeeByManager(0);
-                for (Employee employee : rootList) {
-                    empIdStr += employee.getId() + ",";
-                    empIdStr += getUsersId(employee.getId(), empList);
-                }
-            }
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+        List<String > employeeIdList=new ArrayList<>();
+
+        List<Employee> rootList = employeeService.getEmployeeByManager(empId);
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr+=employeeIdStr+",";
         }
         list = employeeService.getEmployeeNameMapByManager(empIdStr);
         return JSON.toJSONString(list);
     }
 
-    public String getUsersId(Integer empId, List<Employee> empList) {
-        List<String> result = new ArrayList<>();
-        String userId = "";
-        String usersId = "";
-        for (Employee employee : empList) {
-            if (employee.getManager() != null || employee.getManager() != 0) {
-                if (employee.getManager().equals(empId)) {
-                    usersId += employee.getId() + ",";
-                    result.add(employee.getId() + "");
-                }
-            }
-        }
-        for (String str : result) {
-            String userId1 = getUsersId(Integer.parseInt(str), empList);
-            if (userId1 != null && !userId1.equals("")) {
-                userId += userId1;
-            }
-        }
-        if (userId != null && !userId.equals("null")) {
-            usersId += userId;
-        }
-        return usersId;
-    }
 
     /**
      * 获取请假配置项信息
@@ -647,17 +612,16 @@ public class LeaveController {
         }
 
         String empIdStr = "";
+        List<String > employeeIdList=new ArrayList<>();
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-        if (rootList != null) {
-            empIdStr += empId + ",";
-            List<Employee> empList = employeeService.getEmployeeByManager(0);
-            for (Employee employee : rootList) {
-                empIdStr += employee.getId() + ",";
-                empIdStr += getUsersId(employee.getId(), empList);
-            }
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+
+        map = new HashMap();
+        for (String employeeIdStr : employeeIdList) {
+            empIdStr+=employeeIdStr+",";
         }
         map.put("empIdStr", empIdStr);
         List<LeaveData> total = leaveService.getLeaveDataStatisticsList(map);

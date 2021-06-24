@@ -13,6 +13,8 @@ public class OverhaulRecord {
     private Double workingHour;
     private Double overtime;
     private String type; //该记录类型 0维护,1缺陷,2维修
+    private String overhaulNo;//每个类型的编号,缺陷编号或者维护编号
+
 
     @Override
     public String toString() {
@@ -26,7 +28,16 @@ public class OverhaulRecord {
                 ", workingHour=" + workingHour +
                 ", overtime=" + overtime +
                 ", type='" + type + '\'' +
+                ", overhaulNo='" + overhaulNo + '\'' +
                 '}';
+    }
+
+    public String getOverhaulNo() {
+        return overhaulNo;
+    }
+
+    public void setOverhaulNo(String overhaulNo) {
+        this.overhaulNo = overhaulNo;
     }
 
     public String getType() {

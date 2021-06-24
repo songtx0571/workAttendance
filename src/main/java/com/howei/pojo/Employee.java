@@ -5,7 +5,7 @@ import java.util.List;
 
 //员工信息
 public class Employee implements Serializable {
-    private int id;
+    private Integer id;
     private String name;//姓名
     private String userNumber;//编号
     private String idNumber;//身份证
@@ -62,11 +62,11 @@ public class Employee implements Serializable {
         this.isChanged = isChanged;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
