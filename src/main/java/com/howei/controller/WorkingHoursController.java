@@ -84,94 +84,80 @@ public class WorkingHoursController {
         }
 
         Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
-        String empIdStr = "";//拼接请假人字符串
         //根据绩效管理人获取被绩效管理人
-        List<String > employeeIdList=new ArrayList<>();
+        List<String> employeeIdList = new ArrayList<>();
 
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
 
-        for (String employeeIdStr : employeeIdList) {
-            empIdStr+=employeeIdStr+",";
-        }
-        //去除剩余 ','
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-        }
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
-        //遍历集合，整理返回此月数据
-        String[] empArr = empIdStr.split(",");
-        Map<String,Double> mapDayData=null;//初始化日期
-        for (int k = 0; k < empArr.length; k++) {
-            //获取此月天数
-            int day = DateFormat.getDaysOfMonth(month + "-01");
-            result.setCount(day);
-            //初始化日期Map
-            mapDayData=new HashMap<>();//初始化日期
-            mapDayData=this.defaultMothData(mapDayData,day);
-            Map<String, Object> map1 = new HashMap<>();
-            String emp = empArr[k];
-            //获取此人指定月份的运行工时数据
-            Map map = new HashMap();
-            map.put("monthDay", month + "-01");
-            map.put("empIdStr", emp);
-            map.put("projectId", projectId);
-            List<OperatingHours> list = workingService.getOperatingHoursList(map);
-            int size = 0;
-            if (list != null && list.size() > 0) {
-                size = list.size();
-            } else {
-                continue;
-            }
-            //获取此月（1-31天）数据
-            int workAttendance = 0;//考勤天数
-            double workingTotal = 0.0;//此月总共工时
-            for (int i = 0; i < day; i++) {
-                if (i < size) {
-                    OperatingHours operatingHours = list.get(i);
-                    double workingTime = operatingHours.getWorkingTime();//工时
-                    String monthDay=operatingHours.getMonthDay();
-                    String[] arr=monthDay.split("-");
-                    mapDayData.put(arr[2],workingTime);
-                    //考勤天数:工时不为o
-                    if (workingTime > 0) {
-                        workAttendance++;
-                    }
-                    //此月总共工时
-                    workingTotal += workingTime;
-                    map1.put("employeeNumber", operatingHours.getEmployeeNumber());//员工编号
-                    map1.put("employeeName", operatingHours.getEmployeeName());//员工名称
+
+        //获取此月天数
+        int day = DateFormat.getDaysOfMonth(month + "-01");
+        result.setCount(day);
+        if (employeeIdList.size() > 0) {
+            for (int k = 0; k < employeeIdList.size(); k++) {
+                //初始化日期Map
+                Map<String, Object> mapDayData = this.defaultMothData(day);//初始化日期
+                Map<String, Object> map1 = new HashMap<>();
+                String emp = employeeIdList.get(k);
+                //获取此人指定月份的运行工时数据
+                Map map = new HashMap();
+                map.put("monthDay", month + "-01");
+                map.put("empIdStr", emp);
+                map.put("projectId", projectId);
+                List<OperatingHours> list = workingService.getOperatingHoursList(map);
+                int size = 0;
+                if (list != null && list.size() > 0) {
+                    size = list.size();
+                } else {
+                    continue;
                 }
+                //获取此月（1-31天）数据
+                int workAttendance = 0;//考勤天数
+                double workingTotal = 0.0;//此月总共工时
+                for (int i = 0; i < day; i++) {
+                    if (i < size) {
+                        OperatingHours operatingHours = list.get(i);
+                        Map<String, Object> dailyDataMap = new HashMap<>();
+                        double workingTime = operatingHours.getWorkingTime();//工时
+                        dailyDataMap.put("total", workingTime);
+                        dailyDataMap.put("detail", operatingHours);
+                        String monthDay = operatingHours.getMonthDay();
+                        String[] arr = monthDay.split("-");
+                        mapDayData.put(arr[2], dailyDataMap);
+                        //考勤天数:工时不为o
+                        if (workingTime > 0) {
+                            workAttendance++;
+                        }
+                        //此月总共工时
+                        workingTotal += workingTime;
+                        map1.put("employeeNumber", operatingHours.getEmployeeNumber());//员工编号
+                        map1.put("employeeName", operatingHours.getEmployeeName());//员工名称
+                    }
+                }
+                map1.put("workAttendance", workAttendance);
+                map1.put("data", mapDayData);//1-31天数据
+                //本月要求工时数
+                BigDecimal bd = new BigDecimal(40 / 7 * day);
+                double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                map1.put("monthTime", workingTotal);//本月工时
+                //判断是否有加班工时
+                if (workingTotal > thisMonthRequirementTime) {
+                    bd = new BigDecimal(workingTotal - thisMonthRequirementTime);
+                    double workOvertime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    map1.put("workOvertime", workOvertime);//加班工时
+                } else {
+                    map1.put("workOvertime", 0);//加班工时
+                }
+                resultList.add(map1);
             }
-            map1.put("workAttendance", workAttendance);
-            map1.put("data", mapDayData);//1-31天数据
-            //本月要求工时数
-            BigDecimal bd = new BigDecimal(40 / 7 * day);
-            double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            map1.put("monthTime", workingTotal);//本月工时
-            //判断是否有加班工时
-            if (workingTotal > thisMonthRequirementTime) {
-                bd = new BigDecimal(workingTotal - thisMonthRequirementTime);
-                double workOvertime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                map1.put("workOvertime", workOvertime);//加班工时
-            } else {
-                map1.put("workOvertime", 0);//加班工时
-            }
-            resultList.add(map1);
+
         }
         result.setData(resultList);
         return result;
-    }
-
-    //设置当月数据默认为0
-    private Map defaultMothData(Map map,int day) {
-        DecimalFormat df = new DecimalFormat("00");
-        for (Integer i = 1; i <= day; i++) {
-            map.put(df.format(i), 0D);
-        }
-        return map;
     }
 
 
@@ -214,7 +200,7 @@ public class WorkingHoursController {
         List<Employee> rootList = employeeService.getEmployeeByManager(usersEmployeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,userNumberList);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, userNumberList);
         if (employeeIdList.size() > 0) {
             paramsMap.put("employeeIdList", employeeIdList);
         }
@@ -248,12 +234,12 @@ public class WorkingHoursController {
             Map<String, Object> mapMap;
             if (!resultMap.containsKey(employeeId.toString())) {
                 mapMapMap = new HashMap<>();
-                mapMap = this.initMap(daysOfMonth);
+                mapMap = this.defaultMothData(daysOfMonth);
                 Map<String, Object> map = (Map<String, Object>) mapMap.get(overhaulRecord.getFinishDay());
                 map.put("total", df.format(Double.valueOf(map.get("total").toString()) + (overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour())));
                 List detailList = (ArrayList) map.get("detail");
                 detailList.add(overhaulRecord);
-                map.put("detail",detailList );
+                map.put("detail", detailList);
                 mapMap.put(overhaulRecord.getFinishDay(), map);
                 mapMapMap.put("data", mapMap);
 
@@ -270,7 +256,7 @@ public class WorkingHoursController {
                 map.put("total", df.format(Double.valueOf(map.get("total").toString()) + (overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour())));
                 List detailList = (ArrayList) map.get("detail");
                 detailList.add(overhaulRecord);
-                map.put("detail",detailList );
+                map.put("detail", detailList);
                 mapMap.put(overhaulRecord.getFinishDay(), map);
 
                 mapMapMap.put("data", mapMap);
@@ -283,7 +269,7 @@ public class WorkingHoursController {
     }
 
     //初始化当月
-    private Map<String, Object> initMap(int n) {
+    private Map<String, Object> defaultMothData(int n) {
         Map<String, Object> resultMap = new HashMap<>();
         DecimalFormat df = new DecimalFormat("00");
         for (Integer i = 1; i <= n; i++) {
@@ -294,9 +280,6 @@ public class WorkingHoursController {
         }
         return resultMap;
     }
-
-
-
 
 
     /**----------------------------------下拉框------------------------------------------*/

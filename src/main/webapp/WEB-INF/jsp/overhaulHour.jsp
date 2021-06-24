@@ -49,6 +49,10 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
+        .operaHourTd{
+             text-align: center;
+             cursor: pointer;
+         }
     </style>
 </head>
 <body>

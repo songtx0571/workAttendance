@@ -87,11 +87,29 @@ function  showTableList (month,projectId) {
             for (var item in data) {
                 var data1 = data[item]
                 table += "<td>"+data1.userNumber+"</td><td>"+data1.userName+"</td>";
+
                 for (var i = 1; i <= tian; i ++) {
                     if (i < 10) {
                         i = "0" + i;
                     }
-                    table += "<td id='key_'+item+'_'+i >"+data1.data[i].total+"</td>"
+                    var content = "'";
+                    for (var z= 0; z < data1.data[i].detail.length; z ++) {
+                        if (data1.data[i].detail[z].overhaulNo == "" || data1.data[i].detail[z].overhaulNo == null) {
+                            data1.data[i].detail[z].overhaulNo = "无编号"
+                        }
+                        if (data1.data[i].detail[z].overtime == "" || data1.data[i].detail[z].overtime == null) {
+                            data1.data[i].detail[z].overtime = "0"
+                        }
+                        content += ""+"<p>ID:"+data1.data[i].detail[z].overhaulNo+"；工时:"+data1.data[i].detail[z].workingHour+"；加班工时:"+data1.data[i].detail[z].overtime+"</p><br>";
+                    }
+
+                    content += "'"
+
+                    if (content.length < 3 ) {
+                        content = "'"+"无数据！"+"'";
+                    }
+                    var operatingTd = "'operaHourTd_"+item+"_"+i+"'";
+                    table += '<td class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
                 }
                 table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
             }
@@ -101,6 +119,12 @@ function  showTableList (month,projectId) {
         }
     })
 
+}
+function showDiv (content, id) {
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        layer.tips(content, "#"+id)
+    })
 }
 //上个月
 function monthUpBtn() {

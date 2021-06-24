@@ -63,7 +63,7 @@ function showDepart() {
 function  showTableList (month,projectId) {
     $("#test15").val(month)
     var div = $(".div");
-    var table = "<table class='layui-table'><thead><tr><th>编号</th><th>姓名</th>";
+    var table = "<table class='layui-table'><thead><tr><th>编号</th><th style='width: 60px;'>姓名</th>";
     $(".loading").css("display","block");
     $.ajax({
         url: path + '/wa/working/getOperatingHoursList',//请求地址
@@ -91,7 +91,30 @@ function  showTableList (month,projectId) {
                     if (i < 10) {
                         i = "0" + i;
                     }
-                    table += "<th>"+data1.data[i]+"</th>"
+                    var time = "'"+"2021-05-06 12:00:00,2021-05-07 12:00:00"+"'";
+
+
+                    var content = "'";
+                    // for (var z= 0; z < data1.data[i].detail.length; z ++) {
+                    //
+                    //     if (data1.data[i].detail[z].successorTime == "" || data1.data[i].detail[z].successorTime == null) {
+                    //         data1.data[i].detail[z].successorTime = "无"
+                    //     }
+                    //     if (data1.data[i].detail[z].tradersTime == "" || data1.data[i].detail[z].tradersTime == null) {
+                    //         data1.data[i].detail[z].tradersTime = "无"
+                    //     }
+                    //
+                    //     content += ""+"<p>接班时间:"+data1.data[i].detail[z].successorTime+"；</p><p>交班时间:"+data1.data[i].detail[z].tradersTime+"</p><br>";
+                    // }
+                    content += ""+"<p>接班时间:"+data1.data[i].detail.successorTime+"；</p><p>交班时间:"+data1.data[i].detail.tradersTime+"</p><br>";
+                    content += "'"
+
+                    if (content.length < 3 ) {
+                        content = "'"+"无数据！"+"'";
+                    }
+
+                    var operatingTd = "'operatingTd_"+item+"_"+i+"'";
+                    table += '<td class="operatingTd" id="operatingTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
                 }
                 table += "<td style='font-weight: bold;color: red;'>"+data1.monthTime+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.workOvertime+"</td></tr>"
             }
@@ -101,6 +124,12 @@ function  showTableList (month,projectId) {
         }
     })
 
+}
+function showDiv (content, id) {
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        layer.tips(content, "#"+id)
+    })
 }
 //上个月
 function monthUpBtn() {
