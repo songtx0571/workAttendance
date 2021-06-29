@@ -86,13 +86,14 @@ public class WorkingHoursController {
         Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
         //根据绩效管理人获取被绩效管理人
         List<String> employeeIdList = new ArrayList<>();
-
+        employeeIdList.add(employeeId.toString());
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
 
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
+        DecimalFormat decimalFormat=new DecimalFormat("0.0");
 
         //获取此月天数
         int day = DateFormat.getDaysOfMonth(month + "-01");
@@ -141,14 +142,14 @@ public class WorkingHoursController {
                 map1.put("workAttendance", workAttendance);
                 map1.put("data", mapDayData);//1-31天数据
                 //本月要求工时数
-                BigDecimal bd = new BigDecimal(40 / 7 * day);
+                BigDecimal bd = new BigDecimal(40 / 7.0 * day);
                 double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                map1.put("monthTime", workingTotal);//本月工时
+                map1.put("monthTime", decimalFormat.format(workingTotal));//本月工时
                 //判断是否有加班工时
                 if (workingTotal > thisMonthRequirementTime) {
                     bd = new BigDecimal(workingTotal - thisMonthRequirementTime);
                     double workOvertime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                    map1.put("workOvertime", workOvertime);//加班工时
+                    map1.put("workOvertime", decimalFormat.format(workOvertime));//加班工时
                 } else {
                     map1.put("workOvertime", 0);//加班工时
                 }
@@ -185,14 +186,13 @@ public class WorkingHoursController {
         if (date != null) {
             paramsMap.put("date", date);
         }
-        if (departmentId == null && !subject.isPermitted("查询所有部门")) {
-            departmentId = users.getDepartmentId();
-        }
         if (departmentId != null) {
             paramsMap.put("departmentId", departmentId);
         }
         List<String> employeeIdList = new ArrayList<>();
+        employeeIdList.add(String.valueOf(users.getEmployeeId()));
         List<String> userNumberList = new ArrayList<>();
+        userNumberList.add(users.getUserNumber());
 
         Integer usersEmployeeId = users.getEmployeeId();
         //根据id查询被管理人的员工信息
@@ -228,10 +228,13 @@ public class WorkingHoursController {
         Map<String, Object> resultMap = new HashMap<>();
         //循环每一条记录,
         DecimalFormat df = new DecimalFormat("0.0");
+        double baseWorkHours = new BigDecimal(40 / 7.0 * daysOfMonth).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        //循环list
         for (OverhaulRecord overhaulRecord : overhaulRecordList) {
             Integer employeeId = overhaulRecord.getEmployeeId();
             Map<String, Object> mapMapMap;
             Map<String, Object> mapMap;
+            //如果map中不存在则添加该条数据,存在则获取数据,在对应的日期中添加工时
             if (!resultMap.containsKey(employeeId.toString())) {
                 mapMapMap = new HashMap<>();
                 mapMap = this.defaultMothData(daysOfMonth);
@@ -260,8 +263,15 @@ public class WorkingHoursController {
                 mapMap.put(overhaulRecord.getFinishDay(), map);
 
                 mapMapMap.put("data", mapMap);
-                mapMapMap.put("all", df.format(overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour() + Double.valueOf(mapMapMap.get("all").toString())));
-                mapMapMap.put("over", df.format((overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMapMap.get("over").toString())));
+                double allWorkHours = overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour() + Double.valueOf(mapMapMap.get("all").toString());
+
+                double restHours = 0;
+                if (allWorkHours >= baseWorkHours) {
+                    restHours = allWorkHours - baseWorkHours;
+                    allWorkHours = baseWorkHours;
+                }
+                mapMapMap.put("all", df.format(allWorkHours));
+                mapMapMap.put("over", df.format(restHours + (overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMapMap.get("over").toString())));
             }
             resultMap.put(employeeId.toString(), mapMapMap);
         }
