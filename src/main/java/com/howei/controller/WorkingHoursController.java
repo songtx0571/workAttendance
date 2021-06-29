@@ -86,13 +86,12 @@ public class WorkingHoursController {
         Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
         //根据绩效管理人获取被绩效管理人
         List<String> employeeIdList = new ArrayList<>();
-
+        employeeIdList.add(employeeId.toString());
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
 
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
-
 
         //获取此月天数
         int day = DateFormat.getDaysOfMonth(month + "-01");
@@ -123,6 +122,8 @@ public class WorkingHoursController {
                         OperatingHours operatingHours = list.get(i);
                         Map<String, Object> dailyDataMap = new HashMap<>();
                         double workingTime = operatingHours.getWorkingTime();//工时
+                        BigDecimal bd = new BigDecimal(workingTime);
+                        workingTime = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                         dailyDataMap.put("total", workingTime);
                         dailyDataMap.put("detail", operatingHours);
                         String monthDay = operatingHours.getMonthDay();
@@ -141,13 +142,15 @@ public class WorkingHoursController {
                 map1.put("workAttendance", workAttendance);
                 map1.put("data", mapDayData);//1-31天数据
                 //本月要求工时数
-                BigDecimal bd = new BigDecimal(40 / 7 * day);
-                double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                BigDecimal bd = new BigDecimal(40 / 7.0 * day);
+                double thisMonthRequirementTime = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                bd = new BigDecimal(workingTotal);
+                workingTotal = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                 map1.put("monthTime", workingTotal);//本月工时
                 //判断是否有加班工时
                 if (workingTotal > thisMonthRequirementTime) {
                     bd = new BigDecimal(workingTotal - thisMonthRequirementTime);
-                    double workOvertime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    double workOvertime = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                     map1.put("workOvertime", workOvertime);//加班工时
                 } else {
                     map1.put("workOvertime", 0);//加班工时
@@ -176,6 +179,7 @@ public class WorkingHoursController {
         if (users == null) {
             return Result.fail("用户失效");
         }
+        Integer empId=users.getEmployeeId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         if (date == null) {
             date = sdf.format(new Date());
@@ -192,6 +196,7 @@ public class WorkingHoursController {
             paramsMap.put("departmentId", departmentId);
         }
         List<String> employeeIdList = new ArrayList<>();
+        employeeIdList.add(empId.toString());
         List<String> userNumberList = new ArrayList<>();
 
         Integer usersEmployeeId = users.getEmployeeId();

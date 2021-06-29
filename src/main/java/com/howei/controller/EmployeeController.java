@@ -82,7 +82,6 @@ public class EmployeeController {
         } else {
             empIdStr += users.getEmployeeId() + ",";
             List<String> employeeIdList = new ArrayList<>();
-
             List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
 
             List<Employee> empList = employeeService.getEmployeeByManager(0);
