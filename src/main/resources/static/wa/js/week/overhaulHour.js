@@ -62,9 +62,9 @@ function showDepart() {
 }
 function  showTableList (month,projectId) {
     $("#test15").val(month);
-    $(".loading").css("display","block");
     var div = $(".div");
-    var ul = "<ul><li style='border-top: 1px solid #e6e6e6;border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;background: #f2f2f2;'><span>编号</span><span style='width: 105px;'>姓名</span>";
+    var table = "<table><thead><tr style='background: #f2f2f2;'><th>编&nbsp;号</th><th style='width: 105px;'>姓名</th>";
+    $(".loading").css("display","block");
     $.ajax({
         url: "/wa/working/getOverhaulHours?departmentId="+projectId+"&date="+month,//请求地址
         dataType: "json",//数据格式
@@ -74,19 +74,19 @@ function  showTableList (month,projectId) {
             var tian = data.count;
             data = data.data;
             for (var i = 0; i < tian; i ++) {
-                ul += "<span>"+(i+1)+"日</span>"
+                table += "<th>"+(i+1)+"<br />日</th>"
             }
-            ul += "<span style='font-weight: bold;width: 100px;'>本月工时</span><span style='font-weight: bold;width: 100px;border-right: 0px solid #e6e6e6;'>加班工时</span></li>";
+            table += "<th style='font-weight: bold;'>本月<br />工时</th><th style='font-weight: bold;'>本月<br />考勤</th><th style='font-weight: bold;'>加班<br />工时</th></tr></thead><tbody><tr>";
             if (data == "") {
                 $(".loading").css("display","none");
-                ul += "<li style='border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;'><span style='width:100%;text-align: center;line-height: 56px;font-size: 20px;'>无数据！</span></li></ul>";
-                div.html(ul);
+                table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;min-width: 100%;border: none;padding-left: 10px;'>无数据！</td></tr></tbody></table>";
+                div.html(table);
                 return false;
             }
 
             for (var item in data) {
                 var data1 = data[item]
-                ul += "<li style='border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;'><span>"+data1.userNumber+"</span><span style='width: 105px;'>"+data1.userName+"</span>";
+                table += "<td>"+data1.userNumber+"</td><td>"+data1.userName+"</td>";
 
                 for (var i = 1; i <= tian; i ++) {
                     if (i < 10) {
@@ -109,12 +109,12 @@ function  showTableList (month,projectId) {
                         content = "'"+"无数据！"+"'";
                     }
                     var operatingTd = "'operaHourTd_"+item+"_"+i+"'";
-                    ul += '<span class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</span>'
+                    table += '<td class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
                 }
-                ul += "<span style='font-weight: bold;color: red;width: 100px;'>"+data1.all+"</span><span style='font-weight: bold;color: red;width: 100px;border-right: 0px solid #e6e6e6;'>"+data1.over+"</span></li>"
+                table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
             }
-            ul += "</ul>";
-            div.html(ul);
+            table += "</tbody></table>";
+            div.html(table);
             $(".loading").css("display","none");
         }
     })

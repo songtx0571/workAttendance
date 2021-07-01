@@ -79,7 +79,7 @@ function  showTableList (month,projectId) {
             table += "<th style='font-weight: bold;'>本月<br />工时</th><th style='font-weight: bold;'>考勤<br />天数</th><th style='font-weight: bold;'>加班<br />工时</th></tr></thead><tbody><tr>";
             if (data == "") {
                 $(".loading").css("display","none");
-                table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;'>无数据！</td></tr></tbody></table>";
+                table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;min-width: 100%;border: none;padding-left: 10px;'>无数据！</td></tr></tbody></table>";
                 div.html(table);
                 return false;
             }

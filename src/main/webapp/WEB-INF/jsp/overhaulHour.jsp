@@ -49,18 +49,27 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
-        .div ul{
-            width: 2050px;
+        .div table {
+            border: 1px solid #e6e6e6;
+            collapse: 0;
+            color: #666;
+            font-size: 14px;
         }
-        .div ul li{
-            line-height: 35px;
+        .div table  tr th, .div table tr td{
+            min-width: 65px;
+            line-height: 33px;
             text-align: center;
-            border-bottom: 1px solid #e6e6e6;
+            border: 1px solid #e6e6e6;
         }
-        .div ul li span{
-            display: inline-block;
-            width: 53px;
-            border-right: 1px solid #e6e6e6;
+        .div table thead, .div table tbody {
+            display: block;
+        }
+        .div table tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+        .div table tbody::-webkit-scrollbar{
+            display: none;
         }
         .operaHourTd{
             text-align: center;

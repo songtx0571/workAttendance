@@ -56,10 +56,20 @@
             font-size: 14px;
         }
         .div table  tr th, .div table tr td{
-            width: 75px;
+            min-width: 65px;
             line-height: 33px;
             text-align: center;
             border: 1px solid #e6e6e6;
+        }
+        .div table thead, .div table tbody {
+            display: block;
+        }
+        .div table tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+        .div table tbody::-webkit-scrollbar{
+            display: none;
         }
         .operatingTd{
             text-align: center;
