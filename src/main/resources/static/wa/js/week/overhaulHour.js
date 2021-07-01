@@ -64,7 +64,7 @@ function  showTableList (month,projectId) {
     $("#test15").val(month);
     $(".loading").css("display","block");
     var div = $(".div");
-    var table = "<table class='layui-table'><thead><tr><th>编号</th><th>姓名</th>";
+    var ul = "<ul><li style='border-top: 1px solid #e6e6e6;border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;background: #f2f2f2;'><span>编号</span><span style='width: 105px;'>姓名</span>";
     $.ajax({
         url: "/wa/working/getOverhaulHours?departmentId="+projectId+"&date="+month,//请求地址
         dataType: "json",//数据格式
@@ -74,19 +74,19 @@ function  showTableList (month,projectId) {
             var tian = data.count;
             data = data.data;
             for (var i = 0; i < tian; i ++) {
-                table += "<th>"+(i+1)+"日</th>"
+                ul += "<span>"+(i+1)+"日</span>"
             }
-            table += "<th style='font-weight: bold;'>本月工时</th><th style='font-weight: bold;'>加班工时</th></tr></thead><tbody><tr>";
+            ul += "<span style='font-weight: bold;width: 100px;'>本月工时</span><span style='font-weight: bold;width: 100px;border-right: 0px solid #e6e6e6;'>加班工时</span></li>";
             if (data == "") {
                 $(".loading").css("display","none");
-                table += "<td colspan='"+(tian+4)+"' style='text-align: center;line-height: 56px;font-size: 20px;'>无数据！</td></tr></tbody></table>";
-                div.html(table);
+                ul += "<li style='border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;'><span style='width:100%;text-align: center;line-height: 56px;font-size: 20px;'>无数据！</span></li></ul>";
+                div.html(ul);
                 return false;
             }
 
             for (var item in data) {
                 var data1 = data[item]
-                table += "<td>"+data1.userNumber+"</td><td>"+data1.userName+"</td>";
+                ul += "<li style='border-left: 1px solid #e6e6e6;border-right: 1px solid #e6e6e6;'><span>"+data1.userNumber+"</span><span style='width: 105px;'>"+data1.userName+"</span>";
 
                 for (var i = 1; i <= tian; i ++) {
                     if (i < 10) {
@@ -109,12 +109,12 @@ function  showTableList (month,projectId) {
                         content = "'"+"无数据！"+"'";
                     }
                     var operatingTd = "'operaHourTd_"+item+"_"+i+"'";
-                    table += '<td class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
+                    ul += '<span class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</span>'
                 }
-                table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
+                ul += "<span style='font-weight: bold;color: red;width: 100px;'>"+data1.all+"</span><span style='font-weight: bold;color: red;width: 100px;border-right: 0px solid #e6e6e6;'>"+data1.over+"</span></li>"
             }
-            table += "</tbody></table>";
-            div.html(table);
+            ul += "</ul>";
+            div.html(ul);
             $(".loading").css("display","none");
         }
     })

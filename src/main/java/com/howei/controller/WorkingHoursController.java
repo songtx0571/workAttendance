@@ -221,6 +221,7 @@ public class WorkingHoursController {
         }
         //查询检修记录
         List<OverhaulRecord> maintenanceRecordList = workingService.getMaintenceRecordByMap(paramsMap);
+        System.out.println(maintenanceRecordList);
         if (maintenanceRecordList != null && maintenanceRecordList.size() > 0) {
             overhaulRecordList.addAll(maintenanceRecordList);
         }

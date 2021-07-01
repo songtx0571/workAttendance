@@ -63,7 +63,7 @@ function showDepart() {
 function  showTableList (month,projectId) {
     $("#test15").val(month)
     var div = $(".div");
-    var table = "<table class='layui-table'><thead><tr><th>编号</th><th style='width: 60px;'>姓名</th>";
+    var table = "<table><thead><tr style='background: #f2f2f2;'><th>编号</th><th style='width: 105px;'>姓名</th>";
     $(".loading").css("display","block");
     $.ajax({
         url: path + '/wa/working/getOperatingHoursList',//请求地址
@@ -74,9 +74,9 @@ function  showTableList (month,projectId) {
             var tian = data.count;
             data = data.data;
             for (var i = 0; i < tian; i ++) {
-                table += "<th>"+(i+1)+"日</th>"
+                table += "<th>"+(i+1)+"<br />日</th>"
             }
-            table += "<th style='font-weight: bold;'>本月工时</th><th style='font-weight: bold;'>考勤天数</th><th style='font-weight: bold;'>加班工时</th></tr></thead><tbody><tr>";
+            table += "<th style='font-weight: bold;'>本月<br />工时</th><th style='font-weight: bold;'>考勤<br />天数</th><th style='font-weight: bold;'>加班<br />工时</th></tr></thead><tbody><tr>";
             if (data == "") {
                 $(".loading").css("display","none");
                 table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;'>无数据！</td></tr></tbody></table>";

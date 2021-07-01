@@ -49,9 +49,25 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
+        .div table {
+            border: 1px solid #e6e6e6;
+            collapse: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .div table  tr th, .div table tr td{
+            width: 75px;
+            line-height: 33px;
+            text-align: center;
+            border: 1px solid #e6e6e6;
+        }
         .operatingTd{
             text-align: center;
             cursor: pointer;
+
+        }
+        .layui-layer-tips {
+            width: 200px;
         }
     </style>
 </head>
@@ -77,7 +93,7 @@
         </form>
     </div>
     <div class="content">
-        <div class="div layui-form"></div>
+        <div class="div"></div>
     </div>
     <div class="loading">
         <div style="width: 50px;margin: 0 auto;">

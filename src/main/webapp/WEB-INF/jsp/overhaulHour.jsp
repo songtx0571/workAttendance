@@ -49,9 +49,25 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
+        .div ul{
+            width: 2050px;
+        }
+        .div ul li{
+            line-height: 35px;
+            text-align: center;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        .div ul li span{
+            display: inline-block;
+            width: 53px;
+            border-right: 1px solid #e6e6e6;
+        }
         .operaHourTd{
             text-align: center;
             cursor: pointer;
+        }
+        .layui-layer-tips {
+            width: 210px;
         }
     </style>
 </head>
@@ -77,7 +93,7 @@
         </form>
     </div>
     <div class="content">
-        <div class="div layui-form"></div>
+        <div class="div"></div>
     </div>
     <div class="loading">
         <div style="width: 50px;margin: 0 auto;">

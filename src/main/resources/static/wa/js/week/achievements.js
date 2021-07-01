@@ -540,8 +540,10 @@ function showBehavior(cycle) {
         $('.week4').val("");
         $('#sum').val("");
         $('#remark').val("");
-        $('#jiaban').text('0');
-        $('#kaoqin').text('0');
+        /*$('#jiaban').text('0');
+        $('#kaoqin').text('0');*/
+        $('#jiaban').val('0');
+        $('#kaoqin').val('0');
         $('#netPerformance').val('0');
         $('#comprehensivePerformance').val('0');
         return;
@@ -564,8 +566,10 @@ function showBehavior(cycle) {
                 $('.week4').val("");
                 $('#sum').val("");
                 $('#remark').val("");
-                $('#jiaban').text('0');
-                $('#kaoqin').text('0');
+                /*$('#jiaban').text('0');
+                $('#kaoqin').text('0');*/
+                $('#jiaban').val('0');
+                $('#kaoqin').val('0');
                 $('#netPerformance').val('0');
                 $('#comprehensivePerformance').val('0');
                 // return;
@@ -595,8 +599,10 @@ function showBehavior(cycle) {
                 $(".week3").val(data[0].week3);
                 $(".week4").val(data[0].week4);
                 $(".period").val('10');
-                $("#jiaban").text(data[0].jiaban);//加班
-                $("#kaoqin").text(data[0].kaoqin);//考勤
+                /*$("#jiaban").text(data[0].jiaban);//加班
+                $("#kaoqin").text(data[0].kaoqin);//考勤*/
+                $("#jiaban").val(data[0].jiaban);//加班
+                $("#kaoqin").val(data[0].kaoqin);//考勤
                 $("#remark").val(data[0].remark);//备注
             }
             leaveConfig.html(tr);
@@ -614,8 +620,8 @@ function showBehavior(cycle) {
                         res = json;
                     }
                     strToJson(res);
-                    $("#jiaban").text(res.jiaban);
-                    $("#kaoqin").text(res.kaoqin);
+                    /*$("#jiaban").text(res.jiaban);
+                    $("#kaoqin").text(res.kaoqin);*/
                     $('#netPerformance').val(res.netPerformance);
                     $('#comprehensivePerformance').val(res.comprehensivePerformance);
                 }
@@ -704,8 +710,10 @@ function updBehavior() {
     var id=$("#BeId").val();
     var employeeId = $("#employeeIdHidden2").val();
     var remark = $('#remark').val();
-    var jiaban = $('#jiaban').text();
-    var kaoqin = parseFloat($('#kaoqin').text());
+    /*var jiaban = $('#jiaban').text();
+    var kaoqin = parseFloat($('#kaoqin').text());*/
+    var jiaban = parseFloat($('#jiaban').val());
+    var kaoqin = parseFloat($('#kaoqin').val());
     var cycle = $("#test6").val();
     var sum = $("#sum").val();
     var netPerformance = $("#netPerformance").val();//净绩效
