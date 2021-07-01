@@ -93,7 +93,7 @@ public class WorkingHoursController {
 
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
-        DecimalFormat decimalFormat=new DecimalFormat("0.0");
+        DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
         //获取此月天数
         int day = DateFormat.getDaysOfMonth(month + "-01");
@@ -221,7 +221,6 @@ public class WorkingHoursController {
         }
         //查询检修记录
         List<OverhaulRecord> maintenanceRecordList = workingService.getMaintenceRecordByMap(paramsMap);
-        System.out.println(maintenanceRecordList);
         if (maintenanceRecordList != null && maintenanceRecordList.size() > 0) {
             overhaulRecordList.addAll(maintenanceRecordList);
         }
@@ -247,16 +246,22 @@ public class WorkingHoursController {
                 mapMap.put(overhaulRecord.getFinishDay(), map);
                 mapMapMap.put("data", mapMap);
 
+                //本月工时
                 mapMapMap.put("all", overhaulRecord.getWorkingHour() == null ? 0 : df.format(overhaulRecord.getWorkingHour()));
+                //加班工时
                 mapMapMap.put("over", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
 
                 mapMapMap.put("employeeId", employeeId);
                 mapMapMap.put("userName", overhaulRecord.getUserName());
                 mapMapMap.put("userNumber", overhaulRecord.getUserNumber());
+                mapMapMap.put("workAttendance", 1);
             } else {
                 mapMapMap = (Map<String, Object>) resultMap.get(employeeId.toString());
                 mapMap = (Map<String, Object>) mapMapMap.get("data");
                 Map<String, Object> map = (Map<String, Object>) mapMap.get(overhaulRecord.getFinishDay());
+                if ("0".equals(map.get("total").toString())) {
+                    mapMapMap.put("workAttendance", Integer.valueOf(mapMapMap.get("workAttendance").toString()) + 1);
+                }
                 map.put("total", df.format(Double.valueOf(map.get("total").toString()) + (overhaulRecord.getWorkingHour() == null ? 0 : overhaulRecord.getWorkingHour())));
                 List detailList = (ArrayList) map.get("detail");
                 detailList.add(overhaulRecord);
