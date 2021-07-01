@@ -202,15 +202,15 @@ public class LeaveController {
         }
         int rows = Page.getOffSet(page, pageSize);
         //获取请假人信息
-        List<String > employeeIdList=new ArrayList<>();
-
+        List<String> employeeIdList = new ArrayList<>();
+        employeeIdList.add(employeeId.toString());
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
         for (String employeeIdStr : employeeIdList) {
-            empIdStr+=employeeIdStr+",";
+            empIdStr += employeeIdStr + ",";
         }
         Map map = new HashMap();
         Result result = null;
@@ -319,15 +319,15 @@ public class LeaveController {
         List<Map<String, String>> list = null;
         Integer empId = users.getEmployeeId();
         String empIdStr = "";
-        List<String > employeeIdList=new ArrayList<>();
+        List<String> employeeIdList = new ArrayList<>();
 
         List<Employee> rootList = employeeService.getEmployeeByManager(empId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
         for (String employeeIdStr : employeeIdList) {
-            empIdStr+=employeeIdStr+",";
+            empIdStr += employeeIdStr + ",";
         }
         list = employeeService.getEmployeeNameMapByManager(empIdStr);
         return JSON.toJSONString(list);
@@ -603,25 +603,25 @@ public class LeaveController {
 
         Subject subject = SecurityUtils.getSubject();
         Users user = (Users) subject.getPrincipal();
-        String empId=String.valueOf(user.getEmployeeId());
+        String empId = String.valueOf(user.getEmployeeId());
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         Integer employeeId = user.getEmployeeId();
-        System.out.println("selectAllFlag::"+selectAllFlag);
+        System.out.println("selectAllFlag::" + selectAllFlag);
         if (selectAllFlag) {
             employeeId = 0;
         }
 
         String empIdStr = "";
-        List<String > employeeIdList=new ArrayList<>();
+        List<String> employeeIdList = new ArrayList<>();
 
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
         map = new HashMap();
         for (String employeeIdStr : employeeIdList) {
-            empIdStr+=employeeIdStr+",";
+            empIdStr += employeeIdStr + ",";
         }
         map.put("empIdStr", empIdStr);
         List<LeaveData> total = leaveService.getLeaveDataStatisticsList(map);
