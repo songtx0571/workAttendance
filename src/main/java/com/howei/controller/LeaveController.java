@@ -203,7 +203,7 @@ public class LeaveController {
         int rows = Page.getOffSet(page, pageSize);
         //获取请假人信息
         List<String > employeeIdList=new ArrayList<>();
-        employeeIdList.add(employeeId.toString());
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
@@ -320,7 +320,7 @@ public class LeaveController {
         Integer empId = users.getEmployeeId();
         String empIdStr = "";
         List<String > employeeIdList=new ArrayList<>();
-        employeeIdList.add(empId.toString());
+
         List<Employee> rootList = employeeService.getEmployeeByManager(empId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
@@ -606,13 +606,14 @@ public class LeaveController {
         String empId=String.valueOf(user.getEmployeeId());
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         Integer employeeId = user.getEmployeeId();
+        System.out.println("selectAllFlag::"+selectAllFlag);
         if (selectAllFlag) {
             employeeId = 0;
         }
 
         String empIdStr = "";
         List<String > employeeIdList=new ArrayList<>();
-        employeeIdList.add(employeeId.toString());
+
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);

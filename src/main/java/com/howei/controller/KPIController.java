@@ -102,11 +102,12 @@ public class KPIController {
         if (selectAllFlag) {
             employeeId = 0;
         }
-        List<String > employeeIdList=new ArrayList<>();
+        List<String> employeeIdList = new ArrayList<>();
+        employeeIdList.add(employeeId.toString());
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
         // map.put("empId", empIdStr);
 
 
@@ -453,16 +454,16 @@ public class KPIController {
         if (selectAllFlag) {
             employeeId = 0;
         }
-        List<String > employeeIdList=new ArrayList<>();
+        List<String> employeeIdList = new ArrayList<>();
 
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
-        ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
         map = new HashMap();
         for (String employeeIdStr : employeeIdList) {
-            empIdStr+=employeeIdStr+",";
+            empIdStr += employeeIdStr + ",";
         }
         map.put("empId", empIdStr);
 
@@ -585,13 +586,12 @@ public class KPIController {
 
 
         String startTime = request.getParameter("startTime");
-        if(startTime!=null){
-            map.put("createTime",startTime+"%");
+        if (startTime != null) {
+            map.put("createTime", startTime + "%");
         }
         String departmentId = request.getParameter("departmentId");
-        if(departmentId!=null&&!"".equals(departmentId)&&!"0".equals(departmentId))
-        {
-            map.put("departmentId",departmentId);
+        if (departmentId != null && !"".equals(departmentId) && !"0".equals(departmentId)) {
+            map.put("departmentId", departmentId);
         }
 
         Result result = new Result();
@@ -605,16 +605,16 @@ public class KPIController {
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         String empIdStr = "";
         if (!selectAllFlag) {
-            List<String > employeeIdList=new ArrayList<>();
+            List<String> employeeIdList = new ArrayList<>();
 
             List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
             List<Employee> empList = employeeService.getEmployeeByManager(0);
-            ListUtils.getChildEmployeeId(rootList,empList,employeeIdList,null);
+            ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
             map = new HashMap();
             for (String employeeIdStr : employeeIdList) {
-                empIdStr+=employeeIdStr+",";
+                empIdStr += employeeIdStr + ",";
             }
             map.put("empId", empIdStr);
         }

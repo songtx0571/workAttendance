@@ -18,11 +18,11 @@ public class Behavior {
     private String remark;
     private String cycle;
     private String sum;
-    private int employeeId;
+    private Integer employeeId;
 
-    private int jiaban;
-    private int kaoqin;
-    private int zhiban;
+    private Double jiaban;
+    private Double kaoqin;
+    private Double zhiban;
 
     private List<LeaveData> leaveData;
 
@@ -154,27 +154,31 @@ public class Behavior {
         this.employeeId = employeeId;
     }
 
-    public int getJiaban() {
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public Double getJiaban() {
         return jiaban;
     }
 
-    public void setJiaban(int jiaban) {
+    public void setJiaban(Double jiaban) {
         this.jiaban = jiaban;
     }
 
-    public int getKaoqin() {
+    public Double getKaoqin() {
         return kaoqin;
     }
 
-    public void setKaoqin(int kaoqin) {
+    public void setKaoqin(Double kaoqin) {
         this.kaoqin = kaoqin;
     }
 
-    public int getZhiban() {
+    public Double getZhiban() {
         return zhiban;
     }
 
-    public void setZhiban(int zhiban) {
+    public void setZhiban(Double zhiban) {
         this.zhiban = zhiban;
     }
 

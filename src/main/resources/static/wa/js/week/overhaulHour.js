@@ -62,9 +62,9 @@ function showDepart() {
 }
 function  showTableList (month,projectId) {
     $("#test15").val(month);
-    $(".loading").css("display","block");
     var div = $(".div");
-    var table = "<table class='layui-table'><thead><tr><th>编号</th><th>姓名</th>";
+    var table = "<table><thead><tr style='background: #f2f2f2;'><th>编&nbsp;号</th><th style='width: 105px;'>姓名</th>";
+    $(".loading").css("display","block");
     $.ajax({
         url: "/wa/working/getOverhaulHours?departmentId="+projectId+"&date="+month,//请求地址
         dataType: "json",//数据格式
@@ -74,12 +74,12 @@ function  showTableList (month,projectId) {
             var tian = data.count;
             data = data.data;
             for (var i = 0; i < tian; i ++) {
-                table += "<th>"+(i+1)+"日</th>"
+                table += "<th>"+(i+1)+"<br />日</th>"
             }
-            table += "<th style='font-weight: bold;'>本月工时</th><th style='font-weight: bold;'>加班工时</th></tr></thead><tbody><tr>";
+            table += "<th style='font-weight: bold;'>本月<br />工时</th><th style='font-weight: bold;'>本月<br />考勤</th><th style='font-weight: bold;'>加班<br />工时</th></tr></thead><tbody><tr>";
             if (data == "") {
                 $(".loading").css("display","none");
-                table += "<td colspan='"+(tian+4)+"' style='text-align: center;line-height: 56px;font-size: 20px;'>无数据！</td></tr></tbody></table>";
+                table += "<td colspan='"+(tian+5)+"' style='text-align: center;line-height: 56px;font-size: 20px;min-width: 100%;border: none;padding-left: 10px;'>无数据！</td></tr></tbody></table>";
                 div.html(table);
                 return false;
             }
@@ -111,7 +111,7 @@ function  showTableList (month,projectId) {
                     var operatingTd = "'operaHourTd_"+item+"_"+i+"'";
                     table += '<td class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
                 }
-                table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
+                table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
             }
             table += "</tbody></table>";
             div.html(table);

@@ -329,12 +329,28 @@
                             <td colspan="10">合计</td>
                             <td><input type="text" id="sum" name="sum" disabled="disabled" ></td>
                         </tr>
-                        <tr>
+                       <%-- <tr>
                             <td>加班(小时)</td>
                             <td colspan="5" id="jiaban">
                             </td>
                             <td colspan="4">考勤(天)</td>
                             <td colspan="4" id="kaoqin">
+                            </td>
+                        </tr>--%>
+                        <tr>
+                            <td>加班(小时)</td>
+                            <td colspan="5">
+                                <a style="display: inline" onclick="addCount('jiaban')"><img height="15px" src="../img/and.png"></a>
+                                <input value="0" id="jiaban" name="jiaban" class="inputCount">
+                                <a style="display: inline" onclick="reduceCount('jiaban')"><img height="15px" src="../img/reduce.png"></a>
+                                <span style="display: none;">数值已为0</span>
+                            </td>
+                            <td colspan="4">考勤(天)</td>
+                            <td colspan="4">
+                                <a style="display: inline" onclick="addCount('kaoqin')"><img height="15px" src="../img/and.png"></a>
+                                <input value="0" id="kaoqin" name="kaoqin" class="inputCount">
+                                <a style="display: inline" onclick="reduceCount('kaoqin')"><img height="15px" src="../img/reduce.png"></a>
+                                <span style="display: none;">数值已为0</span>
                             </td>
                         </tr>
                         <tr>

@@ -49,9 +49,34 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
+        .div table {
+            border: 1px solid #e6e6e6;
+            collapse: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .div table  tr th, .div table tr td{
+            min-width: 65px;
+            line-height: 33px;
+            text-align: center;
+            border: 1px solid #e6e6e6;
+        }
+        .div table thead, .div table tbody {
+            display: block;
+        }
+        .div table tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+        .div table tbody::-webkit-scrollbar{
+            display: none;
+        }
         .operaHourTd{
             text-align: center;
             cursor: pointer;
+        }
+        .layui-layer-tips {
+            width: 210px;
         }
     </style>
 </head>
@@ -77,7 +102,7 @@
         </form>
     </div>
     <div class="content">
-        <div class="div layui-form"></div>
+        <div class="div"></div>
     </div>
     <div class="loading">
         <div style="width: 50px;margin: 0 auto;">

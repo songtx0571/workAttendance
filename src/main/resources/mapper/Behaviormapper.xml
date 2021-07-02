@@ -32,9 +32,39 @@
     <update id="update">
         update behavior
         <set>
-            week1=#{week1},week2=#{week2},week3=#{week3},
-            week4=#{week4},cycle=#{cycle},period=#{period},
-            jiaban=#{jiaban},kaoqin=#{kaoqin},remark=#{remark},sum=#{sum},cycle2=concat(cycle,'-01')
+            <if test="week1!=null">
+                week1=#{week1},
+            </if>
+            <if test="week2!=null">
+                week2=#{week2},
+            </if>
+            <if test="week3!=null">
+                week3=#{week3},
+            </if>
+            <if test="week4!=null">
+                week4=#{week4},
+            </if>
+            <if test="cycle!=null">
+                cycle=#{cycle},
+            </if>
+            <if test="period!=null">
+                period=#{period},
+            </if>
+            <if test="jiaban!=null">
+                jiaban=#{jiaban},
+            </if>
+            <if test="kaoqin!=null">
+                kaoqin=#{kaoqin},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="sum!=null">
+                sum=#{sum},
+            </if>
+            <if test="kaoqin!=null">
+                cycle2=concat(cycle,'-01'),
+            </if>
         </set>
         where id=#{id}
     </update>
