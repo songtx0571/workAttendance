@@ -371,67 +371,75 @@ public class WagsController {
             List<Wages> list = wagsService.getWagsList(map);
             for (int i = 0; i <list.size() ; i++) {
                 Wages wages=list.get(i);
-                Integer employeeId=wages.getEmployeeId();
-                map.put("cycle",cycle);
-                if(employeeId!=null&&!employeeId.equals("")){
-                    map.put("employeeId",employeeId);
-                }
-                Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
-                double comprehensivePerformance=0.00;//综合绩效
-                double foodSupplement=0.00;//餐补
-                if(assessment!=null) {
-                    double score1 = assessment.getScore1();
-                    double score2 = assessment.getScore2();
-                    double jianban = assessment.getJiaban();//加班
-                    int kapqin = assessment.getKaoqin();//考勤
-                    //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-                    BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
-                    double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                    assessment.setNetPerformance(netPerformance);
-                    //综合绩效=净绩效+加班*0.01
-                    bd = new BigDecimal(netPerformance + jianban * 0.01);
-                    comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                    //餐补=20*考勤
-                    foodSupplement = 20 * kapqin;
-                }
-                //绩效工资=绩效基数*绩效系数
-                BigDecimal bd = new BigDecimal(wages.getMeritBase()*comprehensivePerformance);
-                Double meritPay=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                wages.setMeritPay(meritPay);
-                Double wageSubtotal=wages.getWageSubtotal();//工资小计
-                //应发工资==(岗位工资+职级工资)/2+绩效工资+其他
-                bd = new BigDecimal(wageSubtotal/2+meritPay+wages.getOther());
-                Double wagesPayable=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                wages.setWagesPayable(wagesPayable);
-                //补贴小计=高温补贴+餐补
-                bd = new BigDecimal(wages.getHighTemperatureSubsidy()+foodSupplement);
-                Double subTotalOfSubsidies=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
-                //应发合计=应发工资+补贴小计
-                Double totalPayable=wagesPayable+subTotalOfSubsidies;
-                wages.setTotalPayable(totalPayable);
-                //计税合计=应发合计-扣款合计
-                Double totalTax=totalPayable-wages.getTotalDeduction();
-                //判断此月是否大于等于4月
-                try {
-                    String fourMonth=DateFormat.getAppointDate(wages.getDate(),4);
-                    if(DateFormat.comparetoTime(fourMonth,wages.getDate())){
-                        totalTax=totalTax-300;
+                if(wages.getId()!=null){
+                    Integer employeeId=wages.getEmployeeId();
+                    map.put("cycle",cycle);
+                    if(employeeId!=null&&!employeeId.equals("")){
+                        map.put("employeeId",employeeId);
                     }
-                    //************************************ 个调税计算 *****************************************
-                    Double tax = this.taxCalculator(employeeId.toString(), month,wages.getSixSpecialDeductions(),totalTax);
-                    //************************************ 实发工资 *****************************************
-                    Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
-                    wages.setIndividualTaxAdjustment(tax);
-                    wages.setNetSalary(netSalary);
-                    wagsService.updWags(wages);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return JSON.toJSONString(Type.error);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return JSON.toJSONString(Type.error);
+                    Assessment assessment=behaviorService.getAssessmentByEmployeeId(map);
+                    double comprehensivePerformance=0.00;//综合绩效
+                    double foodSupplement=0.00;//餐补
+                    if(assessment!=null) {
+                        double score1 = assessment.getScore1();
+                        double score2 = assessment.getScore2();
+                        double jianban = assessment.getJiaban();//加班
+                        int kapqin = assessment.getKaoqin();//考勤
+                        //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+                        BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
+                        double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                        assessment.setNetPerformance(netPerformance);
+                        //综合绩效=净绩效+加班*0.01
+                        bd = new BigDecimal(netPerformance + jianban * 0.01);
+                        comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                        //餐补=20*考勤
+                        foodSupplement = 20 * kapqin;
+                    }
+
+                    wages.setPerformanceCoefficient(comprehensivePerformance);
+
+                    //绩效工资=绩效基数*绩效系数
+                    BigDecimal bd = new BigDecimal(wages.getMeritBase()*comprehensivePerformance);
+                    Double meritPay=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setMeritPay(meritPay);
+
+
+                    Double wageSubtotal=wages.getWageSubtotal();//工资小计
+                    //应发工资==(岗位工资+职级工资)/2+绩效工资+其他
+                    bd = new BigDecimal(wageSubtotal/2+meritPay+wages.getOther());
+                    Double wagesPayable=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setWagesPayable(wagesPayable);
+                    //补贴小计=高温补贴+餐补
+                    bd = new BigDecimal(wages.getHighTemperatureSubsidy()+foodSupplement);
+                    Double subTotalOfSubsidies=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
+                    //应发合计=应发工资+补贴小计
+                    Double totalPayable=wagesPayable+subTotalOfSubsidies;
+                    wages.setTotalPayable(totalPayable);
+                    //计税合计=应发合计-扣款合计
+                    Double totalTax=totalPayable-wages.getTotalDeduction();
+                    //判断此月是否大于等于4月
+                    try {
+                        String fourMonth=DateFormat.getAppointDate(wages.getDate(),4);
+                        if(DateFormat.comparetoTime(fourMonth,wages.getDate())){
+                            totalTax=totalTax-300;
+                        }
+                        //************************************ 个调税计算 *****************************************
+                        Double tax = this.taxCalculator(employeeId.toString(), month,wages.getSixSpecialDeductions(),totalTax);
+                        //************************************ 实发工资 *****************************************
+                        Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+                        wages.setIndividualTaxAdjustment(tax);
+                        wages.setNetSalary(netSalary);
+                        wagsService.updWags(wages);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return JSON.toJSONString(Type.error);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return JSON.toJSONString(Type.error);
+                    }
                 }
+
             }
             return JSON.toJSONString(Type.success);
         }

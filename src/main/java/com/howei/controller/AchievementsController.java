@@ -359,7 +359,7 @@ public class AchievementsController {
             }
         }
         //本月要求工时数
-        BigDecimal bd = new BigDecimal(40 / 7 * day);
+        BigDecimal bd = new BigDecimal(40 / 7.0 * day);
         double thisMonthRequirementTime = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();//本月工时
         //判断是否有加班工时
         double workOvertime = 0.0;
