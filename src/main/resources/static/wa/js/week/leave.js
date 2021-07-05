@@ -368,7 +368,7 @@ function addBtnOk() {
                 $(".addLeave p").css("display","block");
             }else {
                 layer.closeAll();
-                showLeaveList(1,"");
+                showLeaveList(1,$("#test15").val());
             }
         }
     });
@@ -387,7 +387,7 @@ function updBtnOk() {
         data: {"id": id, "startTime": startTime, "endTime": endTime, "leaveId": leaveId, "remark": remark},
         success: function (data) {
             layer.closeAll();
-            showLeaveList(1,"");
+            showLeaveList(1,$("#test15").val());
         }
     });
 }
@@ -403,7 +403,7 @@ function examine(review) {
         success: function (data) {
             layer.closeAll();
             var page = $(".layui-laypage-skip").find("input").val();
-            showLeaveList(page,"");
+            showLeaveList(page,$("#test15").val());
         }
     });
 }

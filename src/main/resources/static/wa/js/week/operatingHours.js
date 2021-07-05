@@ -63,7 +63,7 @@ function showDepart() {
 function  showTableList (month,projectId) {
     $("#test15").val(month)
     var div = $(".div");
-    var table = "<table><thead><tr style='background: #f2f2f2;'><th>编号</th><th style='width: 105px;'>姓名</th>";
+    var table = "<table><thead><tr style='background: #f2f2f2;'><th>编号</th><th>姓名</th>";
     $(".loading").css("display","block");
     $.ajax({
         url: path + '/wa/working/getOperatingHoursList',//请求地址
