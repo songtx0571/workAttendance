@@ -122,7 +122,7 @@ function getSel(){
                     var dom = data.elem[data.elem.selectedIndex].label;
                     dom = parseFloat(dom)
                     $(".basePay").val(dom);
-                    sumWages();
+                    // sumWages();
                     $.ajax({
                         type: "GET",
                         url: path + "/wa/wags/getPostGradeMap",
@@ -144,7 +144,7 @@ function getSel(){
                     var dom1 = data1.elem[data1.elem.selectedIndex].label;
                     dom1 = parseFloat(dom1)
                     $(".positionSalary").val(dom1);
-                    sumWages();
+                    // sumWages();
                 });
             }
         });
@@ -175,7 +175,7 @@ function threeDecimal(id, value) {
     $("#" + id).val(value);
 }
 
-function sumWages() {
+/*function sumWages() {
     var basePay = parseFloat($(".basePay").val());//岗位工资
     var positionSalary = parseFloat($(".positionSalary").val());//职级工资
     //绩效基数=(岗位工资+职级工资)/2
@@ -250,7 +250,7 @@ function sumWages() {
             $(".netSalary").val(netSalary);
         }
     });
-}
+}*/
 
 //查询数据
 function showWagsList(m) {
@@ -398,7 +398,7 @@ function showWagsList(m) {
                 success: function (data) {
                         $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
                         $(".foodSupplement").val(data.foodSupplement);//餐补
-                        sumWages();
+                        // sumWages();
                     }
                 });
                 layer.open({

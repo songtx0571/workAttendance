@@ -98,7 +98,7 @@
         SELECT * FROM (
         SELECT id ,maintenanceId,TYPE,content,IFNULL(DATETIME,0) DATETIME,IFNULL(people,0) people,IFNULL(workingHours,0)
         workingHours,IFNULL(defectNumber,0) defectNumber,(SELECT GROUP_CONCAT(c.userName ORDER BY
-        FIND_IN_SET(c.UserName,a.people)) FROM users c WHERE FIND_IN_SET(c.UserName,a.people) ) AS peopleName
+        FIND_IN_SET(c.userNumber,a.people)) FROM users c WHERE FIND_IN_SET(c.userNumber,a.people) ) AS peopleName
         FROM maintenanceRecord a
         ) b
         WHERE b.people LIKE CONCAT ('%',#{userName},'%')
