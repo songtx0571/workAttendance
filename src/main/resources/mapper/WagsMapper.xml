@@ -60,9 +60,12 @@
         FROM employee e
         LEFT JOIN (
         SELECT * FROM wages
+        WHERE 1=1
         <if test="month!=null">
-            WHERE
-            date = #{month}
+          and date = #{month}
+        </if>
+        <if test="wagesIds!=null">
+            and FIND_IN_SET(wages.id,#{wagesIds})
         </if>
         ) w ON e.id = w.employeeId
         LEFT JOIN users u ON u.employeeId = e.id

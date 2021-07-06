@@ -11,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import sun.invoke.empty.Empty;
 
@@ -349,14 +350,14 @@ public class WagsController {
     }
 
     /**
-     * 核算指定月份的工资
-     *
-     * @param month
+     *  核算指定月份的工资
+     * @param month 月份
+     * @param id   工资id
      * @return
      */
     @RequestMapping("thisMonthCalculation")
     @ResponseBody
-    public String thisMonthCalculation(@RequestParam("month") String month) {
+    public String thisMonthCalculation(@RequestParam("month") String month,@RequestParam(required = false) String id) {
         Users users = this.getPrincipal();
         if (users == null) {
             return JSON.toJSONString(Type.noUser);
@@ -368,6 +369,9 @@ public class WagsController {
             String cycle = DateFormat.getYearMonthByMonth(month, -1);
 
             map.put("month", month + "-01");
+            if(!StringUtils.isEmpty(id)){
+                map.put("wagesIds",id);
+            }
             List<Wages> list = wagsService.getWagsList(map);
             for (int i = 0; i < list.size(); i++) {
                 Wages wages = list.get(i);

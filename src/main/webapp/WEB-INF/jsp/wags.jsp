@@ -76,6 +76,9 @@
             75%{-webkit-transform:rotate(270deg);}
             100%{-webkit-transform:rotate(360deg);}
         }
+        .warp .container .layui-table-cell .layui-form-checkbox[lay-skin=primary] {
+            top: 5px;
+        }
     </style>
 </head>
 <body>

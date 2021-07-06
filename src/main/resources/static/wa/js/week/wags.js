@@ -269,7 +269,8 @@ function showWagsList(m) {
             , toolbar: true
             , totalRow: true
             , cols: [[ //表头
-                {field: 'userNumber', title: '编号', sort: true, width: 70, totalRowText: '合计', align: 'center'}
+                {field: 'userNumber',type:'checkbox'}
+                , {field: 'userNumber', title: '编号', sort: true, width: 70, totalRowText: '合计', align: 'center'}
                 , {field: 'employeeName', title: '姓名', width: 100, align: 'center'}
                 , {field: 'departmentName', title: '项目部', sort: true, align: 'center'}
                 , {field: 'isChanged', title: '人事异动', sort: true, align: 'center'}
@@ -511,44 +512,63 @@ function calculationWags () {
 
 //本月工资核算
 function calculationWags () {
-    layer.open({
-        type: 1
-        ,title: false //不显示标题栏
-        ,closeBtn: false
-        ,area: '300px;'
-        ,shade: 0.8
-        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
-        ,btn: ['确定', '取消']
-        ,btnAlign: 'c'
-        ,moveType: 1 //拖拽模式，0或者1
-        ,content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">确认计算该月工资吗？</div>'
-        ,success: function(layero){
-            var btn = layero.find('.layui-layer-btn');
-            btn.find('.layui-layer-btn0').click(function () {
-                $(".loading").css("display",'block');
-                $.ajax({
-                    "type" : 'put',
-                    "url": path + "/wa/wags/thisMonthCalculation",
-                    data: {month:$("#test15").val()},
-                    dataType: "json",
-                    "success":function(data){
-                        if (data == "success"){
-                            $(".loading").css("display",'none');
-                        } else if (data == "error"){ //后台错误
-                            $(".loading").css("display",'none');
-                            layer.alert("操作失败");
-                        } else if (data == "noParameters"){ //参数错误
-                            $(".loading").css("display",'none');
-                            layer.alert("前台参数错误");
-                        } else if (data == "noUser"){ //用户信息过期
-                            $(".loading").css("display",'none');
-                            layer.alert("用户信息过期");
-                        }
-                    }
-                });
+    var ids = [];
+    layui.use(['table','form'], function () {
+        var table = layui.table,layer = layui.layer;
+        var checkStatus = table.checkStatus('demo');
+        $(checkStatus.data).each(function (i, o) {//o即为表格中一行的数据
+            if (o.id != null) {
+                ids.push(o.id);
+            }
+        });
+        ids = ids.join(",");
+        if (ids.length < 1) {
+            layer.msg('请勾选需要核算的人员');
+            return false;
+        } else {
+            layer.open({
+                type: 1
+                ,title: false //不显示标题栏
+                ,closeBtn: false
+                ,area: '300px;'
+                ,shade: 0.8
+                ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                ,btn: ['确定', '取消']
+                ,btnAlign: 'c'
+                ,moveType: 1 //拖拽模式，0或者1
+                ,content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">确认计算该月工资吗？</div>'
+                ,success: function(layero){
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.find('.layui-layer-btn0').click(function () {
+                        $(".loading").css("display",'block');
+                        $.ajax({
+                            "type" : 'put',
+                            "url": path + "/wa/wags/thisMonthCalculation",
+                            data: {month:$("#test15").val(),id: ids},
+                            dataType: "json",
+                            "success":function(data){
+                                if (data == "success"){
+                                    $(".loading").css("display",'none');
+                                    showWagsList($("#test15").val());
+                                }else if (data == "noParameters"){ //参数错误
+                                    $(".loading").css("display",'none');
+                                    layer.alert("前台参数错误");
+                                } else if (data == "noUser"){ //用户信息过期
+                                    $(".loading").css("display",'none');
+                                    layer.alert("用户信息过期");
+                                } else { //后台错误
+                                    $(".loading").css("display",'none');
+                                    layer.alert("操作失败");
+                                }
+                            }
+                        });
+                    });
+                }
             });
         }
-    });
+    })
+
+
 }
 
 //修改
