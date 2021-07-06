@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class Wages implements Serializable {
     private Integer id;
     private Integer employeeId;
-    private double basePay;//基本工资
+    private double basePay;//基本工资 岗位工资
     private double skillPay;//技能工资
-    private double positionSalary;//职务工资
+    private double positionSalary;//职务工资 职级工资
     private double seniorityWage;//工龄工资
     private double other;//其他
     private double meritBase;//绩效基数

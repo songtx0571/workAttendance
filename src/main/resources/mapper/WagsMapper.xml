@@ -35,7 +35,27 @@
     </resultMap>
 
     <select id="getWagsList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Wages">
-        SELECT e.id employeeId,e.isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
+        SELECT e.id employeeId,
+        (
+        CASE e.isChanged
+        WHEN 0 THEN
+        '正常'
+        WHEN 1 THEN
+        '当月入职'
+        WHEN 2 THEN
+        '当月离职'
+        WHEN 3 THEN
+        '试用期'
+        WHEN 4 THEN
+        '试用转正'
+        WHEN 5 THEN
+        '派遣调整'
+        WHEN 6 THEN
+        '部门调整'
+        WHEN 7 THEN
+        '薪酬调整'
+        END
+        ) isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
         ,wp.name as wagesPostName,pg.gradeName as postGradeName
         FROM employee e
         LEFT JOIN (
@@ -78,7 +98,7 @@
         (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
         ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.subTotalOfSubsidies},#{wages.totalPayable},#{wages.endowmentInsurance}
         ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
-        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},#{item.wagesPostId},#{item.postGradeId},#{meritBase})
+        ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},#{wages.wagesPostId},#{wages.postGradeId},#{wages.meritBase})
     </insert>
 
     <update id="updWags" keyProperty="id" useGeneratedKeys="true" parameterType="com.howei.pojo.Wages">

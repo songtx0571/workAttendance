@@ -190,7 +190,7 @@ public class WagsController {
                         //工资小计=岗位工资+职级工资
                         wages.setWageSubtotal(wagesPost.getWagesPostWage() + postGrade.getPostGradeWage());//工资小计
                         //绩效工资
-                        wages.setMeritPay(wages.getWageSubtotal() / 2);
+                        wages.setMeritPay(wages.getWageSubtotal() / 2.0);
                     }
                     wagesList.add(wages);
                 }
@@ -378,6 +378,11 @@ public class WagsController {
                         map.put("employeeId", employeeId);
                     }
                     Assessment assessment = behaviorService.getAssessmentByEmployeeId(map);
+                    BigDecimal bd = new BigDecimal((wages.getBasePay() + wages.getPositionSalary()) / 2.0);
+                    //绩效技术
+                    double meritBase = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setMeritBase(meritBase);
+
                     double comprehensivePerformance = 0.00;//综合绩效 (绩效系数)
                     double foodSupplement = 0.00;//餐补
                     if (assessment != null) {
@@ -386,7 +391,7 @@ public class WagsController {
                         double jianban = assessment.getJiaban();//加班
                         int kapqin = assessment.getKaoqin();//考勤
                         //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-                        BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
+                        bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
                         double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         assessment.setNetPerformance(netPerformance);
                         //综合绩效=净绩效+加班*0.01
@@ -400,15 +405,20 @@ public class WagsController {
                     wages.setPerformanceCoefficient(comprehensivePerformance);
 
                     //绩效工资=绩效基数*绩效系数
-                    BigDecimal bd = new BigDecimal(wages.getMeritBase() * comprehensivePerformance);
+                    bd = new BigDecimal(wages.getMeritBase() * comprehensivePerformance);
                     Double meritPay = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setMeritPay(meritPay);
                     //工资小计=岗位工资+职级工资
                     Double wageSubtotal = wages.getWageSubtotal();//工资小计
                     //应发工资==(岗位工资+职级工资)/2+绩效工资+其他
-                    bd = new BigDecimal(wageSubtotal / 2 + meritPay + wages.getOther());
+                    bd = new BigDecimal(wageSubtotal / 2.0 + meritPay + wages.getOther());
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setWagesPayable(wagesPayable);
+                    //餐补
+                    bd=new BigDecimal(foodSupplement);
+                    foodSupplement=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setFoodSupplement(foodSupplement);
+
                     //补贴小计=高温补贴+餐补
                     bd = new BigDecimal(wages.getHighTemperatureSubsidy() + foodSupplement);
                     Double subTotalOfSubsidies = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -420,7 +430,6 @@ public class WagsController {
                     double totalDeduction = wages.getEndowmentInsurance() + wages.getUnemploymentBenefits() + wages.getMedicalInsurance() + wages.getAccumulationFund() + wages.getOtherDeductions() + wages.getUnionFees();
                     bd = new BigDecimal(totalDeduction);
                     totalDeduction = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-
                     wages.setTotalDeduction(totalDeduction);
                     //计税合计=应发合计-扣款合计
                     Double totalTax = totalPayable - wages.getTotalDeduction();

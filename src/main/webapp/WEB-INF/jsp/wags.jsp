@@ -95,9 +95,9 @@
         <shiro:hasPermission name='工资修改'>
             <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
         </shiro:hasPermission>
-<%--        <shiro:hasPermission name='工资修改'>--%>
-            <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
-<%--        </shiro:hasPermission>--%>
+        <%--        <shiro:hasPermission name='工资修改'>--%>
+        <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
+        <%--        </shiro:hasPermission>--%>
         <div style="clear: both"></div>
         <div class="copyDiv">
             <input type="hidden" id="monthEnd">
@@ -180,7 +180,7 @@
                 <td>绩效基数：</td>
                 <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase" placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
                 <td>绩效系数：</td>
-                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);sumWages();" readonly></td>
+                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
@@ -196,7 +196,7 @@
             </tr>
             <tr>
                 <td>餐补：</td>
-                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);sumWages();" readonly></td>
+                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);" readonly></td>
                 <td>高温补贴：</td>
                 <td><input type="text" class="highTemperatureSubsidy" id="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
             </tr>

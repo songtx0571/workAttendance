@@ -122,7 +122,7 @@ function getSel(){
                     var dom = data.elem[data.elem.selectedIndex].label;
                     dom = parseFloat(dom)
                     $(".basePay").val(dom);
-                    // sumWages();
+                    sumWages();
                     $.ajax({
                         type: "GET",
                         url: path + "/wa/wags/getPostGradeMap",
@@ -144,7 +144,7 @@ function getSel(){
                     var dom1 = data1.elem[data1.elem.selectedIndex].label;
                     dom1 = parseFloat(dom1)
                     $(".positionSalary").val(dom1);
-                    // sumWages();
+                    sumWages();
                 });
             }
         });
@@ -175,7 +175,7 @@ function threeDecimal(id, value) {
     $("#" + id).val(value);
 }
 
-/*function sumWages() {
+function sumWages() {
     var basePay = parseFloat($(".basePay").val());//岗位工资
     var positionSalary = parseFloat($(".positionSalary").val());//职级工资
     //绩效基数=(岗位工资+职级工资)/2
@@ -250,7 +250,7 @@ function threeDecimal(id, value) {
             $(".netSalary").val(netSalary);
         }
     });
-}*/
+}
 
 //查询数据
 function showWagsList(m) {
@@ -347,13 +347,13 @@ function showWagsList(m) {
                 $("#selPostLevelName").val(data.postGradeId);
                 form.render();
             });
-           /* $.ajax({
-                type: "GET",
-                url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
-                data: {cycle: m,employeeId:data.employeeId},
-                async: false,
-                dataType: "json",
-                success: function (data) {*/
+            /* $.ajax({
+                 type: "GET",
+                 url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
+                 data: {cycle: m,employeeId:data.employeeId},
+                 async: false,
+                 dataType: "json",
+                 success: function (data) {*/
             $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
             $(".foodSupplement").val(data.foodSupplement);//餐补
             //     }
@@ -389,18 +389,18 @@ function showWagsList(m) {
             $(".netSalary").val(data.netSalary);//实发工资
             $(".remark").val(data.remark);//备注
             if (obj.event === 'edit') {//修改
-                 $.ajax({
-                type: "GET",
-                url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
-                data: {cycle: m,employeeId:data.employeeId},
-                async: false,
-                dataType: "json",
-                success: function (data) {
-                        $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
-                        $(".foodSupplement").val(data.foodSupplement);//餐补
-                        // sumWages();
-                    }
-                });
+                /*$.ajax({
+               type: "GET",
+               url: path + "/wa/wags/getPerformanceCoefficientByEmployeeId",
+               data: {cycle: m,employeeId:data.employeeId},
+               async: false,
+               dataType: "json",
+               success: function (data) {
+                       $(".performanceCoefficient").val(data.performanceCoefficient);//绩效系数
+                       $(".foodSupplement").val(data.foodSupplement);//餐补
+                       // sumWages();
+                   }
+               });*/
                 layer.open({
                     type: 1
                     , id: 'updateFinance' //防止重复弹出
@@ -492,6 +492,15 @@ function calculationWags () {
                     "success":function(data){
                         if (data == "success"){
                             $(".loading").css("display",'none');
+                        } else if (data == "error"){ //后台错误
+                            $(".loading").css("display",'none');
+                            layer.alert("操作失败");
+                        } else if (data == "noParameters"){ //参数错误
+                            $(".loading").css("display",'none');
+                            layer.alert("前台参数错误");
+                        } else if (data == "noUser"){ //用户信息过期
+                            $(".loading").css("display",'none');
+                            layer.alert("用户信息过期");
                         }
                     }
                 });
@@ -560,13 +569,13 @@ function updFinance() {
     wages.positionSalary = parseFloat($("#positionSalary").val());
     wages.wageSubtotal = parseFloat($("#wageSubtotal").val());//工资小计
     wages.meritPay = parseFloat($("#meritPay").val());
-    wages.performanceBase = parseFloat($("#performanceBase").val());
-    wages.performanceCoefficient = parseFloat($("#performanceCoefficient").val());
+    wages.meritBase = parseFloat($("#performanceBase").val());//绩效基数
+    wages.performanceCoefficient = parseFloat($("#performanceCoefficient").val());//绩效系数
     wages.wagesPayable = parseFloat($("#wagesPayable").val());//应发工资
     wages.foodSupplement = parseFloat($("#foodSupplement").val());
     wages.highTemperatureSubsidy = parseFloat($("#highTemperatureSubsidy").val());
     wages.subTotalOfSubsidies = parseFloat($("#subTotalOfSubsidies").val());
-    wages.currentIncomeTax = parseFloat($("#totalPayable").val());//应发合计  本期收入
+    wages.totalPayable = parseFloat($("#totalPayable").val());//应发合计  本期收入
     wages.endowmentInsurance = parseFloat($("#endowmentInsurance").val());
     wages.unemploymentBenefits = parseFloat($("#unemploymentBenefits").val());
     wages.medicalInsurance = parseFloat($("#medicalInsurance").val());
@@ -582,7 +591,6 @@ function updFinance() {
     wages.other = $("#other").val();//其他
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
-    wages.deductionOfExpenses = '5000.00';//减除费用
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",
