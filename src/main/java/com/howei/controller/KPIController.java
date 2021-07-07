@@ -450,12 +450,12 @@ public class KPIController {
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         Integer employeeId = user.getEmployeeId();
 
-        String empIdStr = null;
+        String empIdStr = "";
         if (selectAllFlag) {
             employeeId = 0;
         }
         List<String> employeeIdList = new ArrayList<>();
-
+        employeeIdList.add(String.valueOf(user.getEmployeeId()));
         List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);

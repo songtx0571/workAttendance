@@ -350,14 +350,15 @@ public class WagsController {
     }
 
     /**
-     *  核算指定月份的工资
+     * 核算指定月份的工资
+     *
      * @param month 月份
-     * @param id   工资id
+     * @param id    工资id
      * @return
      */
     @RequestMapping("thisMonthCalculation")
     @ResponseBody
-    public String thisMonthCalculation(@RequestParam("month") String month,@RequestParam(required = false) String id) {
+    public String thisMonthCalculation(@RequestParam("month") String month, @RequestParam(required = false) String id) {
         Users users = this.getPrincipal();
         if (users == null) {
             return JSON.toJSONString(Type.noUser);
@@ -369,8 +370,8 @@ public class WagsController {
             String cycle = DateFormat.getYearMonthByMonth(month, -1);
 
             map.put("month", month + "-01");
-            if(!StringUtils.isEmpty(id)){
-                map.put("wagesIds",id);
+            if (!StringUtils.isEmpty(id)) {
+                map.put("wagesIds", id);
             }
             List<Wages> list = wagsService.getWagsList(map);
             for (int i = 0; i < list.size(); i++) {
@@ -419,8 +420,8 @@ public class WagsController {
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setWagesPayable(wagesPayable);
                     //餐补
-                    bd=new BigDecimal(foodSupplement);
-                    foodSupplement=bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    bd = new BigDecimal(foodSupplement);
+                    foodSupplement = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setFoodSupplement(foodSupplement);
 
                     //补贴小计=高温补贴+餐补
@@ -445,6 +446,8 @@ public class WagsController {
                         }
                         //************************************ 个调税计算 *****************************************
                         Double tax = this.taxCalculator(employeeId.toString(), month, wages.getSixSpecialDeductions(), totalTax);
+                        //计税合计
+                        wages.setTotalTax(totalTax);
                         //************************************ 实发工资 *****************************************
                         Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
                         wages.setIndividualTaxAdjustment(tax);
