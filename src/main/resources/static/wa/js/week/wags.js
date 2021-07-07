@@ -468,47 +468,6 @@ function copyOk() {
     });
 }
 
-//本月工资核算
-function calculationWags () {
-    layer.open({
-        type: 1
-        ,title: false //不显示标题栏
-        ,closeBtn: false
-        ,area: '300px;'
-        ,shade: 0.8
-        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
-        ,btn: ['确定', '取消']
-        ,btnAlign: 'c'
-        ,moveType: 1 //拖拽模式，0或者1
-        ,content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">确认计算该月工资吗？</div>'
-        ,success: function(layero){
-            var btn = layero.find('.layui-layer-btn');
-            btn.find('.layui-layer-btn0').click(function () {
-                $(".loading").css("display",'block');
-                $.ajax({
-                    "type" : 'put',
-                    "url": path + "/wa/wags/thisMonthCalculation",
-                    data: {month:$("#test15").val()},
-                    dataType: "json",
-                    "success":function(data){
-                        if (data == "success"){
-                            $(".loading").css("display",'none');
-                        } else if (data == "error"){ //后台错误
-                            $(".loading").css("display",'none');
-                            layer.alert("操作失败");
-                        } else if (data == "noParameters"){ //参数错误
-                            $(".loading").css("display",'none');
-                            layer.alert("前台参数错误");
-                        } else if (data == "noUser"){ //用户信息过期
-                            $(".loading").css("display",'none');
-                            layer.alert("用户信息过期");
-                        }
-                    }
-                });
-            });
-        }
-    });
-}
 
 //本月工资核算
 function calculationWags () {

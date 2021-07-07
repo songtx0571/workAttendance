@@ -438,28 +438,22 @@ public class WagsController {
                     wages.setTotalDeduction(totalDeduction);
                     //计税合计=应发合计-扣款合计
                     Double totalTax = totalPayable - wages.getTotalDeduction();
-                    //判断此月是否大于等于4月
-                    try {
-                        String fourMonth = DateFormat.getAppointDate(wages.getDate(), 4);
-                        if (DateFormat.comparetoTime(fourMonth, wages.getDate())) {
-                            totalTax = totalTax - 300;
-                        }
-                        //************************************ 个调税计算 *****************************************
-                        Double tax = this.taxCalculator(employeeId.toString(), month, wages.getSixSpecialDeductions(), totalTax);
-                        //计税合计
-                        wages.setTotalTax(totalTax);
-                        //************************************ 实发工资 *****************************************
-                        Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
-                        wages.setIndividualTaxAdjustment(tax);
-                        wages.setNetSalary(netSalary);
-                        wagsService.updWags(wages);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return JSON.toJSONString(Type.error);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return JSON.toJSONString(Type.error);
+                    //判断是否是劳务派遣人员
+                    if ("否".equals(wages.getLaowupaiqian())) {
+                        totalTax = totalTax - 300;
                     }
+                    //************************************ 个调税计算 *****************************************
+                    Double tax = this.taxCalculator(employeeId.toString(), month, wages.getSixSpecialDeductions(), totalTax);
+                    //计税合计
+                    wages.setTotalTax(totalTax);
+                    //************************************ 实发工资 *****************************************
+                    if ("否".equals(wages.getLaowupaiqian())) {
+                        totalTax = totalTax + 300;
+                    }
+                    Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+                    wages.setIndividualTaxAdjustment(tax);
+                    wages.setNetSalary(netSalary);
+                    wagsService.updWags(wages);
                 }
 
             }
