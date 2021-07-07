@@ -447,10 +447,7 @@ public class WagsController {
                     //计税合计
                     wages.setTotalTax(totalTax);
                     //************************************ 实发工资 *****************************************
-                    if ("否".equals(wages.getLaowupaiqian())) {
-                        totalTax = totalTax + 300;
-                    }
-                    Double netSalary = Double.valueOf(totalTax) - tax;//实发工资
+                    Double netSalary = Double.valueOf( totalPayable - wages.getTotalDeduction()) - tax;//实发工资
                     wages.setIndividualTaxAdjustment(tax);
                     wages.setNetSalary(netSalary);
                     wagsService.updWags(wages);
