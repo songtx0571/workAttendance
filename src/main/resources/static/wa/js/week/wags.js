@@ -305,7 +305,7 @@ function showWagsList(m) {
                 , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120, align: 'center'}
             ]]
             , done: function (res, curr, count) {
-                var currentYear = date.getFullYear();
+                /*var currentYear = date.getFullYear();
                 var currentMonth = date.getMonth() + 1;
                 var selYear = ($("#test15").val()).substr(0,4);
                 var selMonth = ($("#test15").val()).substr(5,2);
@@ -313,7 +313,7 @@ function showWagsList(m) {
                     for (var i = 0; i < res.count; i ++) {
                         $('.editBtn').css("display", "none");
                     }
-                }
+                }*/
             }
         });
         //监听行工具事件
@@ -570,6 +570,20 @@ function updFinance() {
     wages.other = $("#other").val();//其他
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
+
+
+    wages.totalTaxTotal = $("#totalTaxTotal").val();//累计收入额
+    wages.deductionOfExpensesTaxTotal = $("#deductionOfExpensesTaxTotal").val();//累计费用减免
+    wages.specialDeductionTaxTotal = $("#specialDeductionTaxTotal").val();//累计专项扣除
+    wages.specialAdditionalDeductionTaxTotal = $("#specialAdditionalDeductionTaxTotal").val();//累计附加专项扣除
+    wages.IndividualIncomeTaxTotal = $("#IndividualIncomeTaxTotal").val();//累计个税
+    wages.IndividualIncomeTaxPaidTotal = $("#IndividualIncomeTaxPaidTotal").val();//累计已缴纳个税
+    wages.otherDeductionTaxTotal = $("#otherDeductionTaxTotal").val();//累计其他扣除
+    wages.taxableIncomeTotal = $("#taxableIncomeTotal").val();//累计应缴纳税所得额
+
+    console.log(wages);
+
+
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",

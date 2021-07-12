@@ -50,9 +50,9 @@
         .layui-table-body::-webkit-scrollbar {
             display:none
         }
-        /*#calculationButton{*/
-        /*    display: none;*/
-        /*}*/
+        /*#calculationButton{
+            display: none;
+        }*/
         .loading{
             width: 100%;
             height: 100%;
@@ -127,7 +127,7 @@
     </div>
     <div class="updateFinance">
         <input type="hidden" id="dateHidden">
-
+        <input type="hidden" class="laowupaiqianHidden">
         <table style="margin-top: 20px;" cellspacing="0">
             <thead>
             <tr>
@@ -252,6 +252,35 @@
                 <td>备注：</td>
                 <td colspan="3"><input type="text" class="remark" id="remark" name="remark"></td>
             </tr>
+
+            <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
+                <td colspan="4" style="text-align: center;">累计值</td>
+            </tr>
+            <tr>
+                <td>累计收入额：</td>
+                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal" placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);"></td>
+                <td>累计费用减免：</td>
+                <td><input type="text" class="deductionOfExpensesTaxTotal" id="deductionOfExpensesTaxTotal" placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);"></td>
+            </tr>
+            <tr>
+                <td>累计专项扣除：</td>
+                <td><input type="text" class="specialDeductionTaxTotal" id="specialDeductionTaxTotal" placeholder="0.00" onchange="twoDecimal('specialDeductionTaxTotal',this.value);"></td>
+                <td>累计附加专项扣除：</td>
+                <td><input type="text" class="specialAdditionalDeductionTaxTotal" id="specialAdditionalDeductionTaxTotal" placeholder="0.00" onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);"></td>
+            </tr>
+            <tr>
+                <td>累计个税：</td>
+                <td><input type="text" class="IndividualIncomeTaxTotal" id="IndividualIncomeTaxTotal"  placeholder="0.00" onchange="twoDecimal('IndividualIncomeTaxTotal',this.value);"></td>
+                <td>累计已缴纳个税：</td>
+                <td><input type="text" class="IndividualIncomeTaxPaidTotal"  id="IndividualIncomeTaxPaidTotal" placeholder="0.00" onchange="twoDecimal('IndividualIncomeTaxPaidTotal',this.value);"></td>
+            </tr>
+            <tr>
+                <td>累计其他扣除：</td>
+                <td><input type="text" class="otherDeductionTaxTotal" id="otherDeductionTaxTotal"  placeholder="0.00" onchange="twoDecimal('otherDeductionTaxTotal',this.value);"></td>
+                <td>累计应缴纳税所得额：</td>
+                <td><input type="text" class="taxableIncomeTotal"  id="taxableIncomeTotal" placeholder="0.00" onchange="twoDecimal('taxableIncomeTotal',this.value);"></td>
+            </tr>
+
             <tr style="line-height: 80px;">
                 <td colspan="4" style="text-align: center;">
                     <button class="layui-btn layui-btn-normal" onclick="updFinance()">确定</button>
@@ -262,7 +291,7 @@
         </table>
     </div>
     <div class="detailFinance">
-        <table style="margin-top: 20px;" cellspacing="0">
+        <table cellspacing="0">
             <thead>
             <tr>
                 <th colspan="4" style="font-size: 24px;">工资信息</th>
@@ -356,6 +385,31 @@
             <tr>
                 <td>备注：</td>
                 <td colspan="3"><input type="text" class="remark" name="remark" readonly></td>
+            </tr>
+
+            <tr>
+                <td>累计收入额：</td>
+                <td><input type="text" class="totalTaxTotal" placeholder="0.00" readonly></td>
+                <td>累计费用减免：</td>
+                <td><input type="text" class="deductionOfExpensesTaxTotal" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
+                <td>累计专项扣除：</td>
+                <td><input type="text" class="specialDeductionTaxTotal" placeholder="0.00" readonly></td>
+                <td>累计附加专项扣除：</td>
+                <td><input type="text" class="specialAdditionalDeductionTaxTotal" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
+                <td>累计个税：</td>
+                <td><input type="text" class="IndividualIncomeTaxTotal" placeholder="0.00" readonly></td>
+                <td>累计已缴纳个税：</td>
+                <td><input type="text" class="IndividualIncomeTaxPaidTotal" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
+                <td>累计其他扣除：</td>
+                <td><input type="text" class="otherDeductionTaxTotal"   placeholder="0.00" readonly></td>
+                <td>累计应缴纳税所得额：</td>
+                <td><input type="text" class="taxableIncomeTotal"   placeholder="0.00" readonly></td>
             </tr>
             </tbody>
         </table>
