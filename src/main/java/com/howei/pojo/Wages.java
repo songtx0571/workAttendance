@@ -45,8 +45,8 @@ public class Wages implements Serializable {
     private Double specialAdditionalDeductionTaxTotal;//累计附加专项扣除
     private Double otherDeductionTaxTotal;//累计其他扣除
     private Double taxableIncomeTotal;//累计应缴纳税所得额
-    private Double IndividualIncomeTaxTotal;//累计个税
-    private Double IndividualIncomeTaxPaidTotal;//累计已缴纳个税
+    private Double individualIncomeTaxTotal;//累计个税
+    private Double individualIncomeTaxPaidTotal;//累计已缴纳个税
 
 
     //虚字段
@@ -99,8 +99,8 @@ public class Wages implements Serializable {
                 ", specialAdditionalDeductionTaxTotal=" + specialAdditionalDeductionTaxTotal +
                 ", otherDeductionTaxTotal=" + otherDeductionTaxTotal +
                 ", taxableIncomeTotal=" + taxableIncomeTotal +
-                ", IndividualIncomeTaxTotal=" + IndividualIncomeTaxTotal +
-                ", IndividualIncomeTaxPaidTotal=" + IndividualIncomeTaxPaidTotal +
+                ", individualIncomeTaxTotal=" + individualIncomeTaxTotal +
+                ", individualIncomeTaxPaidTotal=" + individualIncomeTaxPaidTotal +
                 ", employeeName='" + employeeName + '\'' +
                 ", userNumber='" + userNumber + '\'' +
                 ", laowupaiqian='" + laowupaiqian + '\'' +
@@ -112,19 +112,19 @@ public class Wages implements Serializable {
     }
 
     public Double getIndividualIncomeTaxTotal() {
-        return IndividualIncomeTaxTotal;
+        return individualIncomeTaxTotal;
     }
 
     public void setIndividualIncomeTaxTotal(Double individualIncomeTaxTotal) {
-        IndividualIncomeTaxTotal = individualIncomeTaxTotal;
+        this.individualIncomeTaxTotal = individualIncomeTaxTotal;
     }
 
     public Double getIndividualIncomeTaxPaidTotal() {
-        return IndividualIncomeTaxPaidTotal;
+        return individualIncomeTaxPaidTotal;
     }
 
     public void setIndividualIncomeTaxPaidTotal(Double individualIncomeTaxPaidTotal) {
-        IndividualIncomeTaxPaidTotal = individualIncomeTaxPaidTotal;
+        this.individualIncomeTaxPaidTotal = individualIncomeTaxPaidTotal;
     }
 
     public Double getTotalTaxTotal() {

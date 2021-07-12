@@ -182,11 +182,11 @@
             <if test="taxableIncomeTotal!=null">
                 taxableIncomeTotal=#{taxableIncomeTotal},
             </if>
-            <if test="IndividualIncomeTaxTotal!=null">
-                IndividualIncomeTaxTotal=#{IndividualIncomeTaxTotal},
+            <if test="individualIncomeTaxTotal!=null">
+                individualIncomeTaxTotal=#{individualIncomeTaxTotal},
             </if>
-            <if test="IndividualIncomeTaxPaidTotal!=null">
-                IndividualIncomeTaxPaidTotal=#{IndividualIncomeTaxPaidTotal},
+            <if test="individualIncomeTaxPaidTotal!=null">
+                individualIncomeTaxPaidTotal=#{individualIncomeTaxPaidTotal},
             </if>
         </set>
         where 1=1 and id=#{id} and date=#{date}
