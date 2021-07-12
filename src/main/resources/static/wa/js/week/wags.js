@@ -389,16 +389,14 @@ function showWagsList(m) {
             $(".individualTaxAdjustment").val(data.individualTaxAdjustment);//个调税
             $(".netSalary").val(data.netSalary);//实发工资
             $(".remark").val(data.remark);//备注
-
-            $("#totalTaxTotal").val(data.totalTaxTotal);//累计收入额
-            $("#deductionOfExpensesTaxTotal").val(data.deductionOfExpensesTaxTotal);//累计费用减免
-            $("#specialDeductionTaxTotal").val(data.specialDeductionTaxTotal);//累计专项扣除
-            $("#specialAdditionalDeductionTaxTotal").val(data.specialAdditionalDeductionTaxTotal);//累计附加专项扣除
-            $("#IndividualIncomeTaxTotal").val(data.IndividualIncomeTaxTotal);//累计个税
-            $("#IndividualIncomeTaxPaidTotal").val(data.IndividualIncomeTaxPaidTotal);//累计已缴纳个税
-            $("#otherDeductionTaxTotal").val(data.otherDeductionTaxTotal);//累计其他扣除
-            $("#taxableIncomeTotal").val(data.taxableIncomeTotal);//累计应缴纳税所得额
-
+            $(".totalTaxTotal").val(data.totalTaxTotal);//累计收入额
+            $(".deductionOfExpensesTaxTotal").val(data.deductionOfExpensesTaxTotal);//累计费用减免
+            $(".specialDeductionTaxTotal").val(data.specialDeductionTaxTotal);//累计专项扣除
+            $(".specialAdditionalDeductionTaxTotal").val(data.specialAdditionalDeductionTaxTotal);//累计附加专项扣除
+            $(".individualIncomeTaxTotal").val(data.individualIncomeTaxTotal);//累计个税
+            $(".individualIncomeTaxPaidTotal").val(data.individualIncomeTaxPaidTotal);//累计已缴纳个税
+            $(".otherDeductionTaxTotal").val(data.otherDeductionTaxTotal);//累计其他扣除
+            $(".taxableIncomeTotal").val(data.taxableIncomeTotal);//累计应缴纳税所得额
             if (obj.event === 'edit') {//修改
                 /*$.ajax({
                type: "GET",
@@ -580,20 +578,14 @@ function updFinance() {
     wages.other = $("#other").val();//其他
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
-
-
     wages.totalTaxTotal = $("#totalTaxTotal").val();//累计收入额
     wages.deductionOfExpensesTaxTotal = $("#deductionOfExpensesTaxTotal").val();//累计费用减免
     wages.specialDeductionTaxTotal = $("#specialDeductionTaxTotal").val();//累计专项扣除
     wages.specialAdditionalDeductionTaxTotal = $("#specialAdditionalDeductionTaxTotal").val();//累计附加专项扣除
-    wages.IndividualIncomeTaxTotal = $("#IndividualIncomeTaxTotal").val();//累计个税
-    wages.IndividualIncomeTaxPaidTotal = $("#IndividualIncomeTaxPaidTotal").val();//累计已缴纳个税
+    wages.individualIncomeTaxTotal = $("#individualIncomeTaxTotal").val();//累计个税
+    wages.individualIncomeTaxPaidTotal = $("#individualIncomeTaxPaidTotal").val();//累计已缴纳个税
     wages.otherDeductionTaxTotal = $("#otherDeductionTaxTotal").val();//累计其他扣除
     wages.taxableIncomeTotal = $("#taxableIncomeTotal").val();//累计应缴纳税所得额
-
-    console.log(wages);
-
-
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",
