@@ -50,9 +50,9 @@
         .layui-table-body::-webkit-scrollbar {
             display:none
         }
-        #calculationButton{
-            display: none;
-        }
+        /*#calculationButton{*/
+        /*    display: none;*/
+        /*}*/
         .loading{
             width: 100%;
             height: 100%;
@@ -98,9 +98,6 @@
         <shiro:hasPermission name='工资修改'>
             <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
         </shiro:hasPermission>
-        <%--        <shiro:hasPermission name='工资修改'>--%>
-        <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
-        <%--        </shiro:hasPermission>--%>
         <div style="clear: both"></div>
         <div class="copyDiv">
             <input type="hidden" id="monthEnd">

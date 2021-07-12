@@ -79,11 +79,10 @@ public class WagsController {
             empIdStr += users.getEmployeeId() + ",";
             List<String> employeeIdList = new ArrayList<>();
 
-            List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
+            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
             List<Employee> empList = employeeService.getEmployeeByManager(0);
             ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
-
             for (String employeeIdStr : employeeIdList) {
                 empIdStr += employeeIdStr + ",";
             }
@@ -235,6 +234,22 @@ public class WagsController {
 
     /**
      * 个税计算
+     * <p>
+     * <p>
+     * 第一步，求“累计应纳税所得”
+     * <p>
+     * 累计应纳税所得=累计计税合计-（当前月份-3）*300- *当前月份-5000*工作月份
+     * <p>
+     * *300是通讯费，从4月起每月-300
+     * *当前月份 是发放工资的月份，比如现在是7月
+     * *工作月份 是员工的工龄（按月统计），工作月份=当前月份-入职月份，比如1月入职，工作月份=7-1=6；如果1月之前就已经在职，工作月份=当前月份
+     * <p>
+     * 第二步，求“个调税”
+     * 分解成两小步 即
+     * 1、累计个税=累计应纳税所得*税率-速算扣除数
+     * 2、当月个调税=累计个税-历史月个调税【比如  7月个调税=累计个税-1到6月个调税合计】
+     * <p>
+     * 也就是 当月个调税=累计应纳税所得*税率-速算扣除数-历史月个调税
      *
      * @param employeeId
      * @param month
@@ -244,7 +259,7 @@ public class WagsController {
      */
     public Double taxCalculator(String employeeId, String month, double specialAdditionalDeduction, double totalTaxThisMonth) {
         //累计值
-        Double totalTax = 0.00;//计税合计
+        Double totalTaxTotal = 0.00;//累计计税合计
         Double deductionOfExpensesTaxTotal = 0.00;//累计减除费用
         Double taxableIncome = 0.00;//累计应纳税所得额
         Double personalIncomeTotalTax = 0.00;//累计个税
@@ -256,23 +271,21 @@ public class WagsController {
         List<Wages> listWages = wagsService.getWagesToTax(map);
         if (listWages != null) {
             for (Wages wages : listWages) {
-                //计税合计=应发合计-扣款合计
-                totalTax = totalTax + wages.getTotalTax();
+                //计税合计
+                totalTaxTotal += wages.getTotalTax();
                 //累计减除费用
                 deductionOfExpensesTaxTotal += 5000;
                 //累计专项扣除
                 specialAdditionalDeductionTaxTotal += wages.getSixSpecialDeductions();
-                //计算累计应纳税所得额：累计应纳税所得额=累计计税合计-累计专项附加扣除-5000*月份
-                taxableIncome = totalTax - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
                 //累计个税
                 personalIncomeTotalTax += wages.getPerformanceCoefficient();
             }
             //计算截至到指定月份
             specialAdditionalDeductionTaxTotal += specialAdditionalDeduction;
-            totalTax += totalTaxThisMonth;
+            totalTaxTotal += totalTaxThisMonth;
             deductionOfExpensesTaxTotal += 5000;
-            //计算累计应纳税所得额：累计应纳税所得额=累计计税合计-累计专项附加扣除-5000*月份
-            taxableIncome = totalTax - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
+            //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
+            taxableIncome = totalTaxTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
             //指定月份的个税
             return taxableIncome(taxableIncome, personalIncomeTotalTax);
         }
@@ -312,7 +325,7 @@ public class WagsController {
         }
         //累计个税 = 累计应纳税所得额*预扣税率 - 速算扣除数
         Double accumulatedPersonalIncomeTax = taxableIncome * taxRate - quickCalculationDeduction;
-        //当月个税
+        //当月个税=累计个税-历史月个调税
         Double tax = accumulatedPersonalIncomeTax - personalIncomeTotalTax;
         if (tax < 0) {
             tax = 0.00;
@@ -384,7 +397,7 @@ public class WagsController {
                     }
                     Assessment assessment = behaviorService.getAssessmentByEmployeeId(map);
                     BigDecimal bd = new BigDecimal((wages.getBasePay() + wages.getPositionSalary()) / 2.0);
-                    //绩效技术
+                    //绩效基数
                     double meritBase = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setMeritBase(meritBase);
 
@@ -447,7 +460,7 @@ public class WagsController {
                     //计税合计
                     wages.setTotalTax(totalTax);
                     //************************************ 实发工资 *****************************************
-                    Double netSalary = Double.valueOf( totalPayable - wages.getTotalDeduction()) - tax;//实发工资
+                    Double netSalary = Double.valueOf(totalPayable - wages.getTotalDeduction()) - tax;//实发工资
                     wages.setIndividualTaxAdjustment(tax);
                     wages.setNetSalary(netSalary);
                     wagsService.updWags(wages);

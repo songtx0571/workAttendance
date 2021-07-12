@@ -41,10 +41,10 @@ function monthUpBtn() {
         form.render(); //更新全部
     });
     showWagsList($("#test15").val());
-    $("#calculationButton").css("display","none");
-    if (upBtnMonth == Number(month)+1) {
-        $("#calculationButton").css("display","block");
-    }
+    // $("#calculationButton").css("display","none");
+    // if (upBtnMonth == Number(month)+1) {
+    //     $("#calculationButton").css("display","block");
+    // }
 }
 
 //点击查看下个月数据
@@ -65,10 +65,10 @@ function monthDownBtn() {
         form.render(); //更新全部
     });
     showWagsList($("#test15").val());
-    $("#calculationButton").css("display","none");
-    if (upBtnMonth == Number(month)+1) {
-        $("#calculationButton").css("display","block");
-    }
+    // $("#calculationButton").css("display","none");
+    // if (upBtnMonth == Number(month)+1) {
+    //     $("#calculationButton").css("display","block");
+    // }
 }
 
 //显示时间
