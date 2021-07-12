@@ -389,6 +389,16 @@ function showWagsList(m) {
             $(".individualTaxAdjustment").val(data.individualTaxAdjustment);//个调税
             $(".netSalary").val(data.netSalary);//实发工资
             $(".remark").val(data.remark);//备注
+
+            $("#totalTaxTotal").val(data.totalTaxTotal);//累计收入额
+            $("#deductionOfExpensesTaxTotal").val(data.deductionOfExpensesTaxTotal);//累计费用减免
+            $("#specialDeductionTaxTotal").val(data.specialDeductionTaxTotal);//累计专项扣除
+            $("#specialAdditionalDeductionTaxTotal").val(data.specialAdditionalDeductionTaxTotal);//累计附加专项扣除
+            $("#IndividualIncomeTaxTotal").val(data.IndividualIncomeTaxTotal);//累计个税
+            $("#IndividualIncomeTaxPaidTotal").val(data.IndividualIncomeTaxPaidTotal);//累计已缴纳个税
+            $("#otherDeductionTaxTotal").val(data.otherDeductionTaxTotal);//累计其他扣除
+            $("#taxableIncomeTotal").val(data.taxableIncomeTotal);//累计应缴纳税所得额
+
             if (obj.event === 'edit') {//修改
                 /*$.ajax({
                type: "GET",
