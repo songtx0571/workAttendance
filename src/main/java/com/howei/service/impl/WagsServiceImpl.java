@@ -37,8 +37,8 @@ public class WagsServiceImpl implements WagsService {
     }
 
     @Override
-    public Wages getWagsListById(String id) {
-        return wagsMapper.getWagsListById(id);
+    public Wages getWagesByMap(Map map) {
+        return wagsMapper.getWagsByMap(map);
     }
 
     @Override

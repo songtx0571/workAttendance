@@ -30,7 +30,7 @@
         SELECT * FROM wages
         WHERE 1=1
         <if test="month!=null">
-          and date = #{month}
+            and date = #{month}
         </if>
         <if test="wagesIds!=null">
             and FIND_IN_SET(wages.id,#{wagesIds})
@@ -51,28 +51,28 @@
         insert into wages
         (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
         totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
-        individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId)
+        individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId,specialAdditionalDeduction)
         values
         <foreach collection="list" item="item" separator="," index="index">
             (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.other},#{item.meritPay}
             ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.subTotalOfSubsidies},#{item.totalPayable},#{item.endowmentInsurance}
             ,#{item.unemploymentBenefits},#{item.medicalInsurance},#{item.accumulationFund},#{item.otherDeductions},#{item.unionFees},#{item.totalTax}
             ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.remark},#{item.date},#{item.created}
-            ,#{item.wagesPostId},#{item.postGradeId})
+            ,#{item.wagesPostId},#{item.postGradeId},#{item.specialAdditionalDeduction})
         </foreach>
     </insert>
 
     <insert id="addThisMonthWags" parameterType="com.howei.pojo.Wages" useGeneratedKeys="true" keyProperty="id">
         insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
         totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
-        individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId,meritBase,totalTaxTotal,deductionOfExpensesTaxTotal,specialDeductionTaxTotal,
+        individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId,meritBase,incomeTotal,deductionOfExpensesTaxTotal,specialDeductionTaxTotal,
         specialAdditionalDeductionTaxTotal,otherDeductionTaxTotal,taxableIncomeTotal,IndividualIncomeTaxTotal,IndividualIncomeTaxPaidTotal)
         values
         (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
         ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.subTotalOfSubsidies},#{wages.totalPayable},#{wages.endowmentInsurance}
         ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
         ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},
-        #{wages.wagesPostId},#{wages.postGradeId},#{wages.meritBase},#{wages.totalTaxTotal},#{wages.deductionOfExpensesTaxTotal},#{wages.specialDeductionTaxTotal},
+        #{wages.wagesPostId},#{wages.postGradeId},#{wages.meritBase},#{wages.incomeTotal},#{wages.deductionOfExpensesTaxTotal},#{wages.specialDeductionTaxTotal},
         #{wages.specialAdditionalDeductionTaxTotal},#{wages.otherDeductionTaxTotal},#{wages.taxableIncomeTotal},#{wages.IndividualIncomeTaxTotal},#{wages.IndividualIncomeTaxPaidTotal}
         )
     </insert>
@@ -164,8 +164,8 @@
             <if test="meritBase!=null">
                 meritBase=#{meritBase},
             </if>
-            <if test="totalTaxTotal!=null">
-                totalTaxTotal=#{totalTaxTotal},
+            <if test="incomeTotal!=null">
+                incomeTotal=#{incomeTotal},
             </if>
             <if test="deductionOfExpensesTaxTotal!=null">
                 deductionOfExpensesTaxTotal=#{deductionOfExpensesTaxTotal},
@@ -175,6 +175,9 @@
             </if>
             <if test="specialAdditionalDeductionTaxTotal!=null">
                 specialAdditionalDeductionTaxTotal=#{specialAdditionalDeductionTaxTotal},
+            </if>
+            <if test="specialAdditionalDeduction!=null">
+                specialAdditionalDeduction=#{specialAdditionalDeduction},
             </if>
             <if test="otherDeductionTaxTotal!=null">
                 otherDeductionTaxTotal=#{otherDeductionTaxTotal},
@@ -188,17 +191,33 @@
             <if test="individualIncomeTaxPaidTotal!=null">
                 individualIncomeTaxPaidTotal=#{individualIncomeTaxPaidTotal},
             </if>
+            <if test="totalTaxTotal!=null">
+                totalTaxTotal=#{totalTaxTotal},
+            </if>
         </set>
         where 1=1 and id=#{id} and date=#{date}
     </update>
 
-    <select id="getWagsListById" parameterType="java.lang.String" resultType="com.howei.pojo.Wages">
-        select * from wages where id=#{id}
+    <select id="getWagsByMap" resultType="com.howei.pojo.Wages">
+        select * from wages
+        where 1=1
+        <if test="id!=null">
+            and id = #{id}
+        </if>
+        <if test="employeeId!=null">
+            and employeeId=#{employeeId}
+        </if>
+        <if test="cycle!=null">
+            and date=#{cycle}
+        </if>
     </select>
-
     <select id="getWagesToTax" resultType="com.howei.pojo.Wages">
          select  e.userNumber,e.name employeeName,e.laowupaiqian,w.* from wages w join employee e on e.id=w.employeeId
-         where DATE_FORMAT(w.`date`,'%Y-%m-%d')&lt;=DATE_FORMAT(#{month},'%Y-%m-%d') and w.employeeId=#{employeeId} order by `date`
+         where
+          DATE_FORMAT(w.`date`,'%Y-%m-%d')&lt;DATE_FORMAT(#{month},'%Y-%m-%d')
+        and DATE_FORMAT(#{month},'%Y-01-01') &lt;= DATE_FORMAT(w.`date`,'%Y-%m-%d')
+         and w.employeeId=#{employeeId} order by `date`
    </select>
+
 
 </mapper>

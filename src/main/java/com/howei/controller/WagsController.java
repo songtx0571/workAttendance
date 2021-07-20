@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import sun.invoke.empty.Empty;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.*;
 
 @Controller
@@ -258,6 +256,16 @@ public class WagsController {
      * @return
      */
     public Double taxCalculator(String employeeId, String month, double specialAdditionalDeduction, double totalTaxThisMonth) {
+
+//        Double totalTaxTotal;//累计收入额
+//        Double deductionOfExpensesTaxTotal;//累计费用减免
+//        Double specialDeductionTaxTotal;//累计专项扣除
+//        Double specialAdditionalDeductionTaxTotal;//累计附加专项扣除
+//        Double otherDeductionTaxTotal;//累计其他扣除
+//        Double taxableIncomeTotal;//累计应缴纳税所得额
+//        Double individualIncomeTaxTotal;//累计个税
+//        Double individualIncomeTaxPaidTotal;//累计已缴纳个税
+
         //累计值
         Double totalTaxTotal = 0.00;//累计计税合计
         Double deductionOfExpensesTaxTotal = 0.00;//累计减除费用
@@ -376,32 +384,48 @@ public class WagsController {
         if (users == null) {
             return JSON.toJSONString(Type.noUser);
         }
+        if (StringUtils.isEmpty(month)) {
+            return JSON.toJSONString(Type.noParameters);
+        }
+        Map map = new HashMap<>();
+        map.put("month", month + "-01");
+        if (!StringUtils.isEmpty(id)) {
+            map.put("wagesIds", id);
+        }
+        //当月需核算的工资数据
+        List<Wages> wageslist = wagsService.getWagsList(map);
 
-        if (month != null && !month.equals("")) {
-            Map map = new HashMap<>();
-            //获取指定日期的上一月份
-            String cycle = DateFormat.getYearMonthByMonth(month, -1);
+        //获取指定日期的上一月份
+        String lastYearMonth = DateFormat.getYearMonthByMonth(month, -1);
+        if (wageslist == null || wageslist.size() == 0) {
+            return JSON.toJSONString(Type.success);
+        }
+        String msg = "";
+        for (int i = 0; i < wageslist.size(); i++) {
 
-            map.put("month", month + "-01");
-            if (!StringUtils.isEmpty(id)) {
-                map.put("wagesIds", id);
-            }
-            List<Wages> list = wagsService.getWagsList(map);
-            for (int i = 0; i < list.size(); i++) {
-                Wages wages = list.get(i);
+            Wages wages = wageslist.get(i);
+            try {
                 if (wages.getId() != null) {
                     Integer employeeId = wages.getEmployeeId();
-                    map.put("cycle", cycle);
+                    map.put("cycle", lastYearMonth);
+
                     if (employeeId != null && !employeeId.equals("")) {
                         map.put("employeeId", employeeId);
                     }
+
+                    //该员工的月绩效
                     Assessment assessment = behaviorService.getAssessmentByEmployeeId(map);
+                    map.put("cycle", lastYearMonth + "-01");
+                    Wages wagesLastMonth = wagsService.getWagesByMap(map);
+                    if (wagesLastMonth == null || !month.substring(0, 4).equals(lastYearMonth.substring(0, 4))) {
+                        wagesLastMonth = Wages.initTotalValue(employeeId);
+                    }
+                    //绩效基数=(岗位工资+职级工资)/2
                     BigDecimal bd = new BigDecimal((wages.getBasePay() + wages.getPositionSalary()) / 2.0);
-                    //绩效基数
                     double meritBase = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setMeritBase(meritBase);
-
-                    double comprehensivePerformance = 0.00;//综合绩效 (绩效系数)
+                    //综合绩效 (绩效系数)
+                    double comprehensivePerformance = 0.00;
                     double foodSupplement = 0.00;//餐补
                     if (assessment != null) {
                         double score1 = assessment.getScore1();
@@ -418,7 +442,6 @@ public class WagsController {
                         //餐补=20*考勤
                         foodSupplement = 20 * kapqin;
                     }
-
                     //绩效系数
                     wages.setPerformanceCoefficient(comprehensivePerformance);
 
@@ -452,26 +475,126 @@ public class WagsController {
                     //计税合计=应发合计-扣款合计
                     Double totalTax = totalPayable - wages.getTotalDeduction();
                     //判断是否是劳务派遣人员
-                    if ("否".equals(wages.getLaowupaiqian())) {
-                        totalTax = totalTax - 300;
-                    }
-                    //************************************ 个调税计算 *****************************************
-                    Double tax = this.taxCalculator(employeeId.toString(), month, wages.getSixSpecialDeductions(), totalTax);
+                    //totalTax = "否".equals(wages.getLaowupaiqian()) ? totalTax - 300 : totalTax;
                     //计税合计
                     wages.setTotalTax(totalTax);
-                    //************************************ 实发工资 *****************************************
-                    Double netSalary = Double.valueOf(totalPayable - wages.getTotalDeduction()) - tax;//实发工资
+
+                    System.out.println("wagesLastMonth::" + wagesLastMonth);
+                    System.out.println("wagesthisMonth::" + wages);
+                    //累计收入额=上个月的累计收入额+(当月应发合计-其他扣款)
+                    Double incomeTotal = wagesLastMonth.getIncomeTotal() + totalPayable;
+                    wages.setIncomeTotal(incomeTotal);
+                    //累计费用减免
+                    Double deductionOfExpensesTaxTotal = wagesLastMonth.getDeductionOfExpensesTaxTotal() + 5000;
+                    wages.setDeductionOfExpensesTaxTotal(deductionOfExpensesTaxTotal);
+                    //累计专项扣除
+                    Double specialDeductionTaxTotal = wagesLastMonth.getSpecialDeductionTaxTotal() + totalDeduction - wages.getUnionFees();
+                    wages.setSpecialDeductionTaxTotal(specialDeductionTaxTotal);
+                    //累计附加专项扣除
+                    Double specialAdditionalDeductionTaxTotal = wagesLastMonth.getSpecialAdditionalDeductionTaxTotal() + wages.getSpecialAdditionalDeduction();
+                    wages.setSpecialAdditionalDeductionTaxTotal(specialAdditionalDeductionTaxTotal);
+                    //累计其他扣除
+                    double communicationFee=0;
+                    if("否".equals(wages.getLaowupaiqian())){
+                        communicationFee=300;
+                    }
+                    Double otherDeductionTaxTotal = wagesLastMonth.getOtherDeductionTaxTotal() + wages.getUnionFees() + communicationFee;
+                    wages.setOtherDeductionTaxTotal(otherDeductionTaxTotal);
+
+                    //累计计税合计
+                    Double taxableIncomeTotal = 0.00;//累计应缴纳税所得额
+                    Double totalTaxTotal = wagesLastMonth.getTotalTaxTotal() + totalTax;//累计计税合计
+                    wages.setTotalTaxTotal(totalTaxTotal);
+                    map = new HashMap();
+                    map.put("month", month + "-01");
+                    map.put("employeeId", employeeId);
+                    List<Wages> listWages = wagsService.getWagesToTax(map);
+                    Double CommunicationFeeTotal = 0.00;
+                    if (listWages != null) {
+                        for (Wages wagesOtherMonth : listWages) {
+                            System.out.println(wagesOtherMonth);
+                            //计税合计
+//                            totalTaxTotal += wagesOtherMonth.getTotalTax();
+                            String date = wagesOtherMonth.getDate();
+                            if ("2021-04-01".compareTo(date) <= 0 && "否".equals(wages.getLaowupaiqian())) {
+                                CommunicationFeeTotal += 300;
+                            }
+
+                        }
+                        if ("否".equals(wages.getLaowupaiqian())) {
+                            CommunicationFeeTotal += 300;
+                        }
+                        System.out.println(CommunicationFeeTotal);
+//                        System.out.println(totalTaxTotal + totalTax);
+                        //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
+                        taxableIncomeTotal = wages.getTotalTaxTotal() - CommunicationFeeTotal - wages.getSpecialAdditionalDeductionTaxTotal() - deductionOfExpensesTaxTotal;
+                    }
+
+                    wages.setTaxableIncomeTotal(taxableIncomeTotal);
+
+
+
+                   // Double tax = taxableIncome(taxableIncomeTotal, wagesLastMonth.getIndividualIncomeTaxTotal());
+
+
+                    Double taxRate = 0.00;//预扣税率
+                    Double quickCalculationDeduction = 0.00;//速算扣除数
+                    //根据`累计应纳税所得额` 判断 `预扣税率`,`速算扣除数`
+                    if (taxableIncomeTotal <= 36000.00) {
+                        taxRate = 0.03;
+                        quickCalculationDeduction = 0.00;
+                    } else if (36000.00 < taxableIncomeTotal && taxableIncomeTotal <= 144000.00) {
+                        taxRate = 0.1;
+                        quickCalculationDeduction = 2520.00;
+                    } else if (144000.00 < taxableIncomeTotal && taxableIncomeTotal <= 300000.00) {
+                        taxRate = 0.2;
+                        quickCalculationDeduction = 16920.00;
+                    } else if (300000.00 < taxableIncomeTotal && taxableIncomeTotal <= 420000.00) {
+                        taxRate = 0.25;
+                        quickCalculationDeduction = 31920.00;
+                    } else if (420000.00 < taxableIncomeTotal && taxableIncomeTotal <= 660000.00) {
+                        taxRate = 0.3;
+                        quickCalculationDeduction = 52920.00;
+                    } else if (660000.00 < taxableIncomeTotal && taxableIncomeTotal <= 960000.00) {
+                        taxRate = 0.35;
+                        quickCalculationDeduction = 85920.00;
+                    } else if (960000.00 < taxableIncomeTotal) {
+                        taxRate = 0.45;
+                        quickCalculationDeduction = 181920.00;
+                    }
+                    //累计个税 = 累计应纳税所得额*预扣税率 - 速算扣除数
+                    Double accumulatedPersonalIncomeTax = taxableIncomeTotal * taxRate - quickCalculationDeduction;
+                    //当月个税=累计个税-历史月个调税
+                    Double tax = accumulatedPersonalIncomeTax - wagesLastMonth.getIndividualIncomeTaxTotal();
+                    if (tax < 0) {
+                        tax = 0.00;
+                    }
+                    //累计已缴纳个税
+                    Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal();
+                    wages.setIndividualIncomeTaxPaidTotal(individualIncomeTaxPaidTotal);
+                    //累计个税
+                    //Double individualIncomeTaxTotal = wagesLastMonth.getIndividualIncomeTaxTotal() + tax;
+                    wages.setIndividualIncomeTaxTotal(accumulatedPersonalIncomeTax);
+                    //实发工资
+                    Double netSalary = totalTax - tax;
                     wages.setIndividualTaxAdjustment(tax);
                     wages.setNetSalary(netSalary);
+
+
                     wagsService.updWags(wages);
                 }
-
+            } catch (Exception e) {
+                System.out.println("wages::" + wages.getId() + "::" + wages.getUserNumber() + "::" + wages.getEmployeeName());
+                msg += "(" + wages.getUserNumber() + ")" + wages.getEmployeeName();
+                e.printStackTrace();
+                break;
             }
-            return JSON.toJSONString(Type.success);
         }
-        return JSON.toJSONString(Type.cancel);
+        if (!"".equals(msg)) {
+            return JSON.toJSONString(msg);
+        }
+        return JSON.toJSONString(Type.success);
     }
-
 
     /**-------------------------------------工资岗位----------------------------------------*/
 

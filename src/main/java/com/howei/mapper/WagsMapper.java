@@ -19,7 +19,7 @@ public interface WagsMapper {
 
     List<Tax> getTaxList(Map map);
 
-    Wages getWagsListById(@Param("id") String id);
+    Wages getWagsByMap(Map map);
 
     int addThisMonthWags(@Param("wages") Wages wages);
 

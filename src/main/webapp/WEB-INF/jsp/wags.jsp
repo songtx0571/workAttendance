@@ -9,27 +9,33 @@
     <script type="text/javascript" src="../js/week/wags.js"></script>
     <script type="text/javascript" src="../js/week/alert.js"></script>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
         }
-        .warp{
+
+        .warp {
             padding: 10px;
             box-sizing: border-box;
         }
-        body::-webkit-scrollbar{
+
+        body::-webkit-scrollbar {
             display: none;
         }
-        .updateFinance table,.detailFinance table{
+
+        .updateFinance table, .detailFinance table {
             width: 99%;
         }
-        .updateFinance table tr,.detailFinance table tr{
+
+        .updateFinance table tr, .detailFinance table tr {
             line-height: 50px;
         }
-        .updateFinance table tr td:first-of-type,.updateFinance table tr td:nth-child(3),.detailFinance table tr td:first-of-type,.detailFinance table tr td:nth-child(3){
+
+        .updateFinance table tr td:first-of-type, .updateFinance table tr td:nth-child(3), .detailFinance table tr td:first-of-type, .detailFinance table tr td:nth-child(3) {
             text-align: right;
         }
-        .updateFinance table tr td input,.detailFinance table tr td input{
+
+        .updateFinance table tr td input, .detailFinance table tr td input {
             width: 98%;
             outline: none;
             height: 47px;
@@ -39,21 +45,25 @@
             padding-left: 8px;
             box-sizing: border-box;
         }
-        .updateFinance,.detailFinance{
+
+        .updateFinance, .detailFinance {
             display: none;
         }
-        .copyDiv{
+
+        .copyDiv {
             display: none;
             padding-top: 20px;
             box-sizing: border-box;
         }
+
         .layui-table-body::-webkit-scrollbar {
-            display:none
+            display: none
         }
+
         /*#calculationButton{
             display: none;
         }*/
-        .loading{
+        .loading {
             width: 100%;
             height: 100%;
             position: absolute;
@@ -66,16 +76,29 @@
             z-index: 9999999;
             display: none;
         }
-        .loading div{
-            animation:turn 1s linear infinite;
+
+        .loading div {
+            animation: turn 1s linear infinite;
         }
-        @keyframes turn{
-            0%{-webkit-transform:rotate(0deg);}
-            25%{-webkit-transform:rotate(90deg);}
-            50%{-webkit-transform:rotate(180deg);}
-            75%{-webkit-transform:rotate(270deg);}
-            100%{-webkit-transform:rotate(360deg);}
+
+        @keyframes turn {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            25% {
+                -webkit-transform: rotate(90deg);
+            }
+            50% {
+                -webkit-transform: rotate(180deg);
+            }
+            75% {
+                -webkit-transform: rotate(270deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
         }
+
         .warp .container .layui-table-cell .layui-form-checkbox[lay-skin=primary] {
             top: 5px;
         }
@@ -85,18 +108,26 @@
 <div class="warp">
     <div class="top">
         <input type="hidden" id="monthStart">
-        <button class="layui-btn layui-btn-sm" style="margin-left: 50px;float: left;height: 38px;margin-right: 5px;" onclick="monthUpBtn()" >&nbsp;&nbsp;&lt;&lt;&nbsp;&nbsp;</button>
+        <button class="layui-btn layui-btn-sm" style="margin-left: 50px;float: left;height: 38px;margin-right: 5px;"
+                onclick="monthUpBtn()">&nbsp;&nbsp;&lt;&lt;&nbsp;&nbsp;
+        </button>
         <div class="layui-inline" style="margin-bottom: 10px;float:left;">
             <div class="layui-input-inline">
                 <input type="text" class="layui-input" id="test15" placeholder="年月">
             </div>
         </div>
-        <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;" onclick="monthDownBtn()" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;</button>
+        <button class="layui-btn layui-btn-sm" style="float: left;height: 38px;margin-left: 5px;"
+                onclick="monthDownBtn()">&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;
+        </button>
         <shiro:hasPermission name='工资修改'>
-            <button class="layui-btn layui-btn-normal layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="copyWags()" id="copyButton">复制此月数据</button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;"
+                    onclick="copyWags()" id="copyButton">复制此月数据
+            </button>
         </shiro:hasPermission>
         <shiro:hasPermission name='工资修改'>
-            <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;" onclick="calculationWags()" id="calculationButton">本月工资核算</button>
+            <button class="layui-btn layui-btn-warm layui-btn-sm" style="margin-left: 50px;float:left;height: 38px;"
+                    onclick="calculationWags()" id="calculationButton">本月工资核算
+            </button>
         </shiro:hasPermission>
         <div style="clear: both"></div>
         <div class="copyDiv">
@@ -107,7 +138,9 @@
                     <input type="text" class="layui-input" id="test16" placeholder="年月">
                 </div>
             </div>
-            <button class="layui-btn layui-btn-normal layui-btn-sm" style="margin-left: 37%;transform: translate(-37%, 0px);" onclick="copyOk()">确定</button>&nbsp;
+            <button class="layui-btn layui-btn-normal layui-btn-sm"
+                    style="margin-left: 37%;transform: translate(-37%, 0px);" onclick="copyOk()">确定
+            </button>&nbsp;
             <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="cancel()">取消</button>
         </div>
     </div>
@@ -148,7 +181,8 @@
                         <div class="layui-inline" style="width: 100%;">
                             <div class="layui-input-inline" style="width: 99%;">
                                 <input type="hidden" id="selPostNameHidden">
-                                <select name="modules" lay-verify="required" lay-filter="selPostName" lay-search="" id="selPostName">
+                                <select name="modules" lay-verify="required" lay-filter="selPostName" lay-search=""
+                                        id="selPostName">
                                 </select>
                             </div>
                         </div>
@@ -160,7 +194,8 @@
                         <div class="layui-inline" style="width: 100%;">
                             <div class="layui-input-inline" style="width: 99%;">
                                 <input type="hidden" id="selPostLevelNameHidden">
-                                <select name="modules" lay-verify="required" lay-filter="selPostLevelName" lay-search="" id="selPostLevelName">
+                                <select name="modules" lay-verify="required" lay-filter="selPostLevelName" lay-search=""
+                                        id="selPostLevelName">
                                 </select>
                             </div>
                         </div>
@@ -172,81 +207,113 @@
             </tr>
             <tr>
                 <td>岗位工资：</td>
-                <td><input type="text" class="basePay" id="basePay" name="basePay" placeholder="0.00"  onchange="twoDecimal('basePay',this.value);" readonly></td>
+                <td><input type="text" class="basePay" id="basePay" name="basePay" placeholder="0.00"
+                           onchange="twoDecimal('basePay',this.value);" readonly></td>
                 <td>职级工资：</td>
-                <td><input type="text" class="positionSalary" id="positionSalary" name="positionSalary" onchange="twoDecimal('positionSalary',this.value);" placeholder="0.00" readonly></td>
+                <td><input type="text" class="positionSalary" id="positionSalary" name="positionSalary"
+                           onchange="twoDecimal('positionSalary',this.value);" placeholder="0.00" readonly></td>
             </tr>
             <tr>
                 <td>绩效基数：</td>
-                <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase" placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
+                <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase"
+                           placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
                 <td>绩效系数：</td>
-                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" onBlur="threeDecimal('performanceCoefficient',this.value);" readonly></td>
+                <td><input type="text" class="performanceCoefficient" id="performanceCoefficient"
+                           name="performanceCoefficient" placeholder="0.000"
+                           onBlur="threeDecimal('performanceCoefficient',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
-                <td><input type="text" class="meritPay" id="meritPay" name="meritPay" placeholder="0.00" onchange="twoDecimal('meritPay',this.value);" readonly></td>
+                <td><input type="text" class="meritPay" id="meritPay" name="meritPay" placeholder="0.00"
+                           onchange="twoDecimal('meritPay',this.value);" readonly></td>
                 <td>其他：</td>
-                <td><input type="text" class="other" id="other" name="other" placeholder="0.00" onBlur="twoDecimal('other',this.value);sumWages();" ></td>
+                <td><input type="text" class="other" id="other" name="other" placeholder="0.00"
+                           onBlur="twoDecimal('other',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td style="color: red;">工资小计：</td>
-                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00" onchange="twoDecimal('wageSubtotal',this.value);" readonly></td>
+                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00"
+                           onchange="twoDecimal('wageSubtotal',this.value);" readonly></td>
                 <td style="color: red;">应发工资：</td>
-                <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00" onchange="twoDecimal('wagesPayable',this.value);" readonly></td>
+                <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00"
+                           onchange="twoDecimal('wagesPayable',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>餐补：</td>
-                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement" placeholder="0.00"  onBlur="twoDecimal('foodSupplement',this.value);" readonly></td>
+                <td><input type="text" class="foodSupplement" id="foodSupplement" name="foodSupplement"
+                           placeholder="0.00" onBlur="twoDecimal('foodSupplement',this.value);" readonly></td>
                 <td>高温补贴：</td>
-                <td><input type="text" class="highTemperatureSubsidy" id="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
+                <td><input type="text" class="highTemperatureSubsidy" id="highTemperatureSubsidy"
+                           name="highTemperatureSubsidy" placeholder="0.00"
+                           onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td style="color: red;">补贴小计：</td>
-                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" onchange="twoDecimal('subTotalOfSubsidies',this.value);" readonly></td>
+                <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies"
+                           placeholder="0.00" onchange="twoDecimal('subTotalOfSubsidies',this.value);" readonly></td>
                 <td style="color: red;">应发合计：</td>
-                <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00" onchange="twoDecimal('totalPayable',this.value);" readonly></td>
+                <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00"
+                           onchange="twoDecimal('totalPayable',this.value);" readonly></td>
             </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">应扣金额</td>
             </tr>
             <tr>
                 <td>养老保险：</td>
-                <td><input type="text" class="endowmentInsurance" id="endowmentInsurance" name="endowmentInsurance" placeholder="0.00" onBlur="twoDecimal('endowmentInsurance',this.value);sumWages();"></td>
+                <td><input type="text" class="endowmentInsurance" id="endowmentInsurance" name="endowmentInsurance"
+                           placeholder="0.00" onBlur="twoDecimal('endowmentInsurance',this.value);sumWages();"></td>
                 <td>医疗保险：</td>
-                <td><input type="text" class="medicalInsurance" id="medicalInsurance" name="medicalInsurance" placeholder="0.00" onBlur="twoDecimal('medicalInsurance',this.value);sumWages();"></td>
+                <td><input type="text" class="medicalInsurance" id="medicalInsurance" name="medicalInsurance"
+                           placeholder="0.00" onBlur="twoDecimal('medicalInsurance',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td>公积金：</td>
-                <td><input type="text" class="accumulationFund" id="accumulationFund" name="accumulationFund" placeholder="0.00" onBlur="twoDecimal('accumulationFund',this.value);sumWages();"></td>
+                <td><input type="text" class="accumulationFund" id="accumulationFund" name="accumulationFund"
+                           placeholder="0.00" onBlur="twoDecimal('accumulationFund',this.value);sumWages();"></td>
                 <td>失业金：</td>
-                <td><input type="text" class="unemploymentBenefits" id="unemploymentBenefits" name="unemploymentBenefits" placeholder="0.00" onBlur="twoDecimal('unemploymentBenefits',this.value);sumWages();"></td>
+                <td><input type="text" class="unemploymentBenefits" id="unemploymentBenefits"
+                           name="unemploymentBenefits" placeholder="0.00"
+                           onBlur="twoDecimal('unemploymentBenefits',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td>工会费：</td>
-                <td><input type="text" class="unionFees" id="unionFees" name="unionFees" placeholder="0.00" onBlur="twoDecimal('unionFees',this.value);sumWages();"></td>
+                <td><input type="text" class="unionFees" id="unionFees" name="unionFees" placeholder="0.00"
+                           onBlur="twoDecimal('unionFees',this.value);sumWages();"></td>
                 <td>其他扣款：</td>
-                <td><input type="text" class="otherDeductions" id="otherDeductions" name="otherDeductions" placeholder="0.00" onBlur="twoDecimal('otherDeductions',this.value);sumWages();"></td>
+                <td><input type="text" class="otherDeductions" id="otherDeductions" name="otherDeductions"
+                           placeholder="0.00" onBlur="twoDecimal('otherDeductions',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td style="color: red;">扣款合计：</td>
-                <td><input type="text" class="totalDeduction" id="totalDeduction" name="totalDeduction" placeholder="0.00"  onchange="twoDecimal('totalDeduction',this.value);" readonly></td>
+                <td><input type="text" class="totalDeduction" id="totalDeduction" name="totalDeduction"
+                           placeholder="0.00" onchange="twoDecimal('totalDeduction',this.value);" readonly></td>
             </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">其他</td>
             </tr>
             <tr>
                 <td style="color: red;">计税合计：</td>
-                <td><input type="number" class="totalTax" id="totalTax" name="totalTax" placeholder="0.00" onchange="twoDecimal('totalTax',this.value);" readonly></td>
+                <td><input type="number" class="totalTax" id="totalTax" name="totalTax" placeholder="0.00"
+                           onchange="twoDecimal('totalTax',this.value);" readonly></td>
                 <td>六项专项扣除金额：</td>
-                <td><input type="text" class="sixSpecialDeductions" id="sixSpecialDeductions" name="sixSpecialDeductions" placeholder="0.00" onBlur="twoDecimal('sixSpecialDeductions',this.value);sumWages()"></td>
+                <td><input type="text" class="sixSpecialDeductions" id="sixSpecialDeductions"
+                           name="sixSpecialDeductions" placeholder="0.00"
+                           onBlur="twoDecimal('sixSpecialDeductions',this.value);sumWages()"></td>
             </tr>
             <tr>
                 <td style="color: red;">个调税：</td>
-                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00"  onchange="twoDecimal('individualTaxAdjustment',this.value);" readonly></td>
+                <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment"
+                           name="individualTaxAdjustment" placeholder="0.00"
+                           onchange="twoDecimal('individualTaxAdjustment',this.value);" readonly></td>
+                <td>专项附加扣除：</td>
+                <td><input type="text" class="specialAdditionalDeduction" id="specialAdditionalDeduction"
+                           name="specialAdditionalDeduction" placeholder="0.00"
+                           onchange="twoDecimal('specialAdditionalDeduction',this.value);"></td>
             </tr>
             <tr>
                 <td style="color: dodgerblue;font-weight: bold;">实发工资：</td>
-                <td colspan="3"><input type="text" class="netSalary" id="netSalary" name="netSalary" placeholder="0.00" onchange="twoDecimal('netSalary',this.value);" readonly></td>
+                <td colspan="3"><input type="text" class="netSalary" id="netSalary" name="netSalary" placeholder="0.00"
+                                       onchange="twoDecimal('netSalary',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>备注：</td>
@@ -257,32 +324,45 @@
             </tr>
             <tr>
                 <td>累计收入额：</td>
-                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal" placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);"></td>
+                <td><input type="text" class="incomeTotal" id="incomeTotal" placeholder="0.00"
+                           onchange="twoDecimal('incomeTotal',this.value);"></td>
                 <td>累计费用减免：</td>
-                <td><input type="text" class="deductionOfExpensesTaxTotal" id="deductionOfExpensesTaxTotal" placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);"></td>
+                <td><input type="text" class="deductionOfExpensesTaxTotal" id="deductionOfExpensesTaxTotal"
+                           placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计专项扣除：</td>
-                <td><input type="text" class="specialDeductionTaxTotal" id="specialDeductionTaxTotal" placeholder="0.00" onchange="twoDecimal('specialDeductionTaxTotal',this.value);"></td>
+                <td><input type="text" class="specialDeductionTaxTotal" id="specialDeductionTaxTotal" placeholder="0.00"
+                           onchange="twoDecimal('specialDeductionTaxTotal',this.value);"></td>
                 <td>累计附加专项扣除：</td>
-                <td><input type="text" class="specialAdditionalDeductionTaxTotal" id="specialAdditionalDeductionTaxTotal" placeholder="0.00" onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);"></td>
+                <td><input type="text" class="specialAdditionalDeductionTaxTotal"
+                           id="specialAdditionalDeductionTaxTotal" placeholder="0.00"
+                           onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计其他扣除：</td>
-                <td><input type="text" class="otherDeductionTaxTotal" id="otherDeductionTaxTotal"  placeholder="0.00" onchange="twoDecimal('otherDeductionTaxTotal',this.value);"></td>
+                <td><input type="text" class="otherDeductionTaxTotal" id="otherDeductionTaxTotal" placeholder="0.00"
+                           onchange="twoDecimal('otherDeductionTaxTotal',this.value);"></td>
                 <td>累计应缴纳税所得额：</td>
-                <td><input type="text" class="taxableIncomeTotal"  id="taxableIncomeTotal" placeholder="0.00" onchange="twoDecimal('taxableIncomeTotal',this.value);"></td>
+                <td><input type="text" class="taxableIncomeTotal" id="taxableIncomeTotal" placeholder="0.00"
+                           onchange="twoDecimal('taxableIncomeTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计个税：</td>
-                <td><input type="text" class="individualIncomeTaxTotal" id="individualIncomeTaxTotal"  placeholder="0.00" onchange="twoDecimal('individualIncomeTaxTotal',this.value);"></td>
+                <td><input type="text" class="individualIncomeTaxTotal" id="individualIncomeTaxTotal" placeholder="0.00"
+                           onchange="twoDecimal('individualIncomeTaxTotal',this.value);"></td>
                 <td>累计已缴纳个税：</td>
-                <td><input type="text" class="individualIncomeTaxPaidTotal"  id="individualIncomeTaxPaidTotal" placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);"></td>
+                <td><input type="text" class="individualIncomeTaxPaidTotal" id="individualIncomeTaxPaidTotal"
+                           placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);"></td>
+            </tr>
+            <tr>
+                <td>累计计税合计：</td>
+                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal"  placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);"></td>
             </tr>
             <tr style="line-height: 80px;">
                 <td colspan="4" style="text-align: center;">
                     <button class="layui-btn layui-btn-normal" onclick="updFinance()">确定</button>
-                    <button  style="margin-left: 5%" class="layui-btn layui-btn-normal" onclick="cancel()">取消</button>
+                    <button style="margin-left: 5%" class="layui-btn layui-btn-normal" onclick="cancel()">取消</button>
                 </td>
             </tr>
             </tbody>
@@ -316,9 +396,11 @@
             </tr>
             <tr>
                 <td>绩效基数：</td>
-                <td><input type="number" class="performanceBase" name="performanceBase" placeholder="0.00" readonly></td>
+                <td><input type="number" class="performanceBase" name="performanceBase" placeholder="0.00" readonly>
+                </td>
                 <td>绩效系数：</td>
-                <td><input type="number" class="performanceCoefficient" name="performanceCoefficient" placeholder="0.000" readonly></td>
+                <td><input type="number" class="performanceCoefficient" name="performanceCoefficient"
+                           placeholder="0.000" readonly></td>
             </tr>
             <tr>
                 <td>绩效工资：</td>
@@ -336,31 +418,38 @@
                 <td>餐补：</td>
                 <td><input type="number" class="foodSupplement" name="foodSupplement" placeholder="0.00" readonly></td>
                 <td>高温补贴：</td>
-                <td><input type="text" class="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00" readonly></td>
+                <td><input type="text" class="highTemperatureSubsidy" name="highTemperatureSubsidy" placeholder="0.00"
+                           readonly></td>
             </tr>
             <tr>
                 <td>补贴小计：</td>
-                <td><input type="text" class="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00" readonly></td>
+                <td><input type="text" class="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00"
+                           readonly></td>
                 <td>应发合计：</td>
                 <td><input type="text" class="totalPayable" name="totalPayable" placeholder="0.00" readonly></td>
             </tr>
             <tr>
                 <td>养老保险：</td>
-                <td><input type="number" class="endowmentInsurance" name="endowmentInsurance" placeholder="0.00" readonly></td>
+                <td><input type="number" class="endowmentInsurance" name="endowmentInsurance" placeholder="0.00"
+                           readonly></td>
                 <td>医疗保险：</td>
-                <td><input type="number" class="medicalInsurance" name="medicalInsurance" placeholder="0.00" readonly></td>
+                <td><input type="number" class="medicalInsurance" name="medicalInsurance" placeholder="0.00" readonly>
+                </td>
             </tr>
             <tr>
                 <td>公积金：</td>
-                <td><input type="number" class="accumulationFund" name="accumulationFund" placeholder="0.00" readonly></td>
+                <td><input type="number" class="accumulationFund" name="accumulationFund" placeholder="0.00" readonly>
+                </td>
                 <td>失业金：</td>
-                <td><input type="number" class="unemploymentBenefits" name="unemploymentBenefits" placeholder="0.00" readonly></td>
+                <td><input type="number" class="unemploymentBenefits" name="unemploymentBenefits" placeholder="0.00"
+                           readonly></td>
             </tr>
             <tr>
                 <td>工会费：</td>
                 <td><input type="number" class="unionFees" name="unionFees" placeholder="0.00" readonly></td>
                 <td>其他扣款：</td>
-                <td><input type="number" class="otherDeductions" name="otherDeductions" placeholder="0.00" readonly></td>
+                <td><input type="number" class="otherDeductions" name="otherDeductions" placeholder="0.00" readonly>
+                </td>
             </tr>
             <tr>
                 <td>扣款合计：</td>
@@ -368,13 +457,18 @@
             </tr>
             <tr>
                 <td>计税合计：</td>
-                <td><input type="text" class="totalTax" name="totalTax" placeholder="0.00" readonly ></td>
+                <td><input type="text" class="totalTax" name="totalTax" placeholder="0.00" readonly></td>
                 <td>六项专项扣除金额：</td>
-                <td><input type="number" class="sixSpecialDeductions" name="sixSpecialDeductions" placeholder="0.00" readonly></td>
+                <td><input type="number" class="sixSpecialDeductions" name="sixSpecialDeductions" placeholder="0.00"
+                           readonly></td>
             </tr>
             <tr>
                 <td>个调税：</td>
-                <td><input type="number" class="individualTaxAdjustment" name="individualTaxAdjustment" placeholder="0.00" readonly></td>
+                <td><input type="number" class="individualTaxAdjustment" name="individualTaxAdjustment"
+                           placeholder="0.00" readonly></td>
+                <td>专项附加扣除：</td>
+                <td><input type="text" class="specialAdditionalDeduction" name="specialAdditionalDeduction"
+                           placeholder="0.00" readonly></td>
             </tr>
             <tr>
                 <td>实发工资：</td>
@@ -386,7 +480,7 @@
             </tr>
             <tr>
                 <td>累计收入额：</td>
-                <td><input type="text" class="totalTaxTotal" placeholder="0.00" readonly></td>
+                <td><input type="text" class="incomeTotal" placeholder="0.00" readonly></td>
                 <td>累计费用减免：</td>
                 <td><input type="text" class="deductionOfExpensesTaxTotal" placeholder="0.00" readonly></td>
             </tr>
@@ -398,15 +492,19 @@
             </tr>
             <tr>
                 <td>累计其他扣除：</td>
-                <td><input type="text" class="otherDeductionTaxTotal"   placeholder="0.00" readonly></td>
+                <td><input type="text" class="otherDeductionTaxTotal" placeholder="0.00" readonly></td>
                 <td>累计应缴纳税所得额：</td>
-                <td><input type="text" class="taxableIncomeTotal"   placeholder="0.00" readonly></td>
+                <td><input type="text" class="taxableIncomeTotal" placeholder="0.00" readonly></td>
             </tr>
             <tr>
                 <td>累计个税：</td>
                 <td><input type="text" class="individualIncomeTaxTotal" placeholder="0.00" readonly></td>
                 <td>累计已缴纳个税：</td>
                 <td><input type="text" class="individualIncomeTaxPaidTotal" placeholder="0.00" readonly></td>
+            </tr>
+            <tr>
+                <td>累计计税合计：</td>
+                <td><input type="text" class="totalTaxTotal" placeholder="0.00" readonly></td>
             </tr>
             </tbody>
         </table>

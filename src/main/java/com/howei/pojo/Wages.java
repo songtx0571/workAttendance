@@ -38,8 +38,8 @@ public class Wages implements Serializable {
     private double subTotalOfSubsidies;//补贴小计
     private Integer postGradeId;//岗位等级Id
     private Integer wagesPostId;//工资岗位Id
-
-    private Double totalTaxTotal;//累计收入额
+    private Double specialAdditionalDeduction;//专项附加扣除
+    private Double incomeTotal;//累计收入额
     private Double deductionOfExpensesTaxTotal;//累计费用减免
     private Double specialDeductionTaxTotal;//累计专项扣除
     private Double specialAdditionalDeductionTaxTotal;//累计附加专项扣除
@@ -47,7 +47,7 @@ public class Wages implements Serializable {
     private Double taxableIncomeTotal;//累计应缴纳税所得额
     private Double individualIncomeTaxTotal;//累计个税
     private Double individualIncomeTaxPaidTotal;//累计已缴纳个税
-
+    private Double totalTaxTotal;//累计计税合计
 
     //虚字段
     private String employeeName;//员工姓名
@@ -57,6 +57,21 @@ public class Wages implements Serializable {
     private String isChanged;//人事异动
     private String postGradeName;//岗位等级名称
     private String wagesPostName;//薪资岗位名称
+
+    public static Wages initTotalValue(Integer employeeId) {
+        Wages wages = new Wages();
+        wages.setEmployeeId(employeeId);
+        wages.setIncomeTotal(0.00);
+        wages.setDeductionOfExpensesTaxTotal(0.00);
+        wages.setSpecialDeductionTaxTotal(0.00);
+        wages.setSpecialAdditionalDeductionTaxTotal(0.00);
+        wages.setOtherDeductionTaxTotal(0.00);
+        wages.setTaxableIncomeTotal(0.00);
+        wages.setIndividualIncomeTaxTotal(0.00);
+        wages.setIndividualIncomeTaxPaidTotal(0.00);
+        wages.setTotalTaxTotal(0.00);
+        return wages;
+    }
 
     @Override
     public String toString() {
@@ -93,7 +108,8 @@ public class Wages implements Serializable {
                 ", subTotalOfSubsidies=" + subTotalOfSubsidies +
                 ", postGradeId=" + postGradeId +
                 ", wagesPostId=" + wagesPostId +
-                ", totalTaxTotal=" + totalTaxTotal +
+                ", specialAdditionalDeduction=" + specialAdditionalDeduction +
+                ", incomeTotal=" + incomeTotal +
                 ", deductionOfExpensesTaxTotal=" + deductionOfExpensesTaxTotal +
                 ", specialDeductionTaxTotal=" + specialDeductionTaxTotal +
                 ", specialAdditionalDeductionTaxTotal=" + specialAdditionalDeductionTaxTotal +
@@ -101,6 +117,7 @@ public class Wages implements Serializable {
                 ", taxableIncomeTotal=" + taxableIncomeTotal +
                 ", individualIncomeTaxTotal=" + individualIncomeTaxTotal +
                 ", individualIncomeTaxPaidTotal=" + individualIncomeTaxPaidTotal +
+                ", totalTaxTotal=" + totalTaxTotal +
                 ", employeeName='" + employeeName + '\'' +
                 ", userNumber='" + userNumber + '\'' +
                 ", laowupaiqian='" + laowupaiqian + '\'' +
@@ -109,6 +126,30 @@ public class Wages implements Serializable {
                 ", postGradeName='" + postGradeName + '\'' +
                 ", wagesPostName='" + wagesPostName + '\'' +
                 '}';
+    }
+
+    public Double getTotalTaxTotal() {
+        return totalTaxTotal;
+    }
+
+    public void setTotalTaxTotal(Double totalTaxTotal) {
+        this.totalTaxTotal = totalTaxTotal;
+    }
+
+    public Double getSpecialAdditionalDeduction() {
+        return specialAdditionalDeduction;
+    }
+
+    public void setSpecialAdditionalDeduction(Double specialAdditionalDeduction) {
+        this.specialAdditionalDeduction = specialAdditionalDeduction;
+    }
+
+    public Double getIncomeTotal() {
+        return incomeTotal;
+    }
+
+    public void setIncomeTotal(Double incomeTotal) {
+        this.incomeTotal = incomeTotal;
     }
 
     public Double getIndividualIncomeTaxTotal() {
@@ -127,13 +168,6 @@ public class Wages implements Serializable {
         this.individualIncomeTaxPaidTotal = individualIncomeTaxPaidTotal;
     }
 
-    public Double getTotalTaxTotal() {
-        return totalTaxTotal;
-    }
-
-    public void setTotalTaxTotal(Double totalTaxTotal) {
-        this.totalTaxTotal = totalTaxTotal;
-    }
 
     public Double getDeductionOfExpensesTaxTotal() {
         return deductionOfExpensesTaxTotal;
