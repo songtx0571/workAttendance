@@ -30,6 +30,7 @@
             ,oh.workingTime,e.name as employeeName,e.userNumber as employeeNumber
         from operatingHours oh
         left join employee e on e.id=oh.employeeId
+        left join  users u  on u.employeeId =e.id
         <where>
             <if test="monthDay!=null and monthDay!=''">
                 and date_format(oh.monthDay,'%Y-%m') = date_format(#{monthDay},'%Y-%m')
@@ -38,7 +39,7 @@
                 and FIND_IN_SET(oh.employeeId,#{empIdStr})
             </if>
             <if test="projectId!=null">
-                and oh.projectId=#{projectId}
+                and u.departmentId=#{projectId}
             </if>
         </where>
         ORDER BY oh.monthDay
