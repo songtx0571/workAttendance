@@ -21,5 +21,7 @@ public enum Type {
     //无记录
     noRecord,
     //无参数
-    noParameters
+    noParameters;
+
+
 }

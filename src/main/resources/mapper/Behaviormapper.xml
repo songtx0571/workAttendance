@@ -125,7 +125,7 @@
 		LEFT JOIN (SELECT employeeId,SUM(score) score FROM performance WHERE cycle = #{cycle} GROUP BY employeeId ) c ON c.employeeId = b.id
 		WHERE userName = #{userName}
 	</select>
-	
+
 	<select id='getAssessmentByEmployeeId' resultType="com.howei.pojo.Assessment">
 		SELECT b.id,b.name,b.name,c.`name`,b.laowupaiqian,a.jiaban,a.zhiban,a.kaoqin,a.sum score1,c.score score2 FROM employee b
 		LEFT JOIN users u on u.employeeId=b.id

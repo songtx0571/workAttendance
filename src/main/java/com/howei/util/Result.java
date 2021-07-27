@@ -63,12 +63,20 @@ public class Result {
 
     public static Result fail(String msg) {
         Result result = new Result();
+        result.setCode(-1);
         result.setMsg(msg);
+        return result;
+    }
+    public static Result fail(Type type) {
+        Result result = new Result();
+        result.setCode(-1);
+        result.setMsg(type.toString());
         return result;
     }
 
     public static Result fail() {
         return fail("操作失败");
     }
+
 
 }

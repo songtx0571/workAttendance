@@ -1,11 +1,9 @@
 package com.howei.controller;
 
-import com.howei.pojo.Employee;
-import com.howei.pojo.OperatingHours;
-import com.howei.pojo.OverhaulRecord;
-import com.howei.pojo.Users;
+import com.howei.pojo.*;
 import com.howei.service.DepartmentService;
 import com.howei.service.EmployeeService;
+import com.howei.service.UserService;
 import com.howei.service.WorkingService;
 import com.howei.util.DateFormat;
 import com.howei.util.ListUtils;
@@ -14,6 +12,7 @@ import com.howei.util.Type;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +38,8 @@ public class WorkingHoursController {
 
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 运行工时
@@ -77,10 +79,7 @@ public class WorkingHoursController {
         List<Map<String, Object>> resultList = new ArrayList<>();
         //登录信息失效
         if (users == null) {
-            result.setCode(0);
-            result.setMsg(Type.noUser.toString());
-            result.setData(new ArrayList<>());
-            return result;
+            return Result.fail(Type.noUser.toString());
         }
 
         Integer employeeId = users.getEmployeeId();//请假人:请假人为空即为当前登录人
@@ -99,45 +98,39 @@ public class WorkingHoursController {
         int day = DateFormat.getDaysOfMonth(month + "-01");
         result.setCount(day);
         if (employeeIdList.size() > 0) {
-            for (int k = 0; k < employeeIdList.size(); k++) {
+            for (String emp: employeeIdList) {
                 //初始化日期Map
                 Map<String, Object> mapDayData = this.defaultMothData(day);//初始化日期
                 Map<String, Object> map1 = new HashMap<>();
-                String emp = employeeIdList.get(k);
                 //获取此人指定月份的运行工时数据
                 Map map = new HashMap();
                 map.put("monthDay", month + "-01");
                 map.put("empIdStr", emp);
                 map.put("projectId", projectId);
                 List<OperatingHours> list = workingService.getOperatingHoursList(map);
-                int size = 0;
-                if (list != null && list.size() > 0) {
-                    size = list.size();
-                } else {
+                if (list == null || list.size() == 0) {
                     continue;
                 }
                 //获取此月（1-31天）数据
                 int workAttendance = 0;//考勤天数
                 double workingTotal = 0.0;//此月总共工时
-                for (int i = 0; i < day; i++) {
-                    if (i < size) {
-                        OperatingHours operatingHours = list.get(i);
-                        Map<String, Object> dailyDataMap = new HashMap<>();
-                        double workingTime = operatingHours.getWorkingTime();//工时
-                        dailyDataMap.put("total", workingTime);
-                        dailyDataMap.put("detail", operatingHours);
-                        String monthDay = operatingHours.getMonthDay();
-                        String[] arr = monthDay.split("-");
-                        mapDayData.put(arr[2], dailyDataMap);
-                        //考勤天数:工时不为o
-                        if (workingTime > 0) {
-                            workAttendance++;
-                        }
-                        //此月总共工时
-                        workingTotal += workingTime;
-                        map1.put("employeeNumber", operatingHours.getEmployeeNumber());//员工编号
-                        map1.put("employeeName", operatingHours.getEmployeeName());//员工名称
+                for (OperatingHours operatingHours : list) {
+                    Map<String, Object> dailyDataMap = new HashMap<>();
+                    double workingTime = operatingHours.getWorkingTime();//工时
+                    dailyDataMap.put("total", workingTime);
+                    dailyDataMap.put("detail", operatingHours);
+                    String monthDay = operatingHours.getMonthDay();
+                    String[] arr = monthDay.split("-");
+                    mapDayData.put(arr[2], dailyDataMap);
+                    //考勤天数:工时不为o
+                    if (workingTime > 0) {
+                        workAttendance++;
                     }
+                    //此月总共工时
+                    workingTotal += workingTime;
+                    map1.put("employeeNumber", operatingHours.getEmployeeNumber());//员工编号
+                    map1.put("employeeName", operatingHours.getEmployeeName());//员工名称
+
                 }
                 map1.put("workAttendance", workAttendance);
                 map1.put("data", mapDayData);//1-31天数据
@@ -175,7 +168,7 @@ public class WorkingHoursController {
         Subject subject = SecurityUtils.getSubject();
         Users users = (Users) subject.getPrincipal();
         if (users == null) {
-            return Result.fail("用户失效");
+            return Result.fail(Type.noUser.toString());
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         if (date == null) {
@@ -298,8 +291,6 @@ public class WorkingHoursController {
     }
 
 
-    /**----------------------------------下拉框------------------------------------------*/
-
     /**
      * 部门下拉框列表
      *
@@ -314,4 +305,136 @@ public class WorkingHoursController {
         return result;
     }
 
+
+    @GetMapping("/getManagerWorkingHours")
+    public Result getManagerHours(
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(required = false) String month
+    ) {
+        Subject subject = SecurityUtils.getSubject();
+        Users loginUser = (Users) subject.getPrincipal();
+        //登录信息失效
+        if (loginUser == null) {
+            return Result.fail(Type.noUser.toString());
+        }
+
+        Integer loginUserEmployeeId = loginUser.getEmployeeId();
+        //根据绩效管理人获取被绩效管理人
+        List<String> employeeIdList = new ArrayList<>();
+
+        employeeIdList.add(loginUserEmployeeId.toString());
+
+        List<Employee> rootList = employeeService.getEmployeeByManager(loginUserEmployeeId);
+
+        List<Employee> empList = employeeService.getEmployeeByManager(0);
+
+        ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
+        Result result = new Result();
+        //获取此月天数
+        int dayCount = DateFormat.getDaysOfMonth(month + "-01");
+        result.setCount(dayCount);
+        if (employeeIdList == null || employeeIdList.size() == 0) {
+            result.setData(new ArrayList<>());
+            result.setMsg("无数据");
+            return result;
+        }
+        List<Map<String, Object>> resultMapList = new ArrayList<>();
+        for (String employeeId : employeeIdList) {
+            Map paramMap = new HashMap();
+            paramMap.put("employeeId", employeeId);
+            Users userByEmpId = userService.getUserByEmpId(Integer.valueOf(employeeId));
+            paramMap.put("departmentId", userByEmpId.getDepartmentId());
+            paramMap.put("departmentId", userByEmpId.getUserNumber());
+            paramMap.put("month", month);
+            List<ManagerHours> managerHoursList = workingService.getManagerHoursListByMap(paramMap);
+            if (managerHoursList == null || managerHoursList.size() == 0) {
+                continue;
+            }
+            Map<String, Object> managerHoursMap = new HashMap<>();
+            managerHoursMap.put("employeeId", employeeId);
+            Map<String, Object> mapDayData = this.defaultMothData(dayCount);//初始化日期
+            for (ManagerHours managerHours : managerHoursList) {
+                String monthDay = managerHours.getMonthDay();
+                String day = monthDay.substring(monthDay.lastIndexOf("-"));
+                Map dayDataMap = (Map) mapDayData.get(day);
+                dayDataMap.put("total", managerHours.getWorkIngHour() == null ? 0 : managerHours.getWorkIngHour());
+                dayDataMap.put("detail", managerHours);
+                mapDayData.put(day, dayDataMap);
+            }
+            managerHoursMap.put("data", mapDayData);
+            resultMapList.add(managerHoursMap);
+        }
+        return Result.ok(resultMapList.size(), resultMapList);
+
+    }
+
+    /**
+     * @param employeeId
+     * @param monthDay
+     * @param type
+     * @return
+     */
+    @GetMapping("/postManagerWorkingHours")
+    public Result postWorkTime(
+            @RequestParam(required = false) Integer employeeId,
+            @RequestParam(required = false) String monthDay,
+            @RequestParam(required = false) Integer type) {
+        if (StringUtils.isEmpty(type)) {
+            return Result.fail(Type.noParameters);
+        }
+        Subject subject = SecurityUtils.getSubject();
+        Users loginUser = (Users) subject.getPrincipal();
+        //登录信息失效
+        if (loginUser == null) {
+            return Result.fail(Type.noUser.toString());
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        if ("0".equals(type)) {
+            Integer departmentId = null;
+            if (employeeId == null) {
+                employeeId = loginUser.getEmployeeId();
+                departmentId = loginUser.getDepartmentId();
+            } else {
+                Users userByEmpId = userService.getUserByEmpId(employeeId);
+                departmentId = userByEmpId.getDepartmentId();
+            }
+            if (monthDay == null) {
+                monthDay = sdf1.format(new Date());
+            }
+
+            ManagerHours managerHours = new ManagerHours();
+            managerHours.setDepartmentId(departmentId);
+            managerHours.setEmployeeId(employeeId);
+            managerHours.setMonthDay(monthDay);
+            managerHours.setType(1);
+            managerHours.setWorkStartTime(sdf.format(new Date()));
+            workingService.insertManagerHours(managerHours);
+        } else {
+            Map<String, Object> paramsMap = new HashMap<>();
+            if (!StringUtils.isEmpty(employeeId)) {
+                paramsMap.put("employeeId", employeeId);
+            }
+            if (StringUtils.isEmpty(monthDay)) {
+                monthDay = sdf.format(new Date());
+            }
+            paramsMap.put("monthDay", monthDay);
+            paramsMap.put("type", 1);
+            ManagerHours managerHours = workingService.getManagerHoursByMap(paramsMap);
+            String workStartTime = managerHours.getWorkStartTime();
+            Date parseWorkStartTime = null;
+            try {
+                parseWorkStartTime = sdf.parse(workStartTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Date newDate = new Date();
+            managerHours.setWorkEndTime(sdf.format(newDate));
+            Double workingHours = (newDate.getTime() - parseWorkStartTime.getTime()) / 1000 / 3600D;
+            BigDecimal bd = new BigDecimal(workingHours);
+            managerHours.setWorkIngHour(bd.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            workingService.updateManagerHours(managerHours);
+        }
+        return Result.ok();
+    }
 }

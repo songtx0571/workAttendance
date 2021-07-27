@@ -10,7 +10,6 @@ public interface WorkingService {
     List<OperatingHours> getOperatingHoursList(Map map);
 
     /**
-     *
      * @param map
      * @return 检修记录
      */
@@ -19,4 +18,12 @@ public interface WorkingService {
     List<OverhaulRecord> getDefectByMap(Map<String, Object> map);
 
     List<OverhaulRecord> getMaintenceRecordByMap(Map<String, Object> map);
+
+    int insertManagerHours(ManagerHours managerHours);
+
+    ManagerHours getManagerHoursByMap(Map<String, Object> map);
+
+    int updateManagerHours(ManagerHours managerHours);
+
+    List<ManagerHours> getManagerHoursListByMap(Map map);
 }

@@ -16,4 +16,12 @@ public interface WorkingMapper {
     List<OverhaulRecord> getDefectRecordByMap(Map<String, Object> map);
 
     List<OverhaulRecord> getMaintenceRecordByMap(Map<String, Object> map);
+
+    int insertManagerHours(ManagerHours managerHours);
+
+    ManagerHours getManagerHoursByMap(Map<String, Object> map);
+
+    int updateManagerHours(ManagerHours managerHours);
+
+    List<ManagerHours> getManagerHoursListByMap(Map map);
 }

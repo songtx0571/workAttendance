@@ -35,4 +35,25 @@ public class WorkingServiceImpl implements WorkingService {
     public List<OverhaulRecord> getMaintenceRecordByMap(Map<String, Object> map) {
         return workingMapper.getMaintenceRecordByMap(map);
     }
+
+    @Override
+    public int insertManagerHours(ManagerHours managerHours) {
+        return workingMapper.insertManagerHours(managerHours);
+    }
+
+    @Override
+    public ManagerHours getManagerHoursByMap(Map<String, Object> map) {
+        return workingMapper.getManagerHoursByMap(map);
+    }
+
+    @Override
+    public int updateManagerHours(ManagerHours managerHours) {
+        return workingMapper.updateManagerHours(managerHours);
+    }
+
+    @Override
+    public List<ManagerHours> getManagerHoursListByMap(Map map) {
+        return workingMapper.getManagerHoursListByMap(map);
+    }
+
 }

@@ -19,18 +19,51 @@
         <result column="finish_date_time" property="finishDateTime"></result>
         <result column="finish_year_month" property="finishYearMonth"></result>
         <result column="finish_day" property="finishDay"></result>
-        <result column="working_hour" property="workingHour" ></result>
-        <result column="overtime" property="overtime" ></result>
+        <result column="working_hour" property="workingHour"></result>
+        <result column="overtime" property="overtime"></result>
         <result column="type" property="type"></result>
         <result column="overhaul_no" property="overhaulNo"></result>
     </resultMap>
+    <insert id="insertManagerHours">
+        insert into
+        managerHours(departmentId,employeeId,monthDay,workStartTime,type)
+        value
+        (#{departmentId},#{employeeId},#{monthDay},,#{workStartTime},#{type})
+    </insert>
+    <update id="updateManagerHours">
+        update managerHours 
+        <set>
+            <if test="departmentId!=null">
+                departmentId=#{departmentId}
+            </if>
+            <if test="employeeId!=null">
+                employeeId=#{employeeId}
+            </if>
+            <if test="monthDay!=null">
+                monthDay=#{monthDay}
+            </if>
+            <if test="workStartTime!=null">
+                workStartTime=#{workStartTime}
+            </if>
+            <if test="workEndTime!=null">
+                workEndTime=#{workEndTime}
+            </if>
+            <if test="workIngHour!=null">
+                workIngHour=#{workIngHour}
+            </if>
+            <if test="type!=null">
+                type=#{type}
+            </if>
+        </set>
+        
+    </update>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
         select oh.id,oh.scrdailyId,oh.monthDay,oh.tradersTime,oh.successorTime,oh.projectId,oh.other,oh.employeeId
-            ,oh.workingTime,e.name as employeeName,e.userNumber as employeeNumber
+        ,oh.workingTime,e.name as employeeName,e.userNumber as employeeNumber
         from operatingHours oh
         left join employee e on e.id=oh.employeeId
-        left join  users u  on u.employeeId =e.id
+        left join users u on u.employeeId =e.id
         <where>
             <if test="monthDay!=null and monthDay!=''">
                 and date_format(oh.monthDay,'%Y-%m') = date_format(#{monthDay},'%Y-%m')
@@ -95,40 +128,40 @@
     <select id="getDefectRecordByMap" resultMap="overhaulMap">
         SELECT
         DISTINCT
-            substring_index(
-                substring_index(
-                de.empIds,
-                    ',',
-                    b.help_topic_id + 1
-                ),
-                ',' ,- 1
-            ) AS employeeId,
-            u.userNumber userNumber,
-            u.userName,
-            de.confirmer1Time finish_date_time,
-            DATE_FORMAT(de.confirmer1Time,"%Y-%m") finish_year_month,
-            DATE_FORMAT(de.confirmer1Time,"%d") finish_day,
-            de.realExecuteTime working_hour,
-            de.overtime,
-            "1" as type,
-            de.number as  overhaul_no
+        substring_index(
+        substring_index(
+        de.empIds,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
+        ) AS employeeId,
+        u.userNumber userNumber,
+        u.userName,
+        de.confirmer1Time finish_date_time,
+        DATE_FORMAT(de.confirmer1Time,"%Y-%m") finish_year_month,
+        DATE_FORMAT(de.confirmer1Time,"%d") finish_day,
+        de.realExecuteTime working_hour,
+        de.overtime,
+        "1" as type,
+        de.number as overhaul_no
         FROM
-            defect de
+        defect de
         JOIN mysql.help_topic b ON b.help_topic_id &lt; (
-            length(de.empIds) - length(
-                REPLACE (de.empIds, ',', '')
-            ) + 1
+        length(de.empIds) - length(
+        REPLACE (de.empIds, ',', '')
+        ) + 1
         )
         JOIN users u ON u.employeeId = substring_index(
-            substring_index(
-                de.empIds,
-                ',',
-                b.help_topic_id + 1
-            ),
-            ',' ,- 1
+        substring_index(
+        de.empIds,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
         )
-         WHERE
-         de.type=4
+        WHERE
+        de.type=4
         <if test="departmentId!=null">and de.departmentId=#{departmentId}</if>
         <if test="date!=null">
             and de.confirmer1Time like concat("%",#{date},"%")
@@ -144,51 +177,86 @@
     </select>
     <select id="getMaintenceRecordByMap" resultMap="overhaulMap">
         SELECT
-            DISTINCT
-                u.employeeId employeeId,
-                substring_index(
-                    substring_index(
-                    mr.people,
-                        ',',
-                        b.help_topic_id + 1
-                    ),
-                    ',' ,- 1
-                ) AS userNumber,
-                u.userName,
-                mr.datetime finish_date_time,
-                DATE_FORMAT(mr.datetime,"%Y-%m") finish_year_month,
-                DATE_FORMAT(mr.datetime,"%d") finish_day,
-                mr.workingHours working_hour,
-                "2" as type
-            FROM
-                maintenanceRecord mr
-            JOIN mysql.help_topic b ON b.help_topic_id &lt; (
-                length(mr.people) - length(
-                    REPLACE (mr.people, ',', '')
-                ) + 1
-            )
-            JOIN users u ON u.userNumber = substring_index(
-                substring_index(
-                    mr.people,
-                    ',',
-                    b.help_topic_id + 1
-                ),
-                ',' ,- 1
-            )
-            where
-            mr.type=1
+        DISTINCT
+        u.employeeId employeeId,
+        substring_index(
+        substring_index(
+        mr.people,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
+        ) AS userNumber,
+        u.userName,
+        mr.datetime finish_date_time,
+        DATE_FORMAT(mr.datetime,"%Y-%m") finish_year_month,
+        DATE_FORMAT(mr.datetime,"%d") finish_day,
+        mr.workingHours working_hour,
+        "2" as type
+        FROM
+        maintenanceRecord mr
+        JOIN mysql.help_topic b ON b.help_topic_id &lt; (
+        length(mr.people) - length(
+        REPLACE (mr.people, ',', '')
+        ) + 1
+        )
+        JOIN users u ON u.userNumber = substring_index(
+        substring_index(
+        mr.people,
+        ',',
+        b.help_topic_id + 1
+        ),
+        ',' ,- 1
+        )
+        where
+        mr.type=1
 
-            <if test="departmentId!=null">and u.departmentId=#{departmentId}</if>
-            <if test="date!=null">
-                and mr.datetime like concat("%",#{date},"%")
-            </if>
+        <if test="departmentId!=null">and u.departmentId=#{departmentId}</if>
+        <if test="date!=null">
+            and mr.datetime like concat("%",#{date},"%")
+        </if>
 
-            <if test="userNumberList!=null">
-                and
-                <foreach collection="userNumberList" item="userNumber" open="(" close=")" separator=" or">
-                    mr.people like concat("%",#{userNumber},"%")
-                </foreach>
-            </if>
+        <if test="userNumberList!=null">
+            and
+            <foreach collection="userNumberList" item="userNumber" open="(" close=")" separator=" or">
+                mr.people like concat("%",#{userNumber},"%")
+            </foreach>
+        </if>
 
     </select>
+    <select id="getManagerHoursByMap" resultType="com.howei.pojo.ManagerHours">
+        select * from managerHours
+        <where>
+            <if test="departmentId!=null">
+                and departmentId=#{departmentId}
+            </if>
+            <if test="employeeId!=null">
+                and employeeId=#{employeeId}
+            </if>
+            <if test="monthDay!=null">
+                and monthDay=#{monthDay}
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+        </where>
+    </select>
+    <select id="getManagerHoursListByMap" resultType="com.howei.pojo.ManagerHours">
+        select * from managerHours
+        <where>
+            <if test="departmentId!=null">
+                and departmentId=#{departmentId}
+            </if>
+            <if test="employeeId!=null">
+                and employeeId=#{employeeId}
+            </if>
+            <if test="monthDay!=null">
+                and monthDay=#{monthDay}
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+        </where>
+    </select>
+
 </mapper>
