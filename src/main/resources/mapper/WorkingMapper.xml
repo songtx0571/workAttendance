@@ -28,33 +28,34 @@
         insert into
         managerHours(departmentId,employeeId,monthDay,workStartTime,type)
         value
-        (#{departmentId},#{employeeId},#{monthDay},,#{workStartTime},#{type})
+        (#{departmentId},#{employeeId},#{monthDay},#{workStartTime},#{type})
     </insert>
     <update id="updateManagerHours">
         update managerHours 
         <set>
             <if test="departmentId!=null">
-                departmentId=#{departmentId}
+                departmentId=#{departmentId},
             </if>
             <if test="employeeId!=null">
-                employeeId=#{employeeId}
+                employeeId=#{employeeId},
             </if>
             <if test="monthDay!=null">
-                monthDay=#{monthDay}
+                monthDay=#{monthDay},
             </if>
             <if test="workStartTime!=null">
-                workStartTime=#{workStartTime}
+                workStartTime=#{workStartTime},
             </if>
             <if test="workEndTime!=null">
-                workEndTime=#{workEndTime}
+                workEndTime=#{workEndTime},
             </if>
             <if test="workIngHour!=null">
-                workIngHour=#{workIngHour}
+                workIngHour=#{workIngHour},
             </if>
             <if test="type!=null">
-                type=#{type}
+                type=#{type},
             </if>
         </set>
+        where id =#{id}
         
     </update>
 

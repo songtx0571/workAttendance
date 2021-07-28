@@ -13,10 +13,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
@@ -62,6 +59,18 @@ public class WorkingHoursController {
     public ModelAndView toOverHaulHours() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("overhaulHour");
+        return modelAndView;
+    }
+
+    /**
+     * 管理考勤
+     *
+     * @return
+     */
+    @RequestMapping("/toManageAtten")
+    public ModelAndView toManageAtten() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("manageAttendance");
         return modelAndView;
     }
 
@@ -344,22 +353,27 @@ public class WorkingHoursController {
             paramMap.put("employeeId", employeeId);
             Users userByEmpId = userService.getUserByEmpId(Integer.valueOf(employeeId));
             paramMap.put("departmentId", userByEmpId.getDepartmentId());
-            paramMap.put("departmentId", userByEmpId.getUserNumber());
+//            paramMap.put("departmentId", userByEmpId.getUserNumber());
             paramMap.put("month", month);
             List<ManagerHours> managerHoursList = workingService.getManagerHoursListByMap(paramMap);
-            if (managerHoursList == null || managerHoursList.size() == 0) {
+            /*if (managerHoursList == null || managerHoursList.size() == 0) {
                 continue;
-            }
+            }*/
+
             Map<String, Object> managerHoursMap = new HashMap<>();
             managerHoursMap.put("employeeId", employeeId);
+            managerHoursMap.put("userNumber", userByEmpId.getUserNumber());
+            managerHoursMap.put("userName", userByEmpId.getUserName());
             Map<String, Object> mapDayData = this.defaultMothData(dayCount);//初始化日期
-            for (ManagerHours managerHours : managerHoursList) {
-                String monthDay = managerHours.getMonthDay();
-                String day = monthDay.substring(monthDay.lastIndexOf("-"));
-                Map dayDataMap = (Map) mapDayData.get(day);
-                dayDataMap.put("total", managerHours.getWorkIngHour() == null ? 0 : managerHours.getWorkIngHour());
-                dayDataMap.put("detail", managerHours);
-                mapDayData.put(day, dayDataMap);
+            if (managerHoursList != null && managerHoursList.size() > 0) {
+                for (ManagerHours managerHours : managerHoursList) {
+                    String monthDay = managerHours.getMonthDay();
+                    String day = monthDay.substring(monthDay.lastIndexOf("-")+1);
+                    Map dayDataMap = (Map) mapDayData.get(day);
+                    dayDataMap.put("total", managerHours.getWorkIngHour() == null ? 0 : managerHours.getWorkIngHour());
+                    dayDataMap.put("detail", managerHours);
+                    mapDayData.put(day, dayDataMap);
+                }
             }
             managerHoursMap.put("data", mapDayData);
             resultMapList.add(managerHoursMap);
@@ -374,11 +388,11 @@ public class WorkingHoursController {
      * @param type
      * @return
      */
-    @GetMapping("/postManagerWorkingHours")
+    @PostMapping("/postManagerWorkingHours")
     public Result postWorkTime(
             @RequestParam(required = false) Integer employeeId,
             @RequestParam(required = false) String monthDay,
-            @RequestParam(required = false) Integer type) {
+            @RequestParam(required = false) String type) {
         if (StringUtils.isEmpty(type)) {
             return Result.fail(Type.noParameters);
         }
@@ -407,7 +421,7 @@ public class WorkingHoursController {
             managerHours.setDepartmentId(departmentId);
             managerHours.setEmployeeId(employeeId);
             managerHours.setMonthDay(monthDay);
-            managerHours.setType(1);
+            managerHours.setType(0);
             managerHours.setWorkStartTime(sdf.format(new Date()));
             workingService.insertManagerHours(managerHours);
         } else {
@@ -419,7 +433,7 @@ public class WorkingHoursController {
                 monthDay = sdf.format(new Date());
             }
             paramsMap.put("monthDay", monthDay);
-            paramsMap.put("type", 1);
+            paramsMap.put("type", 0);
             ManagerHours managerHours = workingService.getManagerHoursByMap(paramsMap);
             String workStartTime = managerHours.getWorkStartTime();
             Date parseWorkStartTime = null;
@@ -429,6 +443,7 @@ public class WorkingHoursController {
                 e.printStackTrace();
             }
             Date newDate = new Date();
+            managerHours.setType(1);
             managerHours.setWorkEndTime(sdf.format(newDate));
             Double workingHours = (newDate.getTime() - parseWorkStartTime.getTime()) / 1000 / 3600D;
             BigDecimal bd = new BigDecimal(workingHours);
