@@ -251,8 +251,8 @@
             <if test="employeeId!=null">
                 and employeeId=#{employeeId}
             </if>
-            <if test="monthDay!=null">
-                and monthDay=#{monthDay}
+            <if test="month!=null">
+                and monthDay like concat(#{month},"%")
             </if>
             <if test="type!=null">
                 and type=#{type}
