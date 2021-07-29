@@ -45,45 +45,32 @@ function showTable(month) {
     var height = win - 90;
     layui.use(['table', "form"], function () {
         var table = layui.table;
+        var cols = [{field: 'userNumber', title: '编号', align: 'center', width: 80}
+            , {field: 'userName', title: '员工名称', align: 'center', width: 80}];
+        for (let i = 0; i < 31; i++) {
+            col = {};
+            col.field='';
+            col.title=(i + 1) + '日';
+            col.align= 'center';
+            col.width= '65';
+            col.templet=function(a){
+                var j = i < 9 ? "0"+(i+1): (i + 1)
+                if (a.data[j].detail.workIngHour) {
+                    var content = "'"+a.data[j].detail.workStartTime+"<br>"+a.data[j].detail.workEndTime+"'";
+                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workIngHour+'</span>'
+                } else {
+                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                }
+            };
+            cols.push(col);
+        }
+        cols.push({field: 'workAttendance', title: '考勤天数', align: 'center', width: 80})
+        cols.push({field: 'workingHoursTotal', title: '本月工时', align: 'center', width: 80});
         table.render({
             elem: '#demo'
             , height: height
             , url: path + '/wa/working/getManagerWorkingHours?month='+month //数据接口
-            , cols: [[ //表头
-                {field: 'userNumber', title: '编号', align: 'center', width:80}
-                , {field: 'userName', title: '员工名称', align: 'center', width:80}
-                , {field: '', title: '01日', toolbar: '#barDemo1', align: 'center', width:65}
-                , {field: '', title: '02日', toolbar: '#barDemo2', align: 'center', width:65}
-                , {field: '', title: '03日', toolbar: '#barDemo3', align: 'center', width:65}
-                , {field: '', title: '04日', toolbar: '#barDemo4', align: 'center', width:65}
-                , {field: '', title: '05日', toolbar: '#barDemo5', align: 'center', width:65}
-                , {field: '', title: '06日', toolbar: '#barDemo6', align: 'center', width:65}
-                , {field: '', title: '07日', toolbar: '#barDemo7', align: 'center', width:65}
-                , {field: '', title: '08日', toolbar: '#barDemo8', align: 'center', width:65}
-                , {field: '', title: '09日', toolbar: '#barDemo9', align: 'center', width:65}
-                , {field: '', title: '10日', toolbar: '#barDemo10', align: 'center', width:65}
-                , {field: '', title: '11日', toolbar: '#barDemo11', align: 'center', width:65}
-                , {field: '', title: '12日', toolbar: '#barDemo12', align: 'center', width:65}
-                , {field: '', title: '13日', toolbar: '#barDemo13', align: 'center', width:65}
-                , {field: '', title: '14日', toolbar: '#barDemo14', align: 'center', width:65}
-                , {field: '', title: '15日', toolbar: '#barDemo15', align: 'center', width:65}
-                , {field: '', title: '16日', toolbar: '#barDemo16', align: 'center', width:65}
-                , {field: '', title: '17日', toolbar: '#barDemo17', align: 'center', width:65}
-                , {field: '', title: '18日', toolbar: '#barDemo18', align: 'center', width:65}
-                , {field: '', title: '19日', toolbar: '#barDemo19', align: 'center', width:65}
-                , {field: '', title: '20日', toolbar: '#barDemo20', align: 'center', width:65}
-                , {field: '', title: '21日', toolbar: '#barDemo21', align: 'center', width:65}
-                , {field: '', title: '22日', toolbar: '#barDemo22', align: 'center', width:65}
-                , {field: '', title: '23日', toolbar: '#barDemo23', align: 'center', width:65}
-                , {field: '', title: '24日', toolbar: '#barDemo24', align: 'center', width:65}
-                , {field: '', title: '25日', toolbar: '#barDemo25', align: 'center', width:65}
-                , {field: '', title: '26日', toolbar: '#barDemo26', align: 'center', width:65}
-                , {field: '', title: '27日', toolbar: '#barDemo27', align: 'center', width:65}
-                , {field: '', title: '28日', toolbar: '#barDemo28', align: 'center', width:65}
-                , {field: '', title: '29日', toolbar: '#barDemo29', align: 'center', width:65}
-                , {field: '', title: '30日', toolbar: '#barDemo30', align: 'center', width:65}
-                , {field: '', title: '31日', toolbar: '#barDemo31', align: 'center', width:65}
-            ]]
+            , cols: [cols]
             ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
                 if (res.code == 0 || res.code == 200) {
                     $(".loading").css("display",'none');
@@ -147,6 +134,9 @@ function goWork() {
 
 //显示时间
 function showTime(content, id) {
+    if (content == 0) {
+        content = "无";
+    }
     layui.use('layer', function () {
         var layer = layui.layer;
         layer.tips(content, "#"+id)

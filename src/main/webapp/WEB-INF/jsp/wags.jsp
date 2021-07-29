@@ -325,39 +325,39 @@
             <tr>
                 <td>累计收入额：</td>
                 <td><input type="text" class="incomeTotal" id="incomeTotal" placeholder="0.00"
-                           onchange="twoDecimal('incomeTotal',this.value);"></td>
+                           onchange="twoDecimal('incomeTotal',this.value);" readonly></td>
                 <td>累计费用减免：</td>
                 <td><input type="text" class="deductionOfExpensesTaxTotal" id="deductionOfExpensesTaxTotal"
-                           placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);"></td>
+                           placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>累计专项扣除：</td>
                 <td><input type="text" class="specialDeductionTaxTotal" id="specialDeductionTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('specialDeductionTaxTotal',this.value);"></td>
+                           onchange="twoDecimal('specialDeductionTaxTotal',this.value);" readonly></td>
                 <td>累计附加专项扣除：</td>
                 <td><input type="text" class="specialAdditionalDeductionTaxTotal"
                            id="specialAdditionalDeductionTaxTotal" placeholder="0.00"
-                           onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);"></td>
+                           onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>累计其他扣除：</td>
                 <td><input type="text" class="otherDeductionTaxTotal" id="otherDeductionTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('otherDeductionTaxTotal',this.value);"></td>
+                           onchange="twoDecimal('otherDeductionTaxTotal',this.value);" readonly></td>
                 <td>累计应缴纳税所得额：</td>
                 <td><input type="text" class="taxableIncomeTotal" id="taxableIncomeTotal" placeholder="0.00"
-                           onchange="twoDecimal('taxableIncomeTotal',this.value);"></td>
+                           onchange="twoDecimal('taxableIncomeTotal',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>累计个税：</td>
                 <td><input type="text" class="individualIncomeTaxTotal" id="individualIncomeTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('individualIncomeTaxTotal',this.value);"></td>
+                           onchange="twoDecimal('individualIncomeTaxTotal',this.value);" readonly></td>
                 <td>累计已缴纳个税：</td>
                 <td><input type="text" class="individualIncomeTaxPaidTotal" id="individualIncomeTaxPaidTotal"
-                           placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);"></td>
+                           placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);" readonly></td>
             </tr>
             <tr>
                 <td>累计计税合计：</td>
-                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal"  placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);"></td>
+                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal"  placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);" readonly></td>
             </tr>
             <tr style="line-height: 80px;">
                 <td colspan="4" style="text-align: center;">

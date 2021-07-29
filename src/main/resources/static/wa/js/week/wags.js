@@ -336,22 +336,24 @@ function showWagsList(m) {
             $(".employeeName").val(data.employeeName);//员工姓名
             layui.use('form',function (){
                 var form = layui.form;
-                $.ajax({
-                    type: "GET",
-                    url: path + "/wa/wags/getPostGradeMap",
-                    data: {id: data.wagesPostId},
-                    async: false,
-                    dataType: "json",
-                    success: function (data) {
-                        $("#selPostLevelName").empty();
-                        var option = "<option value='0' >请选择岗位等级</option>";
-                        for (var i = 0; i < data.length; i++) {
-                            option += "<option value='" + data[i].id + "' label='"+data[i].wage+"'>" + data[i].name + "</option>"
+                if(data.wagesPostId){
+                    $.ajax({
+                        type: "GET",
+                        url: path + "/wa/wags/getPostGradeMap",
+                        data: {id: data.wagesPostId},
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            $("#selPostLevelName").empty();
+                            var option = "<option value='0' >请选择岗位等级</option>";
+                            for (var i = 0; i < data.length; i++) {
+                                option += "<option value='" + data[i].id + "' label='"+data[i].wage+"'>" + data[i].name + "</option>"
+                            }
+                            $('#selPostLevelName').html(option);
+                            form.render();//菜单渲染 把内容加载进去
                         }
-                        $('#selPostLevelName').html(option);
-                        form.render();//菜单渲染 把内容加载进去
-                    }
-                });
+                    });
+                }
                 $("#selPostNameHidden").val(data.wagesPostId);
                 $("#selPostName").val(data.wagesPostId);
                 $("#selPostLevelNameHidden").val(data.postGradeId);
@@ -537,7 +539,7 @@ function calculationWags () {
                                     layer.alert("用户信息过期");
                                 } else { //后台错误
                                     $(".loading").css("display",'none');
-                                    layer.alert("操作失败");
+                                    layer.alert(data);
                                 }
                             },error:function (res){
                                 $(".loading").css("display",'none');
