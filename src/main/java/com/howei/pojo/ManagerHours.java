@@ -7,7 +7,7 @@ public class ManagerHours {
     private String monthDay;
     private String workStartTime;
     private String workEndTime;
-    private String workIngHour;
+    private Double workingHour;
     private Integer type;
 
     @Override
@@ -19,7 +19,7 @@ public class ManagerHours {
                 ", monthDay='" + monthDay + '\'' +
                 ", workStartTime='" + workStartTime + '\'' +
                 ", workEndTime='" + workEndTime + '\'' +
-                ", workIngHour='" + workIngHour + '\'' +
+                ", workingHour='" + workingHour + '\'' +
                 ", type=" + type +
                 '}';
     }
@@ -72,12 +72,12 @@ public class ManagerHours {
         this.workEndTime = workEndTime;
     }
 
-    public String getWorkIngHour() {
-        return workIngHour;
+    public Double getWorkingHour() {
+        return workingHour;
     }
 
-    public void setWorkIngHour(String workIngHour) {
-        this.workIngHour = workIngHour;
+    public void setWorkingHour(Double workingHour) {
+        this.workingHour = workingHour;
     }
 
     public Integer getType() {

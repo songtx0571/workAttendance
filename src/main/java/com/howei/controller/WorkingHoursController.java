@@ -107,7 +107,7 @@ public class WorkingHoursController {
         int day = DateFormat.getDaysOfMonth(month + "-01");
         result.setCount(day);
         if (employeeIdList.size() > 0) {
-            for (String emp: employeeIdList) {
+            for (String emp : employeeIdList) {
                 //初始化日期Map
                 Map<String, Object> mapDayData = this.defaultMothData(day);//初始化日期
                 Map<String, Object> map1 = new HashMap<>();
@@ -342,41 +342,41 @@ public class WorkingHoursController {
         //获取此月天数
         int dayCount = DateFormat.getDaysOfMonth(month + "-01");
         result.setCount(dayCount);
-        if (employeeIdList == null || employeeIdList.size() == 0) {
-            result.setData(new ArrayList<>());
-            result.setMsg("无数据");
-            return result;
-        }
         List<Map<String, Object>> resultMapList = new ArrayList<>();
         for (String employeeId : employeeIdList) {
+            int workAttendance = 0;//考勤天数
+            double workingHoursTotal = 0.0;//此月总共工时
             Map paramMap = new HashMap();
             paramMap.put("employeeId", employeeId);
             Users userByEmpId = userService.getUserByEmpId(Integer.valueOf(employeeId));
             paramMap.put("departmentId", userByEmpId.getDepartmentId());
-//            paramMap.put("departmentId", userByEmpId.getUserNumber());
             paramMap.put("month", month);
             List<ManagerHours> managerHoursList = workingService.getManagerHoursListByMap(paramMap);
-            /*if (managerHoursList == null || managerHoursList.size() == 0) {
-                continue;
-            }*/
-
-            Map<String, Object> managerHoursMap = new HashMap<>();
-            managerHoursMap.put("employeeId", employeeId);
-            managerHoursMap.put("userNumber", userByEmpId.getUserNumber());
-            managerHoursMap.put("userName", userByEmpId.getUserName());
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("employeeId", employeeId);
+            resultMap.put("userNumber", userByEmpId.getUserNumber());
+            resultMap.put("userName", userByEmpId.getUserName());
             Map<String, Object> mapDayData = this.defaultMothData(dayCount);//初始化日期
             if (managerHoursList != null && managerHoursList.size() > 0) {
                 for (ManagerHours managerHours : managerHoursList) {
                     String monthDay = managerHours.getMonthDay();
-                    String day = monthDay.substring(monthDay.lastIndexOf("-")+1);
+                    String day = monthDay.substring(monthDay.lastIndexOf("-") + 1);
                     Map dayDataMap = (Map) mapDayData.get(day);
-                    dayDataMap.put("total", managerHours.getWorkIngHour() == null ? 0 : managerHours.getWorkIngHour());
+                    Double workIngHour = managerHours.getWorkingHour() == null ? 0.0 : managerHours.getWorkingHour();
+                    if (managerHours.getType() == 1) {
+                        workAttendance++;
+                        workingHoursTotal += workIngHour;
+                    }
+                    dayDataMap.put("total", workIngHour);
                     dayDataMap.put("detail", managerHours);
                     mapDayData.put(day, dayDataMap);
                 }
             }
-            managerHoursMap.put("data", mapDayData);
-            resultMapList.add(managerHoursMap);
+
+            resultMap.put("workAttendance", workAttendance);
+            resultMap.put("workingHoursTotal", workingHoursTotal);
+            resultMap.put("data", mapDayData);
+            resultMapList.add(resultMap);
         }
         return Result.ok(resultMapList.size(), resultMapList);
 
@@ -416,8 +416,15 @@ public class WorkingHoursController {
             if (monthDay == null) {
                 monthDay = sdf1.format(new Date());
             }
-
-            ManagerHours managerHours = new ManagerHours();
+            Map<String, Object> paramsMap = new HashMap<>();
+            paramsMap.put("employeeId", employeeId);
+            paramsMap.put("monthDay", monthDay);
+            paramsMap.put("type", 0);
+            ManagerHours managerHours = workingService.getManagerHoursByMap(paramsMap);
+            if (managerHours != null) {
+                return Result.fail("已经上班打卡");
+            }
+            managerHours = new ManagerHours();
             managerHours.setDepartmentId(departmentId);
             managerHours.setEmployeeId(employeeId);
             managerHours.setMonthDay(monthDay);
@@ -447,7 +454,7 @@ public class WorkingHoursController {
             managerHours.setWorkEndTime(sdf.format(newDate));
             Double workingHours = (newDate.getTime() - parseWorkStartTime.getTime()) / 1000 / 3600D;
             BigDecimal bd = new BigDecimal(workingHours);
-            managerHours.setWorkIngHour(bd.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            managerHours.setWorkingHour(bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             workingService.updateManagerHours(managerHours);
         }
         return Result.ok();

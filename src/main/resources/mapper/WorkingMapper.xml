@@ -31,7 +31,7 @@
         (#{departmentId},#{employeeId},#{monthDay},#{workStartTime},#{type})
     </insert>
     <update id="updateManagerHours">
-        update managerHours 
+        update managerHours
         <set>
             <if test="departmentId!=null">
                 departmentId=#{departmentId},
@@ -48,15 +48,15 @@
             <if test="workEndTime!=null">
                 workEndTime=#{workEndTime},
             </if>
-            <if test="workIngHour!=null">
-                workIngHour=#{workIngHour},
+            <if test="workingHour!=null">
+                workingHour=#{workingHour},
             </if>
             <if test="type!=null">
                 type=#{type},
             </if>
         </set>
         where id =#{id}
-        
+
     </update>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
@@ -243,19 +243,29 @@
         </where>
     </select>
     <select id="getManagerHoursListByMap" resultType="com.howei.pojo.ManagerHours">
-        select * from managerHours
+        select distinct
+        u.employeeId,
+        m.*, u.userName,
+        u.userNumber
+        FROM
+        managerHours m
+        RIGHT JOIN users u ON u.employeeId = m.employeeId
+        JOIN user_role ur ON ur.userId = u.id
+        JOIN role r ON r.id = ur.roleId
+        JOIN role_authority ra ON ra.roleId = r.id
+        JOIN authority a ON a.id = ra.authorityId
         <where>
             <if test="departmentId!=null">
-                and departmentId=#{departmentId}
+                and u.departmentId=#{departmentId}
             </if>
             <if test="employeeId!=null">
-                and employeeId=#{employeeId}
+                and m.employeeId=#{employeeId}
             </if>
             <if test="month!=null">
-                and monthDay like concat(#{month},"%")
+                and m.monthDay like concat(#{month},"%")
             </if>
             <if test="type!=null">
-                and type=#{type}
+                and m.type=#{type}
             </if>
         </where>
     </select>

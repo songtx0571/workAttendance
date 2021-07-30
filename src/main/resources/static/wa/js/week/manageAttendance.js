@@ -55,9 +55,9 @@ function showTable(month) {
             col.width= '65';
             col.templet=function(a){
                 var j = i < 9 ? "0"+(i+1): (i + 1)
-                if (a.data[j].detail.workIngHour) {
+                if (a.data[j].detail.type==1) {
                     var content = "'"+a.data[j].detail.workStartTime+"<br>"+a.data[j].detail.workEndTime+"'";
-                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workIngHour+'</span>'
+                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workingHour+'</span>'
                 } else {
                     return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
                 }
@@ -125,7 +125,7 @@ function goWork() {
             }
 
         }, error: function (res) {
-            $(".loading").css("display",'none');
+            $(".loading").css("display", 'none');
             layer.alert("今日已打卡完毕");
         }
     });
@@ -139,7 +139,7 @@ function showTime(content, id) {
     }
     layui.use('layer', function () {
         var layer = layui.layer;
-        layer.tips(content, "#"+id)
+        layer.tips(content, "#" + id)
     })
 }
 
