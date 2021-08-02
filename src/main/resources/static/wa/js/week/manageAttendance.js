@@ -38,6 +38,7 @@ function showCycleData() {
     });
 }
 
+
 //查询考勤人列表
 function showTable(month) {
     $(".loading").css("display",'block');
@@ -55,11 +56,22 @@ function showTable(month) {
             col.width= '65';
             col.templet=function(a){
                 var j = i < 9 ? "0"+(i+1): (i + 1)
-                if (a.data[j].detail.type==1) {
-                    var content = "'"+a.data[j].detail.workStartTime+"<br>"+a.data[j].detail.workEndTime+"'";
-                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workingHour+'</span>'
+                if (a.data[j]) {
+                    if (a.data[j].detail instanceof  Object) {
+                        if (a.data[j].detail.type==1) {
+                            var content = "'"+a.data[j].detail.workStartTime+"<br>"+a.data[j].detail.workEndTime+"'";
+                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workingHour+'</span>'
+                        }else if (a.data[j].detail.type==0) {
+                            var content = "'"+a.data[j].detail.workStartTime+"<br>无'";
+                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">0</span>'
+                        } else  {
+                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                        }
+                    } else {
+                        return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                    }
                 } else {
-                    return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                    return '<span style="width: 100%;display: inline-block;" >/</span>'
                 }
             };
             cols.push(col);
@@ -82,9 +94,12 @@ function showTable(month) {
             , done: function (res, curr, count) {
                 objArr = res.data;
                 $("#goWorkBtn").css("display", "revert");
-                if (objArr[0].data[day].detail.type == 1) {
+                console.log(objArr[0].data[day<10?"0"+day:day])
+                if ( objArr[0].data[day<10?"0"+day:day].detail.length==0)	{
+                    $("#goWorkBtn").html("<span onclick=\"goWork()\">上班</span>")
+                } else if (objArr[0].data[day<10?"0"+day:day].detail.type == 1) {
                     $("#goWorkBtn").html("打卡结束");
-                } else if (objArr[0].data[day].detail.type == 0) {
+                } else if (objArr[0].data[day<10?"0"+day:day].detail.type == 0) {
                     $("#goWorkBtn").html("<span onclick=\"goWork()\">下班</span>")
                 } else {
                     $("#goWorkBtn").html("<span onclick=\"goWork()\">上班</span>")
@@ -101,9 +116,9 @@ function showTable(month) {
 function goWork() {
     $(".loading").css("display",'block');
     var data = objArr[0];
-    var monthDay = year + "-" + month + "-" + day;
+    var monthDay = year + "-" + month + "-" + (day<10?"0"+day:day);
     var type = 0;
-    if (data.data[day].detail.type == '0' || data.data[day].detail.type == '1') {
+    if (data.data[day<10?"0"+day:day].detail.type == '0' || data.data[day<10?"0"+day:day].detail.type == '1') {
         type = 1;
     }
     $.ajax({
@@ -115,7 +130,7 @@ function goWork() {
             $(".loading").css("display",'none');
             if (jsr.code == 0 || jsr.code == 200) {
                 showTable($("#test").val());
-                if (objArr[0].data[day].detail.type == 0 || objArr[0].data[day].detail.type == 1) {
+                if (objArr[0].data[day<10?"0"+day:day].detail.type == 0 || objArr[0].data[day<10?"0"+day:day].detail.type == 1) {
                     $("#goWorkBtn").html("打卡结束");
                 } else {
                     $("#goWorkBtn").html("<span onclick=\"goWork()\">下班</span>")
@@ -126,7 +141,7 @@ function goWork() {
 
         }, error: function (res) {
             $(".loading").css("display", 'none');
-            layer.alert("今日已打卡完毕");
+            layer.alert("操作失败");
         }
     });
 

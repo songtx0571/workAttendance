@@ -26,7 +26,6 @@
         }
 
         #goWorkBtn {
-            display: none;
             margin-left: 10px;
             float: left;
             line-height: 38px;
