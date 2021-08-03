@@ -118,7 +118,7 @@ public class AchievementsController {
                 double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 assessment.setNetPerformance(netPerformance);
                 //综合绩效=净绩效+加班*0.01
-                bd = new BigDecimal(netPerformance + jianban * 0.01);
+                bd = new BigDecimal(netPerformance);
                 double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 assessment.setComprehensivePerformance(comprehensivePerformance);
                 if (users == null) {
@@ -380,7 +380,7 @@ public class AchievementsController {
             double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             assessment.setNetPerformance(netPerformance);
             //综合绩效=净绩效+加班*0.01
-            bd = new BigDecimal(netPerformance + jianban * 0.01);
+            bd = new BigDecimal(netPerformance);
             double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             assessment.setComprehensivePerformance(comprehensivePerformance);
         }
