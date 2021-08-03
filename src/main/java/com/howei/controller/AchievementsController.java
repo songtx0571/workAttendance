@@ -112,15 +112,12 @@ public class AchievementsController {
                 //计算综合绩效与净绩效
                 double score1 = assessment.getScore1();
                 double score2 = assessment.getScore2();
-                double jianban = assessment.getJiaban();
                 //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
                 BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
                 double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 assessment.setNetPerformance(netPerformance);
-                //综合绩效=净绩效+加班*0.01
-                bd = new BigDecimal(netPerformance);
-                double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                assessment.setComprehensivePerformance(comprehensivePerformance);
+                //综合绩效=净绩效
+                assessment.setComprehensivePerformance(netPerformance);
                 if (users == null) {
 
                 } else {
@@ -374,15 +371,12 @@ public class AchievementsController {
         if (assessment != null) {
             double score1 = assessment.getScore1();
             double score2 = assessment.getScore2();
-            double jianban = assessment.getJiaban();//加班
             //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
             bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
             double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             assessment.setNetPerformance(netPerformance);
-            //综合绩效=净绩效+加班*0.01
-            bd = new BigDecimal(netPerformance);
-            double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            assessment.setComprehensivePerformance(comprehensivePerformance);
+            //综合绩效=净绩效
+            assessment.setComprehensivePerformance(netPerformance);
         }
         return JSON.toJSONString(assessment);
     }

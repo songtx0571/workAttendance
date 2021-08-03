@@ -275,8 +275,6 @@ public class WagsController {
             bd = new BigDecimal(netPerformance);
             comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         }
-        //绩效系数
-
 
         //绩效工资
         Double meritPay = meritBase * comprehensivePerformance;
