@@ -214,29 +214,29 @@
                            onchange="twoDecimal('positionSalary',this.value);" placeholder="0.00" readonly></td>
             </tr>
             <tr>
+                <td style="color: red;">工资小计：</td>
+                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00"
+                           onchange="twoDecimal('wageSubtotal',this.value);" readonly></td>
                 <td>绩效基数：</td>
                 <td><input type="number" class="performanceBase" id="performanceBase" name="performanceBase"
                            placeholder="0.00" onchange="twoDecimal('performanceBase',this.value);" readonly></td>
+            </tr>
+            <tr>
                 <td>绩效系数：</td>
                 <td><input type="text" class="performanceCoefficient" id="performanceCoefficient"
                            name="performanceCoefficient" placeholder="0.000"
                            onBlur="threeDecimal('performanceCoefficient',this.value);" readonly></td>
-            </tr>
-            <tr>
                 <td>绩效工资：</td>
                 <td><input type="text" class="meritPay" id="meritPay" name="meritPay" placeholder="0.00"
                            onchange="twoDecimal('meritPay',this.value);" readonly></td>
-                <td>其他：</td>
-                <td><input type="text" class="other" id="other" name="other" placeholder="0.00"
-                           onBlur="twoDecimal('other',this.value);sumWages();"></td>
             </tr>
             <tr>
-                <td style="color: red;">工资小计：</td>
-                <td><input type="number" class="wageSubtotal" id="wageSubtotal" name="wageSubtotal" placeholder="0.00"
-                           onchange="twoDecimal('wageSubtotal',this.value);" readonly></td>
                 <td style="color: red;">应发工资：</td>
                 <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00"
                            onchange="twoDecimal('wagesPayable',this.value);" readonly></td>
+                <td>其他：</td>
+                <td><input type="text" class="other" id="other" name="other" placeholder="0.00"
+                           onBlur="twoDecimal('other',this.value);sumWages();"></td>
             </tr>
             <tr>
                 <td>餐补：</td>
@@ -248,9 +248,16 @@
                            onBlur="twoDecimal('highTemperatureSubsidy',this.value);sumWages();"></td>
             </tr>
             <tr>
+
+                <td>加班补贴：</td>
+                <td><input type="text" class="overtimeSubsidy" id="overtimeSubsidy"
+                           name="overtimeSubsidy" placeholder="0.00"
+                           onBlur="twoDecimal('overtimeSubsidy',this.value);sumWages();" readonly></td>
                 <td style="color: red;">补贴小计：</td>
                 <td><input type="number" class="subTotalOfSubsidies" id="subTotalOfSubsidies" name="subTotalOfSubsidies"
                            placeholder="0.00" onchange="twoDecimal('subTotalOfSubsidies',this.value);" readonly></td>
+            </tr>
+            <tr>
                 <td style="color: red;">应发合计：</td>
                 <td><input type="number" class="totalPayable" id="totalPayable" name="totalPayable" placeholder="0.00"
                            onchange="twoDecimal('totalPayable',this.value);" readonly></td>
@@ -308,7 +315,7 @@
                 <td>专项附加扣除：</td>
                 <td><input type="text" class="specialAdditionalDeduction" id="specialAdditionalDeduction"
                            name="specialAdditionalDeduction" placeholder="0.00"
-                           onchange="twoDecimal('specialAdditionalDeduction',this.value);"></td>
+                           onchange="twoDecimal('specialAdditionalDeduction',this.value);sumWages()"></td>
             </tr>
             <tr>
                 <td style="color: dodgerblue;font-weight: bold;">实发工资：</td>
@@ -395,24 +402,24 @@
                 <td><input type="number" class="positionSalary" name="positionSalary" placeholder="0.00" readonly></td>
             </tr>
             <tr>
+                <td>工资小计：</td>
+                <td><input type="number" class="wageSubtotal" name="wageSubtotal" placeholder="0.00" readonly></td>
                 <td>绩效基数：</td>
                 <td><input type="number" class="performanceBase" name="performanceBase" placeholder="0.00" readonly>
                 </td>
+            </tr>
+            <tr>
                 <td>绩效系数：</td>
                 <td><input type="number" class="performanceCoefficient" name="performanceCoefficient"
                            placeholder="0.000" readonly></td>
-            </tr>
-            <tr>
                 <td>绩效工资：</td>
                 <td><input type="number" class="meritPay" name="meritPay" placeholder="0.00" readonly></td>
-                <td>其他：</td>
-                <td><input type="number" class="other" name="other" placeholder="0.00" readonly></td>
             </tr>
             <tr>
-                <td>工资小计：</td>
-                <td><input type="number" class="wageSubtotal" name="wageSubtotal" placeholder="0.00" readonly></td>
                 <td>应发工资：</td>
                 <td><input type="text" class="wagesPayable" name="wagesPayable" placeholder="0.00" readonly></td>
+                <td>其他：</td>
+                <td><input type="number" class="other" name="other" placeholder="0.00" readonly></td>
             </tr>
             <tr>
                 <td>餐补：</td>
@@ -422,9 +429,13 @@
                            readonly></td>
             </tr>
             <tr>
+                <td>加班补贴：</td>
+                <td><input type="text" class="overtimeSubsidy" name="overtimeSubsidy" placeholder="0.00" readonly></td>
                 <td>补贴小计：</td>
                 <td><input type="text" class="subTotalOfSubsidies" name="subTotalOfSubsidies" placeholder="0.00"
                            readonly></td>
+            </tr>
+            <tr>
                 <td>应发合计：</td>
                 <td><input type="text" class="totalPayable" name="totalPayable" placeholder="0.00" readonly></td>
             </tr>

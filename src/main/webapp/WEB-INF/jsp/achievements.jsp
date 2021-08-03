@@ -254,7 +254,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="text-align: center;width: 100%;"><button class="layui-btn" onclick="addAteAchievement()">确定</button><button class="layui-btn" onclick="cancel()">取消</button></td>
+                    <td colspan="2" style="text-align: center;width: 100%;"><button class="layui-btn" onclick="addAteAchievement()">确定</button><button class="layui-btn" onclick="cancel1()">取消</button></td>
                 </tr>
             </table>
         </div>

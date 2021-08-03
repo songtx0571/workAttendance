@@ -245,20 +245,14 @@ public class WagsController {
 
         BigDecimal bd;
         //岗位工资
-        Double basePay = wagesDTO.getBasePay();
+        Double basePay = wagesDTO.getBasePay() == null ? 0D : wagesDTO.getBasePay();
         //职级工资
-        Double positionSalary = wagesDTO.getPositionSalary();
+        Double positionSalary = wagesDTO.getPositionSalary() == null ? 0D : wagesDTO.getPositionSalary();
         //绩效基数
-        Double meritBase = 0D;
-
-        //工资小计=岗位工资+职级工资
-        Double wageSubtotal = 0D;
-        if (basePay.compareTo(0D) != 0 || positionSalary.compareTo(0D) != 0) {
-            meritBase = (basePay + positionSalary) / 2.0;
-            wageSubtotal = basePay + positionSalary;
-        }
-
+        Double meritBase = (basePay + positionSalary) / 2.0;
         resultMap.put("meritBase", new BigDecimal(meritBase).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        //工资小计=岗位工资+职级工资
+        Double wageSubtotal = basePay + positionSalary;
         resultMap.put("wageSubtotal", new BigDecimal(wageSubtotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 
@@ -292,14 +286,14 @@ public class WagsController {
         resultMap.put("meritPay", new BigDecimal(meritPay).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
         //其他
-        Double other = wagesDTO.getOther();
+        Double other = wagesDTO.getOther() == null ? 0D : wagesDTO.getOther();
 
         //餐补
-        Double foodSupplement = wagesDTO.getFoodSupplement();
+        Double foodSupplement = wagesDTO.getFoodSupplement() == null ? 0D : wagesDTO.getFoodSupplement();
         //高温补贴
         Double highTemperatureSubsidy = wagesDTO.getHighTemperatureSubsidy() == null ? 0D : wagesDTO.getHighTemperatureSubsidy();
         //加班补贴
-        Double overtimeSubsidy = wagesDTO.getOvertimeSubsidy();
+        Double overtimeSubsidy = wagesDTO.getOvertimeSubsidy() == null ? 0D : wagesDTO.getOvertimeSubsidy();
         //补贴小计
         Double subTotalOfSubsidies = other + foodSupplement + highTemperatureSubsidy + overtimeSubsidy;
         resultMap.put("subTotalOfSubsidies", new BigDecimal(subTotalOfSubsidies).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -330,7 +324,7 @@ public class WagsController {
         resultMap.put("totalDeduction", new BigDecimal(totalDeduction).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
         //累计附加扣除
-        Double specialAdditionalDeduction = wagesDTO.getSpecialAdditionalDeduction();
+        Double specialAdditionalDeduction = wagesDTO.getSpecialAdditionalDeduction() == null ? 0D : wagesDTO.getSpecialAdditionalDeduction();
 
         //计税合计=应发合计-扣款合计
         Double totalTax = totalPayable - totalDeduction;
@@ -417,15 +411,15 @@ public class WagsController {
             quickCalculationDeduction = 181920.00;
         }
         //累计个税 = 累计应纳税所得额*预扣税率 - 速算扣除数
-        Double accumulatedPersonalIncomeTax = taxableIncomeTotal * taxRate - quickCalculationDeduction;
+        Double individualIncomeTaxTotal = taxableIncomeTotal * taxRate - quickCalculationDeduction;
         //当月个税=累计个税-历史月个调税
-        Double tax = accumulatedPersonalIncomeTax - wagesLastMonth.getIndividualIncomeTaxTotal();
+        Double tax = individualIncomeTaxTotal - wagesLastMonth.getIndividualIncomeTaxTotal();
         tax = (tax < 0) ? 0D : tax;
         //累计已缴纳个税
         Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal();
         resultMap.put("individualIncomeTaxPaidTotal", new BigDecimal(individualIncomeTaxPaidTotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
         //累计个税
-        resultMap.put("accumulatedPersonalIncomeTax", new BigDecimal(accumulatedPersonalIncomeTax).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        resultMap.put("individualIncomeTaxTotal", new BigDecimal(individualIncomeTaxTotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
         //个税
         resultMap.put("individualTaxAdjustment", new BigDecimal(tax).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());

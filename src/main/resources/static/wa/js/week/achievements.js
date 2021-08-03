@@ -4,6 +4,7 @@ var classUserNumber = "";
 var date = new Date();
 var year = date.getFullYear();
 var month = date.getMonth() + 1;
+var indexAdd = 0;
 $(function(){
     //显示考核日期
     showCycleData();
@@ -426,7 +427,7 @@ function updAchievement() {
 function showAddateAchievement() {
     layui.use('layer', function(){ //独立版的layer无需执行这一句
         var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
-        layer.open({
+        indexAdd = layer.open({
             type: 1
             ,id: 'addateAchievement' //防止重复弹出
             ,content: $(".addateAchievement")
@@ -460,7 +461,7 @@ function addAteAchievement() {
         success: function (data) {
             if (data == "SUCCESS") {
                 layer.alert("添加成功");
-                layer.closeAll();
+                layer.close(indexAdd);
                 showAchievement($("#test4").val());
                 showAchievementsList($("#test3").val());
                 clearVal();
@@ -849,4 +850,8 @@ function cancel() {
     layer.closeAll();
     showAchievementsList($("#test3").val());
     clearVal();
+}
+//取消添加考核项
+function cancel1 () {
+    layer.close(indexAdd);
 }

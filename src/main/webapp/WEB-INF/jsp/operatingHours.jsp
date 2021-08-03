@@ -66,7 +66,6 @@
         }
         .div table tbody {
             overflow-y: auto;
-            height: 400px;
         }
         .div table tbody::-webkit-scrollbar{
             display: none;
