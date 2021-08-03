@@ -256,7 +256,7 @@ public class WagsController {
         resultMap.put("wageSubtotal", new BigDecimal(wageSubtotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 
-        paramMap.put("cycle", lastYearMonth + "-01");
+        paramMap.put("cycle", lastYearMonth );
         Assessment assessment = behaviorService.getAssessmentByEmployeeId(paramMap);
         Wages wagesLastMonth = wagsService.getWagesByMap(paramMap);
         if (wagesLastMonth == null || !date.substring(0, 4).equals(lastYearMonth.substring(0, 4))) {
@@ -279,10 +279,7 @@ public class WagsController {
 
 
         //绩效工资
-        Double meritPay = 0D;
-        if (meritBase.compareTo(0D) != 0) {
-            meritPay = meritBase * comprehensivePerformance;
-        }
+        Double meritPay = meritBase * comprehensivePerformance;
         resultMap.put("meritPay", new BigDecimal(meritPay).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
         //其他
@@ -550,10 +547,10 @@ public class WagsController {
                     foodSupplement = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setFoodSupplement(foodSupplement);
 
-                    //加班补贴=  加班 * 0.01 * 21.875
-                    wages.setOvertimeSubsidy(jianban * 0.01 * 30D);
+                    //加班补贴=  加班 * 30
+                    wages.setOvertimeSubsidy(jianban * 30D);
                     //补贴小计=高温补贴+餐补 +其他+加班补贴
-                    bd = new BigDecimal(wages.getHighTemperatureSubsidy() + foodSupplement + wages.getOther());
+                    bd = new BigDecimal(wages.getHighTemperatureSubsidy() + foodSupplement + wages.getOther()+(jianban * 30D));
                     Double subTotalOfSubsidies = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
                     //应发合计=应发工资+补贴小计
@@ -616,8 +613,6 @@ public class WagsController {
                         if ("否".equals(wages.getLaowupaiqian())) {
                             CommunicationFeeTotal += 300;
                         }
-                        System.out.println(CommunicationFeeTotal);
-//                        System.out.println(totalTaxTotal + totalTax);
                         //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
                         taxableIncomeTotal = wages.getTotalTaxTotal() - CommunicationFeeTotal - wages.getSpecialAdditionalDeductionTaxTotal() - deductionOfExpensesTaxTotal;
                     }
