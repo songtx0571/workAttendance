@@ -66,14 +66,15 @@
         insert into wages (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
         totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
         individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId,meritBase,incomeTotal,deductionOfExpensesTaxTotal,specialDeductionTaxTotal,
-        specialAdditionalDeductionTaxTotal,otherDeductionTaxTotal,taxableIncomeTotal,individualIncomeTaxTotal,individualIncomeTaxPaidTotal)
+        specialAdditionalDeductionTaxTotal,otherDeductionTaxTotal,taxableIncomeTotal,individualIncomeTaxTotal,individualIncomeTaxPaidTotal,overtimeSubsidy)
         values
         (#{wages.employeeId},#{wages.basePay},#{wages.skillPay},#{wages.positionSalary},#{wages.seniorityWage},#{wages.other},#{wages.meritPay}
         ,#{wages.wageSubtotal},#{wages.performanceCoefficient},#{wages.wagesPayable},#{wages.subTotalOfSubsidies},#{wages.totalPayable},#{wages.endowmentInsurance}
         ,#{wages.unemploymentBenefits},#{wages.medicalInsurance},#{wages.accumulationFund},#{wages.otherDeductions},#{wages.unionFees},#{wages.totalTax}
         ,#{wages.totalDeduction},#{wages.sixSpecialDeductions},#{wages.individualTaxAdjustment},#{wages.netSalary},#{wages.remark},#{wages.date},#{wages.created},
         #{wages.wagesPostId},#{wages.postGradeId},#{wages.meritBase},#{wages.incomeTotal},#{wages.deductionOfExpensesTaxTotal},#{wages.specialDeductionTaxTotal},
-        #{wages.specialAdditionalDeductionTaxTotal},#{wages.otherDeductionTaxTotal},#{wages.taxableIncomeTotal},#{wages.individualIncomeTaxTotal},#{wages.individualIncomeTaxPaidTotal}
+        #{wages.specialAdditionalDeductionTaxTotal},#{wages.otherDeductionTaxTotal},#{wages.taxableIncomeTotal},#{wages.individualIncomeTaxTotal},
+        #{wages.individualIncomeTaxPaidTotal},#{wages.overtimeSubsidy}
         )
     </insert>
 
@@ -193,6 +194,9 @@
             </if>
             <if test="totalTaxTotal!=null">
                 totalTaxTotal=#{totalTaxTotal},
+            </if>
+            <if test="overtimeSubsidy!=null">
+                overtimeSubsidy=#{overtimeSubsidy},
             </if>
         </set>
         where 1=1 and id=#{id} and date=#{date}

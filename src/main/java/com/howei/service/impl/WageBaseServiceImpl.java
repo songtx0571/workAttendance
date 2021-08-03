@@ -105,4 +105,5 @@ public class WageBaseServiceImpl implements WageBaseService {
     public WagesPost getWagesPostById(Integer wagesPostId) {
         return wageBaseMapper.getWagesPostById(wagesPostId);
     }
+
 }
