@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PerformanceService {
-    List<Assessment> findAllAcc(Map map);
+    List<Performance> findAllAcc(Map map);
 
     int insert(Performance performance);
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 public interface PerformanceMapper {
-    List<Assessment> findAllAcc(Map map);
+    List<Performance> findAllAcc(Map map);
 
     int insert(Performance performance);
 

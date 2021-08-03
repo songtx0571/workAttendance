@@ -151,11 +151,9 @@ public class AchievementsController {
         Map map = new HashMap();
         map.put("employeeId", employeeId);
         if (cycle != null) {
-            if (!cycle.equals("请选择")) {
-                map.put("cycle", cycle);
-            }
+            map.put("cycle", cycle);
         }
-        List<Assessment> list = performanceService.findAllAcc(map);
+        List<Performance> list = performanceService.findAllAcc(map);
         return JSON.toJSONString(list);
     }
 

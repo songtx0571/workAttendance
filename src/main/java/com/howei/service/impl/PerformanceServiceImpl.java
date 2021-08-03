@@ -17,7 +17,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     PerformanceMapper performanceMapper;
 
     @Override
-    public List<Assessment> findAllAcc(Map map) {
+    public List<Performance> findAllAcc(Map map) {
         return performanceMapper.findAllAcc(map);
     }
 

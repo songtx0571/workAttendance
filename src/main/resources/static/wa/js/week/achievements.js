@@ -120,9 +120,8 @@ function showAchievementsList(cycle){
                 {field: 'userNumber', title: '编号', width:80, sort: true}
                 ,{field: 'name', title: '姓名', width:100}
                 ,{field: 'score2', title: '业绩合计', event: 'setSign', style:'cursor: pointer;color:red;', sort: true,align:'center'}
-                ,{field: 'zhiban', title: '值班天数', sort: true,hide:true}
-                ,{field: 'kaoqin', title: '考勤天数', sort: true}// 1 在职
-                ,{field: 'netPerformance', title: '净绩效', sort: true}
+                ,{field: 'kaoqin', title: '考勤天数', sort: true}
+                ,{field: 'jiaban', title: '加班小时数', sort: true}
                 ,{field: 'comprehensivePerformance', title: '综合绩效', sort: true}
                 ,{fixed: '', title:'操作', toolbar: '#barDemo11',align:'center', width:250}
             ]]

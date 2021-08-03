@@ -3,10 +3,9 @@
 <mapper namespace="com.howei.mapper.PerformanceMapper" >
     <select id="findAllAcc" parameterType="java.util.HashMap" resultType="com.howei.pojo.Performance">
         select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance  where employeeId=#{employeeId}
-        <if test="cycle!='' and cycle!=null">
+        <if test="cycle!=null">
             and cycle=#{cycle}
         </if>
-        limit 0,10
     </select>
     <select id="findPeAccByM" resultType="com.howei.pojo.Performance">
         select a.id,a.workTasks,a.access,a.weights,a.score,a.cycle,a.employeeId,IFNULL(a.detail,"无") AS detail from performance a
