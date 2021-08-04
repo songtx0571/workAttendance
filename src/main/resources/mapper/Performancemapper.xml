@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.howei.mapper.PerformanceMapper" >
+<mapper namespace="com.howei.mapper.PerformanceMapper">
     <select id="findAllAcc" parameterType="java.util.HashMap" resultType="com.howei.pojo.Performance">
-        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance  where employeeId=#{employeeId}
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail,isActive from performance
+        where employeeId=#{employeeId}
         <if test="cycle!=null">
             and cycle=#{cycle}
         </if>
+        <if test="isActive!=null">
+            and isActive=#{isActive}
+        </if>
     </select>
     <select id="findPeAccByM" resultType="com.howei.pojo.Performance">
-        select a.id,a.workTasks,a.access,a.weights,a.score,a.cycle,a.employeeId,IFNULL(a.detail,"无") AS detail from performance a
-        RIGHT JOIN (SELECT a.id,a.UserName FROM employee a WHERE a.manager=#{performance.manager}) d ON a.employeeId=d.id
+        select a.id,a.workTasks,a.access,a.weights,a.score,a.cycle,a.employeeId,IFNULL(a.detail,"无") AS detail from
+        performance a
+        RIGHT JOIN (SELECT a.id,a.UserName FROM employee a WHERE a.manager=#{performance.manager}) d ON
+        a.employeeId=d.id
         where a.employeeId=#{performance.employeeId}
         <if test="performance.cycle!='' and performance.cycle!=null">
             and a.cycle=#{performance.cycle}
@@ -18,7 +24,7 @@
     </select>
 
     <select id="getPeAcc" parameterType="java.lang.String" resultType="com.howei.pojo.Performance">
-        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail,employeeId from performance  where id=#{id}
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail,employeeId from performance  where id=#{id} and isActive = 0
     </select>
 
     <select id="selectCycle" resultType="java.lang.String">
@@ -29,11 +35,11 @@
         select * from performance where id=#{param1}
     </select>
 
-    <delete id="deletePeAccById" parameterType="java.lang.String" >
+    <delete id="deletePeAccById" parameterType="java.lang.String">
         delete from performance where id=#{id}
     </delete>
 
-    <insert id="insert" >
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert  into performance (workTasks,access,weights,cycle,employeeId,cycle2,detail)
         value (#{workTasks},#{access},#{weights},#{cycle},#{employeeId},concat(#{cycle},'-01'),#{detail})
     </insert>
@@ -78,9 +84,13 @@
             jiabanxishu=#{param1},canbuxishu=#{param2}
         </set>
     </update>
+    <update id="updateIsActiveByIds">
+        update performance set isActive = #{isActive} where find_in_set(id,#{ids})
+    </update>
 
     <select id="findPeAcc" resultType="com.howei.pojo.Performance">
-        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance  where employeeId=#{employeeId}
+        select id,workTasks,access,weights,score,cycle,employeeId,IFNULL(detail,"无") AS detail from performance where
+        employeeId=#{employeeId}
         <if test="cycle!='' and cycle!=null">
             and cycle=#{cycle}
         </if>

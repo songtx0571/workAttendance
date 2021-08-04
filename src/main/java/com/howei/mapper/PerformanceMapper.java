@@ -1,6 +1,5 @@
 package com.howei.mapper;
 
-import com.howei.pojo.Assessment;
 import com.howei.pojo.Performance;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -23,4 +22,6 @@ public interface PerformanceMapper {
     void deletePeAccById(@Param("id") String id);
 
     List<Performance> findPeAcc(Performance performance);
+
+    int updateIsActiveByIds(String ids, boolean isActive);
 }

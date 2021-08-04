@@ -10,6 +10,39 @@ public class Performance {
     private String detail;
     private String manager;
     private int employeeId;
+    private Boolean isActive;
+
+    @Override
+    public String toString() {
+        return "Performance{" +
+                "id=" + id +
+                ", workTasks='" + workTasks + '\'' +
+                ", access='" + access + '\'' +
+                ", weights='" + weights + '\'' +
+                ", score='" + score + '\'' +
+                ", cycle='" + cycle + '\'' +
+                ", detail='" + detail + '\'' +
+                ", manager='" + manager + '\'' +
+                ", employeeId=" + employeeId +
+                ", isActive=" + isActive +
+                '}';
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
 
     public String getManager() {
         return manager;

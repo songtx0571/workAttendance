@@ -8,11 +8,13 @@ import com.howei.service.EmployeeService;
 import com.howei.service.PerformanceService;
 import com.howei.service.WorkingService;
 import com.howei.util.*;
+import org.apache.catalina.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +31,6 @@ import static org.apache.shiro.authz.annotation.Logical.OR;
  */
 @Controller
 @RequestMapping("/wa/achievements")
-@CrossOrigin(origins = "http://test.hopeop.com:80", allowCredentials = "true")
 public class AchievementsController {
 
     @Autowired
@@ -145,16 +146,22 @@ public class AchievementsController {
      */
     @RequestMapping("/findPeAcc")
     @ResponseBody
-    public String findPeAcc(HttpServletRequest request) {
+    public Result findPeAcc(HttpServletRequest request) {
+
         String employeeId = request.getParameter("employeeId");
         String cycle = request.getParameter("cycle");
+        String isActive = request.getParameter("isActive");
         Map map = new HashMap();
         map.put("employeeId", employeeId);
         if (cycle != null) {
             map.put("cycle", cycle);
         }
+        if (isActive != null) {
+            map.put("isActive", isActive);
+        }
         List<Performance> list = performanceService.findAllAcc(map);
-        return JSON.toJSONString(list);
+
+        return Result.ok(list.size(), list);
     }
 
     /**
@@ -179,13 +186,36 @@ public class AchievementsController {
      */
     @RequestMapping(value = "/insertPeAcc", method = {RequestMethod.POST})
     @ResponseBody
-    public String insertPeAcc(@RequestBody Performance performance) {
-        performanceService.insert(performance);
-        if (performance.getId() >= 0) {
-            return JSON.toJSONString(Type.SUCCESS);
+    public Result insertPeAcc(@RequestBody Performance performance) {
+        Subject subject = SecurityUtils.getSubject();
+        Users user = (Users) subject.getPrincipal();
+        if (user == null) {
+            Result.fail(Type.noUser);
         }
-        return JSON.toJSONString(Type.CANCEL);
+        performanceService.insert(performance);
+        return Result.ok();
     }
+
+    /**
+     * 批量修改,修改isActive字段
+     *
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/batchUpdatePeAcc", method = {RequestMethod.POST})
+    @ResponseBody
+    public Result batchInsertPeAcc(@RequestParam String ids, @RequestParam boolean isActive) {
+        Subject subject = SecurityUtils.getSubject();
+        Users user = (Users) subject.getPrincipal();
+        if (user == null) {
+            Result.fail(Type.noUser);
+        }
+        int count = performanceService.updateIsActiveByIds(ids,isActive);
+
+
+        return Result.ok();
+    }
+
 
     /**
      * 修改业绩
@@ -194,6 +224,7 @@ public class AchievementsController {
      */
     @RequestMapping(value = "/updatePeAcc")
     @ResponseBody
+
     public String updatePeAcc(@RequestBody String obj) {
         if (obj != null) {
             List list = (List) JSONArray.parse(obj);
@@ -245,14 +276,12 @@ public class AchievementsController {
     @ResponseBody
     public String deletePeAcc(HttpServletRequest request) {
         String id = request.getParameter("id");
-        if (id != null) {
-            performanceService.deletePeAccById(id);
-            Performance performance = performanceService.getPeAcc(id);
-            if (performance == null || performance.getId() <= 0) {
-                return JSON.toJSONString(Type.SUCCESS);
-            }
+        if (StringUtils.isEmpty(id)) {
+            return JSON.toJSONString(Type.ERROR);
         }
-        return JSON.toJSONString(Type.ERROR);
+        performanceService.deletePeAccById(id);
+        Performance performance = performanceService.getPeAcc(id);
+        return JSON.toJSONString(Type.SUCCESS);
     }
 
     /**

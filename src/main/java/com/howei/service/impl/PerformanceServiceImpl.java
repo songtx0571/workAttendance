@@ -1,7 +1,6 @@
 package com.howei.service.impl;
 
 import com.howei.mapper.PerformanceMapper;
-import com.howei.pojo.Assessment;
 import com.howei.pojo.Performance;
 import com.howei.service.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +48,10 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Override
     public List<Performance> findPeAcc(Performance performance) {
         return performanceMapper.findPeAcc(performance);
+    }
+
+    @Override
+    public int updateIsActiveByIds(String ids, boolean isActive) {
+        return performanceMapper.updateIsActiveByIds(ids, isActive);
     }
 }
