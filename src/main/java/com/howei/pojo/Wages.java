@@ -58,6 +58,7 @@ public class Wages implements Serializable {
     private String isChanged;//人事异动
     private String postGradeName;//岗位等级名称
     private String wagesPostName;//薪资岗位名称
+    private Double jiaban;//加班工时
 
     public static Wages initTotalValue(Integer employeeId) {
         Wages wages = new Wages();
@@ -127,7 +128,16 @@ public class Wages implements Serializable {
                 ", isChanged='" + isChanged + '\'' +
                 ", postGradeName='" + postGradeName + '\'' +
                 ", wagesPostName='" + wagesPostName + '\'' +
+                ", jiaban=" + jiaban +
                 '}';
+    }
+
+    public Double getJiaban() {
+        return jiaban;
+    }
+
+    public void setJiaban(Double jiaban) {
+        this.jiaban = jiaban;
     }
 
     public Integer getId() {

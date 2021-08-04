@@ -256,7 +256,7 @@ public class WagsController {
         resultMap.put("wageSubtotal", new BigDecimal(wageSubtotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 
-        paramMap.put("cycle", lastYearMonth );
+        paramMap.put("cycle", lastYearMonth);
         Assessment assessment = behaviorService.getAssessmentByEmployeeId(paramMap);
         Wages wagesLastMonth = wagsService.getWagesByMap(paramMap);
         if (wagesLastMonth == null || !date.substring(0, 4).equals(lastYearMonth.substring(0, 4))) {
@@ -527,6 +527,7 @@ public class WagsController {
                         //餐补=20*考勤
                         foodSupplement = 20 * kapqin;
                     }
+                    wages.setJiaban(jianban);
                     //绩效系数
                     wages.setPerformanceCoefficient(comprehensivePerformance);
 
@@ -548,7 +549,7 @@ public class WagsController {
                     //加班补贴=  加班 * 30
                     wages.setOvertimeSubsidy(jianban * 30D);
                     //补贴小计=高温补贴+餐补 +其他+加班补贴
-                    bd = new BigDecimal(wages.getHighTemperatureSubsidy() + foodSupplement + wages.getOther()+(jianban * 30D));
+                    bd = new BigDecimal(wages.getHighTemperatureSubsidy() + foodSupplement + wages.getOther() + (jianban * 30D));
                     Double subTotalOfSubsidies = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setSubTotalOfSubsidies(subTotalOfSubsidies);
                     //应发合计=应发工资+补贴小计
