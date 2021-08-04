@@ -430,7 +430,6 @@ function updAchievement() {
             obj[i].weights = arrAll[i][5];
         }
     }
-    console.log(obj)
     $.ajax({
         url: path + '/wa/achievements/updatePeAcc',//请求地址
         dataType: "json",//数据格式
@@ -479,15 +478,18 @@ function showAddateAchievement() {
 
     });
 
+    showAchievementLayuiTable();
+}
 
-
-
+function showAchievementLayuiTable () {
     var id = $("#employeeIdHidden").val();
+    var win = $(window).height();
+    var height = win - 200;
     layui.use(['table', 'form'], function () {
         var table = layui.table;
         table.render({
             elem: '#demoAdd'
-            , height: 500
+            , height: height
             , url: path + '/wa/achievements/findPeAcc?cycle=' + $("#test5").val() + '&employeeId=' + id + '&isActive=1' //数据接口
             , page: true
             , limit: 20
@@ -528,7 +530,7 @@ function showAddateAchievement() {
                                 data: {"id": data.id},
                                 success: function (data) {
                                     if (data.code == 0 || data.code == 200) {
-                                        showAchievement($("#test4").val());
+                                        showAchievementLayuiTable();
                                     } else {
                                         layer.alert(data.msg);
                                     }
