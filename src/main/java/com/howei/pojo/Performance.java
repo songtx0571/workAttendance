@@ -78,14 +78,6 @@ public class Performance {
         return this;
     }
 
-    public int getemployeeId() {
-        return employeeId;
-    }
-
-    public Performance setemployeeId(int employeeId) {
-        this.employeeId = employeeId;
-        return this;
-    }
 
     public int getId() {
         return id;

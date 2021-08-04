@@ -469,12 +469,12 @@ public class AchievementsController {
     public String copyPeAcc(Integer employeeId, String cycle, String lastcycle) {
         //判斷複製周期是否存在10條記錄
         Performance performance = new Performance();
-        performance.setemployeeId(employeeId);
+        performance.setEmployeeId(employeeId);
         performance.setCycle(lastcycle);
         List<Performance> p = performanceService.findPeAcc(performance);
         if (p == null || p.size() == 0) {
             performance = new Performance();
-            performance.setemployeeId(employeeId);
+            performance.setEmployeeId(employeeId);
             performance.setCycle(cycle);
             p = performanceService.findPeAcc(performance);
             for (int i = 0; i < p.size(); i++) {
