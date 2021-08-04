@@ -49,15 +49,15 @@
 
     <insert id="copyToThisMonthWags" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
         insert into wages
-        (employeeId,basePay,skillPay,positionSalary,seniorityWage,other,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
+        (employeeId,basePay,skillPay,positionSalary,seniorityWage,meritPay,wageSubtotal,performanceCoefficient,wagesPayable,subTotalOfSubsidies,
         totalPayable,endowmentInsurance,unemploymentBenefits,medicalInsurance,accumulationFund,otherDeductions,unionFees,totalTax,totalDeduction,sixSpecialDeductions,
-        individualTaxAdjustment,netSalary,remark,`date`,created, wagesPostId,postGradeId,specialAdditionalDeduction)
+        individualTaxAdjustment,netSalary,`date`,created, wagesPostId,postGradeId,specialAdditionalDeduction)
         values
         <foreach collection="list" item="item" separator="," index="index">
-            (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.other},#{item.meritPay}
+            (#{item.employeeId},#{item.basePay},#{item.skillPay},#{item.positionSalary},#{item.seniorityWage},#{item.meritPay}
             ,#{item.wageSubtotal},#{item.performanceCoefficient},#{item.wagesPayable},#{item.subTotalOfSubsidies},#{item.totalPayable},#{item.endowmentInsurance}
             ,#{item.unemploymentBenefits},#{item.medicalInsurance},#{item.accumulationFund},#{item.otherDeductions},#{item.unionFees},#{item.totalTax}
-            ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.remark},#{item.date},#{item.created}
+            ,#{item.totalDeduction},#{item.sixSpecialDeductions},#{item.individualTaxAdjustment},#{item.netSalary},#{item.date},#{item.created}
             ,#{item.wagesPostId},#{item.postGradeId},#{item.specialAdditionalDeduction})
         </foreach>
     </insert>

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.apache.shiro.authz.annotation.Logical.OR;
 
@@ -151,6 +152,9 @@ public class AchievementsController {
         String employeeId = request.getParameter("employeeId");
         String cycle = request.getParameter("cycle");
         String isActive = request.getParameter("isActive");
+        String searchWord = request.getParameter("searchWord");
+        String page = request.getParameter("page");
+        String limit = request.getParameter("limit");
         Map map = new HashMap();
         map.put("employeeId", employeeId);
         if (cycle != null) {
@@ -159,9 +163,18 @@ public class AchievementsController {
         if (isActive != null) {
             map.put("isActive", isActive);
         }
+        if (!StringUtils.isEmpty(searchWord)) {
+            map.put("searchWord", searchWord);
+        }
         List<Performance> list = performanceService.findAllAcc(map);
-
-        return Result.ok(list.size(), list);
+        if (list == null) {
+            return Result.ok(0, new ArrayList<>());
+        }
+        int count = list.size();
+        if (page != null && limit != null) {
+            list = list.stream().skip(Integer.parseInt(page)-1).limit(Integer.parseInt(limit)).collect(Collectors.toList());
+        }
+        return Result.ok(count, list);
     }
 
     /**
@@ -210,8 +223,7 @@ public class AchievementsController {
         if (user == null) {
             Result.fail(Type.noUser);
         }
-        int count = performanceService.updateIsActiveByIds(ids,isActive);
-
+        int count = performanceService.updateIsActiveByIds(ids, isActive);
 
         return Result.ok();
     }
@@ -274,14 +286,13 @@ public class AchievementsController {
      */
     @RequestMapping(value = "/deletePeAcc")
     @ResponseBody
-    public String deletePeAcc(HttpServletRequest request) {
+    public Result deletePeAcc(HttpServletRequest request) {
         String id = request.getParameter("id");
         if (StringUtils.isEmpty(id)) {
-            return JSON.toJSONString(Type.ERROR);
+            return Result.fail(Type.noParameters);
         }
         performanceService.deletePeAccById(id);
-        Performance performance = performanceService.getPeAcc(id);
-        return JSON.toJSONString(Type.SUCCESS);
+        return Result.ok();
     }
 
     /**
@@ -304,6 +315,7 @@ public class AchievementsController {
     @ResponseBody
     @RequestMapping(value = "/updateBehavior", method = {RequestMethod.POST})
     public String insertBe(@RequestBody Behavior behavior) {
+        int id = behavior.getId();
         try {
             behaviorService.update(behavior);
         } catch (Exception e) {
@@ -321,7 +333,7 @@ public class AchievementsController {
      */
     @ResponseBody
     @RequestMapping("/findBehavior")
-    public String findBe(HttpServletRequest request) {
+    public Result findBe(HttpServletRequest request) {
         String cycle = request.getParameter("cycle");
         String employeeId = request.getParameter("employeeId");
         Behavior behavior = new Behavior();
@@ -332,9 +344,7 @@ public class AchievementsController {
             behavior.setCycle(cycle);
         }
         Behavior behaviorResult = behaviorService.findAllBe(behavior);
-        List<Behavior> list = new ArrayList<>();
-        list.add(behaviorResult);
-        return JSON.toJSONString(list);
+        return Result.ok(1, behaviorResult);
     }
 
     /**

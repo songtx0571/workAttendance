@@ -10,6 +10,9 @@
         <if test="isActive!=null">
             and isActive=#{isActive}
         </if>
+        <if test="searchWord!=null">
+            workTasks like concat("%",#{search},"%")
+        </if>
     </select>
     <select id="findPeAccByM" resultType="com.howei.pojo.Performance">
         select a.id,a.workTasks,a.access,a.weights,a.score,a.cycle,a.employeeId,IFNULL(a.detail,"无") AS detail from
