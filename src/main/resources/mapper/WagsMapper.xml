@@ -198,10 +198,6 @@
             <if test="overtimeSubsidy!=null">
                 overtimeSubsidy=#{overtimeSubsidy},
             </if>
-
-            <if test="jiaban!=null">
-                jiaban=#{jiaban},
-            </if>
         </set>
         where 1=1 and id=#{id} and date=#{date}
     </update>
