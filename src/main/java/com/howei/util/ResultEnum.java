@@ -8,9 +8,10 @@ public enum ResultEnum {
     FAIL(203, "操作失败"),
     ADD_MANAGER_ERROR(204, "无绩效管理人,请添加绩效管理人后再申请"),
     RESIGNIN(205, "操作失败"),
-    HAVE_RECORD(206, "存在相同记录"),
+    HAVE_RECORD(206, "记录已经存在"),
     NO_RECORD(207, "无记录"),
     NO_PARAMETERS(208, "缺少参数"),
+    HAVE_NO_RECORD(209, "记录不存在"),
     SERVICE_EXCEPTION(500, "服务器异常");
 
     private Integer code;

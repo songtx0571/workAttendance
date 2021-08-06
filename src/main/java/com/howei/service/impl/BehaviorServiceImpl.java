@@ -41,56 +41,54 @@ public class BehaviorServiceImpl implements BehaviorService {
     }
 
     @Override
-    public Behavior findAllBe(Behavior behavior) {
-        //获取学习能力:考试记录
-        Behavior Behavior = behaviorMapper.findAll(behavior);
-        if(Behavior==null){
+    public Behavior findAllBe(Behavior behaviorQO) {
+        Behavior behavior = behaviorMapper.findAll(behaviorQO);
+        if (behavior == null) {
             return null;
         }
         //获取考勤情况:请假记录
-        Map map=new HashMap();
-        System.out.println("behavior:::"+behavior);
-        System.out.println(Behavior);
-        map.put("employeeId",Behavior.getEmployeeId());
-        map.put("startTime",Behavior.getCycle()+"-01");
-        List<LeaveData> list=leaveService.getLeaveDataToAchievements(map);
-        if(list!=null&&list.size()>0){
-            for (int i=0;i<list.size();i++){
-                LeaveData leaveData=list.get(i);
-                Integer leaveCount=leaveData.getLeaveCount();
-                Integer numValue=leaveData.getNumValue();
-                double leaveResult=numValue*leaveCount;//考核分
+        Map map = new HashMap();
+        map.put("employeeId", behavior.getEmployeeId());
+        map.put("startTime", behavior.getCycle() + "-01");
+        List<LeaveData> leaveDataList = leaveService.getLeaveDataToAchievements(map);
+        if (leaveDataList != null && leaveDataList.size() > 0) {
+            for (int i = 0; i < leaveDataList.size(); i++) {
+                LeaveData leaveData = leaveDataList.get(i);
+                Integer leaveCount = leaveData.getLeaveCount();
+                Integer numValue = leaveData.getNumValue();
+                double leaveResult = numValue * leaveCount;//考核分
                 leaveData.setLeaveResult(leaveResult);
-                int leaveUnit=leaveData.getLeaveUnit();//请假类型单位
-                if(leaveUnit==1){
+                int leaveUnit = leaveData.getLeaveUnit();//请假类型单位
+                if (leaveUnit == 1) {
                     leaveData.setLeaveUnitName("天");
-                }else if(leaveUnit==2){
+                } else if (leaveUnit == 2) {
                     leaveData.setLeaveUnitName("次");
-                }else if(leaveUnit==3){
+                } else if (leaveUnit == 3) {
                     leaveData.setLeaveUnitName("月");
-                }else if(leaveUnit==4){
+                } else if (leaveUnit == 4) {
                     leaveData.setLeaveUnitName("小时");
                 }
             }
         }
-        Behavior.setLeaveData(list);
+        behavior.setLeaveData(leaveDataList);
         //获取工作业绩考勤
-        List<Achievement> achievements = usersmapper.findAchievementsByUserName1(behavior);
+        List<Achievement> achievements = usersmapper.findAchievementsByUserName1(behaviorQO);
+        System.out.println("achievements::"+achievements);
         for (Achievement achievement : achievements) {
-            if (achievement.getWeek() == 1 && Behavior.getWeek1() != "") {
-                Behavior.setWeek1("" + ((double) achievement.getMaxValue()) / 10);
+            if (achievement.getWeek() == 1 && !"".equals(behavior.getWeek1())) {
+                behavior.setWeek1(String.valueOf(achievement.getMaxValue() / 10.0));
             }
-            if (achievement.getWeek() == 2 && Behavior.getWeek2() != "") {
-                Behavior.setWeek2("" + ((double) achievement.getMaxValue()) / 10);
+            if (achievement.getWeek() == 2 && !"".equals(behavior.getWeek2())) {
+                behavior.setWeek2(String.valueOf(achievement.getMaxValue() / 10.0));
             }
-            if (achievement.getWeek() == 3 && Behavior.getWeek3() != "") {
-                Behavior.setWeek3("" + ((double) achievement.getMaxValue()) / 10);
+            if (achievement.getWeek() == 3 && !"".equals(behavior.getWeek3())) {
+                behavior.setWeek3(String.valueOf(achievement.getMaxValue() / 10.0));
             }
-            if (achievement.getWeek() == 4 && Behavior.getWeek4() != "") {
-                Behavior.setWeek4("" + ((double) achievement.getMaxValue()) / 10);
+            if (achievement.getWeek() == 4 && !"".equals(behavior.getWeek4())) {
+                behavior.setWeek4(String.valueOf(achievement.getMaxValue() / 10.0));
             }
         }
-        return Behavior;
+        return behavior;
     }
 
     @Override

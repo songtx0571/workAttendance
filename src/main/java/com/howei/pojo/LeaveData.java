@@ -31,13 +31,51 @@ public class LeaveData {
     private String statusName;
     private String reviewResult;
     private String bothTime;//两个日期之间间隔
-    private int numValue;//请假类型设定的数值
+    private Integer numValue;//请假类型设定的数值
     private String leaveRemark;//请假类型说明
-    private int leaveCount;//根据请假类型
+    private Integer leaveCount;//根据请假类型
     private Double leaveResult;//请假考核分
-    private int leaveUnit;//请假类型单位
+    private Integer leaveUnit;//请假类型单位
     private String leaveUnitName;
 
+    @Override
+    public String toString() {
+        return "LeaveData{" +
+                "id=" + id +
+                ", leaveId=" + leaveId +
+                ", employeeId=" + employeeId +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", intervalTime='" + intervalTime + '\'' +
+                ", created='" + created + '\'' +
+                ", createdBy=" + createdBy +
+                ", updated='" + updated + '\'' +
+                ", updatedBy=" + updatedBy +
+                ", status=" + status +
+                ", parent=" + parent +
+                ", remark='" + remark + '\'' +
+                ", departmentId=" + departmentId +
+                ", review='" + review + '\'' +
+                ", reviewRemark='" + reviewRemark + '\'' +
+                ", reviewTime='" + reviewTime + '\'' +
+                ", nextManager=" + nextManager +
+                ", excess=" + excess +
+                ", manager=" + manager +
+                ", employeeName='" + employeeName + '\'' +
+                ", createdName='" + createdName + '\'' +
+                ", LeaveName='" + LeaveName + '\'' +
+                ", total='" + total + '\'' +
+                ", statusName='" + statusName + '\'' +
+                ", reviewResult='" + reviewResult + '\'' +
+                ", bothTime='" + bothTime + '\'' +
+                ", numValue=" + numValue +
+                ", leaveRemark='" + leaveRemark + '\'' +
+                ", leaveCount=" + leaveCount +
+                ", leaveResult=" + leaveResult +
+                ", leaveUnit=" + leaveUnit +
+                ", leaveUnitName='" + leaveUnitName + '\'' +
+                '}';
+    }
 
     public Integer getId() {
         return id;
@@ -103,6 +141,22 @@ public class LeaveData {
         this.createdBy = createdBy;
     }
 
+    public String getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(String updated) {
+        this.updated = updated;
+    }
+
+    public Integer getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(Integer updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -127,60 +181,12 @@ public class LeaveData {
         this.remark = remark;
     }
 
-    public String getLeaveName() {
-        return LeaveName;
-    }
-
-    public void setLeaveName(String leaveName) {
-        LeaveName = leaveName;
-    }
-
-    public String getCreatedName() {
-        return createdName;
-    }
-
-    public void setCreatedName(String createdName) {
-        this.createdName = createdName;
-    }
-
-    public String getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(String updated) {
-        this.updated = updated;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Integer updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
     public Integer getDepartmentId() {
         return departmentId;
     }
 
     public void setDepartmentId(Integer departmentId) {
         this.departmentId = departmentId;
-    }
-
-    public String getEmployeeName() {
-        return employeeName;
-    }
-
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
-    }
-
-    public String getTotal() {
-        return total;
-    }
-
-    public void setTotal(String total) {
-        this.total = total;
     }
 
     public String getReview() {
@@ -199,36 +205,12 @@ public class LeaveData {
         this.reviewRemark = reviewRemark;
     }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public Integer getManager() {
-        return manager;
-    }
-
-    public void setManager(Integer manager) {
-        this.manager = manager;
-    }
-
     public String getReviewTime() {
         return reviewTime;
     }
 
     public void setReviewTime(String reviewTime) {
         this.reviewTime = reviewTime;
-    }
-
-    public String getReviewResult() {
-        return reviewResult;
-    }
-
-    public void setReviewResult(String reviewResult) {
-        this.reviewResult = reviewResult;
     }
 
     public Integer getNextManager() {
@@ -247,6 +229,62 @@ public class LeaveData {
         this.excess = excess;
     }
 
+    public Integer getManager() {
+        return manager;
+    }
+
+    public void setManager(Integer manager) {
+        this.manager = manager;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getCreatedName() {
+        return createdName;
+    }
+
+    public void setCreatedName(String createdName) {
+        this.createdName = createdName;
+    }
+
+    public String getLeaveName() {
+        return LeaveName;
+    }
+
+    public void setLeaveName(String leaveName) {
+        LeaveName = leaveName;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getReviewResult() {
+        return reviewResult;
+    }
+
+    public void setReviewResult(String reviewResult) {
+        this.reviewResult = reviewResult;
+    }
+
     public String getBothTime() {
         return bothTime;
     }
@@ -255,7 +293,11 @@ public class LeaveData {
         this.bothTime = bothTime;
     }
 
-    public void setNumValue(int numValue) {
+    public Integer getNumValue() {
+        return numValue;
+    }
+
+    public void setNumValue(Integer numValue) {
         this.numValue = numValue;
     }
 
@@ -263,19 +305,15 @@ public class LeaveData {
         return leaveRemark;
     }
 
-    public int getNumValue() {
-        return numValue;
-    }
-
     public void setLeaveRemark(String leaveRemark) {
         this.leaveRemark = leaveRemark;
     }
 
-    public int getLeaveCount() {
+    public Integer getLeaveCount() {
         return leaveCount;
     }
 
-    public void setLeaveCount(int leaveCount) {
+    public void setLeaveCount(Integer leaveCount) {
         this.leaveCount = leaveCount;
     }
 
@@ -287,11 +325,11 @@ public class LeaveData {
         this.leaveResult = leaveResult;
     }
 
-    public int getLeaveUnit() {
+    public Integer getLeaveUnit() {
         return leaveUnit;
     }
 
-    public void setLeaveUnit(int leaveUnit) {
+    public void setLeaveUnit(Integer leaveUnit) {
         this.leaveUnit = leaveUnit;
     }
 

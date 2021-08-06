@@ -3,7 +3,7 @@ package com.howei.pojo;
 import java.util.List;
 
 public class Behavior {
-    private int id;
+    private Integer id;
     private String week1;
     private String week2;
     private String week3;
@@ -19,18 +19,43 @@ public class Behavior {
     private String cycle;
     private String sum;
     private Integer employeeId;
-
     private Double jiaban;
     private Double kaoqin;
     private Double zhiban;
 
     private List<LeaveData> leaveData;
 
-    public int getId() {
+    @Override
+    public String toString() {
+        return "Behavior{" +
+                "id=" + id +
+                ", week1='" + week1 + '\'' +
+                ", week2='" + week2 + '\'' +
+                ", week3='" + week3 + '\'' +
+                ", week4='" + week4 + '\'' +
+                ", period='" + period + '\'' +
+                ", tiaoxiu='" + tiaoxiu + '\'' +
+                ", qingjia='" + qingjia + '\'' +
+                ", kuanggong='" + kuanggong + '\'' +
+                ", chidao='" + chidao + '\'' +
+                ", lunxiu='" + lunxiu + '\'' +
+                ", chuchai='" + chuchai + '\'' +
+                ", remark='" + remark + '\'' +
+                ", cycle='" + cycle + '\'' +
+                ", sum='" + sum + '\'' +
+                ", employeeId=" + employeeId +
+                ", jiaban=" + jiaban +
+                ", kaoqin=" + kaoqin +
+                ", zhiban=" + zhiban +
+                ", leaveData=" + leaveData +
+                '}';
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -146,12 +171,8 @@ public class Behavior {
         this.sum = sum;
     }
 
-    public int getEmployeeId() {
+    public Integer getEmployeeId() {
         return employeeId;
-    }
-
-    public void setEmployeeId(int employeeId) {
-        this.employeeId = employeeId;
     }
 
     public void setEmployeeId(Integer employeeId) {
@@ -189,15 +210,4 @@ public class Behavior {
     public void setLeaveData(List<LeaveData> leaveData) {
         this.leaveData = leaveData;
     }
-
-    @Override
-    public String toString() {
-        return "Behavior [id=" + id + ", week1=" + week1 + ", week2=" + week2 + ", week3=" + week3 + ", week4=" + week4
-                + ", period=" + period + ", tiaoxiu=" + tiaoxiu + ", qingjia=" + qingjia + ", kuanggong=" + kuanggong
-                + ", chidao=" + chidao + ", lunxiu=" + lunxiu + ", chuchai=" + chuchai + ", remark=" + remark
-                + ", cycle=" + cycle + ", sum=" + sum + ", employeeId=" + employeeId + ", jiaban=" + jiaban
-                + ", kaoqin=" + kaoqin + ", zhiban=" + zhiban + "]";
-    }
-
-
 }

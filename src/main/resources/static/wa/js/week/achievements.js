@@ -81,10 +81,15 @@ function showCycleData() {
 function getUser() {
     $.ajax({
         type: "GET",
-        url: path + '/wa/achievements/getUserInform',
+        url: path + '/wa/achievements/getUserInfo',
         dataType: "json",
         success: function (data) {
-            classUserNumber = data.userNumber;
+            if (data.code == 0 || data.code == 200) {
+                data = data.data;
+                classUserNumber = data.userNumber;
+            } else {
+                layer.alert(data.msg);
+            }
         }
     })
 }
@@ -118,14 +123,7 @@ function showAchievementsList(cycle) {
             , cols: [[ //表头
                 {field: 'userNumber', title: '编号', width: 80, sort: true}
                 , {field: 'name', title: '姓名', width: 100}
-                , {
-                    field: 'score2',
-                    title: '业绩合计',
-                    event: 'setSign',
-                    style: 'cursor: pointer;color:red;',
-                    sort: true,
-                    align: 'center'
-                }
+                , {field: 'score2',title: '业绩合计',event: 'setSign',style: 'cursor: pointer;color:red;',sort: true,align: 'center'}
                 , {field: 'kaoqin', title: '考勤天数', sort: true}
                 , {field: 'jiaban', title: '加班小时数', sort: true}
                 , {field: 'comprehensivePerformance', title: '综合绩效', sort: true}
@@ -230,28 +228,32 @@ function showSetSign() {
         type: "get",//请求方式
         data: {"employeeId": id, "cycle": cycle},
         success: function (data) {
-            if (data == "") {
-                $("#setSignP").css("display", "block");
-            } else {
-                $("#setSignP").css("display", "none");
-            }
-            var table = $("#achievementTableId");
-            table.html("");
-            var td = "<tr style='font-weight: bold;'>";
-            for (var i = 0; i < data.length; i++) {
-                td += '<td>业绩' + (i + 1) + '</td>';
-            }
-            td += "</tr><tr>";
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].score == '') {
-                    data[i].score = 0;
+            if (data.code == 0 || data.code == 200) {
+                data = data.data;
+                if (data == "") {
+                    $("#setSignP").css("display", "block");
+                } else {
+                    $("#setSignP").css("display", "none");
                 }
-                parseInt(data[i].score);
-                td += '<td>' + data[i].score + '</td>';
+                var table = $("#achievementTableId");
+                table.html("");
+                var td = "<tr style='font-weight: bold;'>";
+                for (var i = 0; i < data.length; i++) {
+                    td += '<td>业绩' + (i + 1) + '</td>';
+                }
+                td += "</tr><tr>";
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].score == '') {
+                        data[i].score = 0;
+                    }
+                    parseInt(data[i].score);
+                    td += '<td>' + data[i].score + '</td>';
+                }
+                td += "</tr>";
+                table.html(td);
+            } else {
+                layer.alert(data.msg);
             }
-            td += "</tr>";
-            console.log(td);
-            table.html(td);
         }
     })
 }
@@ -343,15 +345,14 @@ function copyTimeOk() {
     var employeeId = $("#employeeIdHidden").val();
     $.ajax({
         url: path + "/wa/achievements/copyPeAcc",//请求地址
-        //url: "http://192.168.1.89:8081/wa/achievements/copyPeAcc",//请求地址
         dataType: "json",//数据格式
         data: {"cycle": startTime, "lastcycle": endTime, "employeeId": employeeId},
         type: "get",//请求方式
         success: function (data) {
-            if (data == "success") {
+            if (data.code == 0 || data.code == 200) {
                 layer.alert("周期已复制");
-            } else if (data == "havaRecord") {
-                layer.alert(endTime + "周期已存在");
+            } else {
+                layer.alert(data.msg);
             }
         }
     });
@@ -437,10 +438,12 @@ function updAchievement() {
         data: JSON.stringify(obj),
         contentType: "application/json; charset=utf-8",
         success: function (data) {
-            if (data == "SUCCESS") {
-                layer.alert("修改成功");
-                showAchievementsList($("#test3").val());
+            if (data.code != 0 && data.code != 200) {
+                layer.alert(data.msg);
+                return;
             }
+            layer.alert("修改成功");
+            showAchievementsList($("#test3").val());
         }
     });
 }
@@ -507,7 +510,6 @@ function showAchievementLayuiTable () {
         });
         table.on('tool(testAdd)', function (obj){
             var data = obj.data;
-            console.log(obj)
             if (obj.event === "deleteAchievement") {
                 layer.open({
                     type: 1
@@ -697,77 +699,85 @@ function showBehavior(cycle) {
         data: {'employeeId': id, "cycle": cycle},
         dataType: "json",
         success: function (data) {
-            leaveConfig.html("");
-            var tr = "";
-            if (data == "" || data == null) {
-                tr = '<tr><td style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
-                $('.week1').val("");
-                $('.week2').val("");
-                $('.week3').val("");
-                $('.week4').val("");
-                $('#sum').val("");
-                $('#remark').val("");
-                /*$('#jiaban').text('0');
-                $('#kaoqin').text('0');*/
-                $('#jiaban').val('0');
-                $('#kaoqin').val('0');
-                $('#netPerformance').val('0');
-                $('#comprehensivePerformance').val('0');
-                // return;
-            } else {
-                var leaveData = data[0].leaveData;
-                tr = '<tr><td rowspan="' + (leaveData.length + 1) + '" style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
-                if (leaveData != "" || leaveData != null) {
-                    for (var i = 0; i < leaveData.length; i++) {
-                        tr += '<tr><td ><input value="' + leaveData[i].leaveCount + '" readonly name="tiaoxiu" class="inputCount tiaoxiu' + leaveData[i].employeeId + '"></td><td>' + leaveData[i].leaveUnitName + '</td><td colspan="7">' + leaveData[i].leaveName + '</td><td><input class="ftiaoxiu' + leaveData[i].employeeId + '" name="fResult" readonly value="' + leaveData[i].leaveResult + '"></tr>';
+            if (data.code == 0 || data.code == 200) {
+                data = data.data;
+                leaveConfig.html("");
+                var tr = "";
+                if (data == "" || data == null) {
+                    tr = '<tr><td style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
+                    $('.week1').val("0");
+                    $('.week2').val("0");
+                    $('.week3').val("0");
+                    $('.week4').val("0");
+                    $('#sum').val("0");
+                    $('#remark').val("");
+                    /*$('#jiaban').text('0');
+                    $('#kaoqin').text('0');*/
+                    $('#jiaban').val('0');
+                    $('#kaoqin').val('0');
+                    $('#netPerformance').val('0');
+                    $('#comprehensivePerformance').val('0');
+                    $("#BeId").val("");
+                    // return;
+                } else {
+                    var leaveData = data.leaveData;
+                    if (leaveData == null) {
+                        leaveData = [];
                     }
-                }
-                if (data[0].week1 == "") {
-                    data[0].week1 = 0;
-                }
-                if (data[0].week2 == "") {
-                    data[0].week2 = 0;
-                }
-                if (data[0].week3 == "") {
-                    data[0].week3 = 0;
-                }
-                if (data[0].week4 == "") {
-                    data[0].week4 = 0;
-                }
-                $("#BeId").val(data[0].id);
-                $(".week1").val(data[0].week1);
-                $(".week2").val(data[0].week2);
-                $(".week3").val(data[0].week3);
-                $(".week4").val(data[0].week4);
-                $(".period").val('10');
-                /*$("#jiaban").text(data[0].jiaban);//加班
-                $("#kaoqin").text(data[0].kaoqin);//考勤*/
-                $("#jiaban").val(data[0].jiaban);//加班
-                $("#kaoqin").val(data[0].kaoqin);//考勤
-                $("#remark").val(data[0].remark);//备注
-            }
-            leaveConfig.html(tr);
-            //计算数值
-            calculateAttendance();
-            $.ajax({
-                url: path + "/wa/achievements/getAssessmentByEmployeeId",//请求地址
-                datatype: "json",//数据格式
-                data: {"cycle": cycle, employeeId: id},
-                type: "post",//请求方式
-                success: function (res) {
-                    // 将字符串转换为json
-                    function strToJson(str) {
-                        var json = eval('(' + str + ')');
-                        res = json;
+                    tr = '<tr><td rowspan="' + (leaveData.length + 1) + '" style="vertical-align:middle">考勤情况（50分）</td><td colspan="2">满勤50分</td><td colspan="7">满勤。每半天1分，每天2分</td><td><input id="fchuqing" name="fchuqing" readonly value="50"></td></tr>';
+                    if (leaveData.length > 0 && leaveData != null) {
+                        for (var i = 0; i < leaveData.length; i++) {
+                            tr += '<tr><td ><input value="' + leaveData[i].leaveCount + '" readonly name="tiaoxiu" class="inputCount tiaoxiu' + leaveData[i].employeeId + '"></td><td>' + leaveData[i].leaveUnitName + '</td><td colspan="7">' + leaveData[i].leaveName + '</td><td><input class="ftiaoxiu' + leaveData[i].employeeId + '" name="fResult" readonly value="' + leaveData[i].leaveResult + '"></tr>';
+                        }
+                    }
+                    if (data.week1 == "") {
+                        data.week1 = 0;
+                    }
+                    if (data.week2 == "") {
+                        data.week2 = 0;
+                    }
+                    if (data.week3 == "") {
+                        data.week3 = 0;
+                    }
+                    if (data.week4 == "") {
+                        data.week4 = 0;
                     }
 
-                    strToJson(res);
-                    /*$("#jiaban").text(res.jiaban);
-                    $("#kaoqin").text(res.kaoqin);*/
-                    $('#netPerformance').val(res.netPerformance);
-                    $('#comprehensivePerformance').val(res.comprehensivePerformance);
+                    $("#BeId").val(data.id);
+                    $(".week1").val(data.week1);
+                    $(".week2").val(data.week2);
+                    $(".week3").val(data.week3);
+                    $(".week4").val(data.week4);
+                    $(".period").val('10');
+                    /*$("#jiaban").text(data.jiaban);//加班
+                    $("#kaoqin").text(data.kaoqin);//考勤*/
+                    $("#jiaban").val(data.jiaban);//加班
+                    $("#kaoqin").val(data.kaoqin);//考勤
+                    $("#remark").val(data.remark);//备注
                 }
-            });
+                leaveConfig.html(tr);
+                //计算数值
+                calculateAttendance();
+                $.ajax({
+                    url: path + "/wa/achievements/getAssessmentByEmployeeId",//请求地址
+                    datatype: "json",//数据格式
+                    data: {"cycle": cycle, employeeId: id},
+                    type: "post",//请求方式
+                    success: function (res) {
+                        if (res.code == 0 || res.code == 200) {
+                            res = res.data;
+                            /*$("#jiaban").text(res.jiaban);
+                            $("#kaoqin").text(res.kaoqin);*/
+                            $('#netPerformance').val(res.netPerformance);
+                            $('#comprehensivePerformance').val(res.comprehensivePerformance);
+                        } else {
+                            layer.alert(res.msg)
+                        }
+                    }
+                });
+            } else {
+                layer.alert(data.msg)
+            }
         }
     });
     /*if ((cycleM == 12 && month == 1 && cycleY == year - 1) || (cycleM == month - 1 && cycleY == year) || (cycleM == month && cycleY == year)) {
@@ -819,7 +829,13 @@ function addReducePerformance(id, day) {
             type: "post",//请求方式
             data: {cycle: cycle, employeeId: employeeId, jiaban: day},
             success: function (data) {
-                $("#comprehensivePerformance").val(data.comprehensivePerformance);//综合绩效
+                if (data.code == 0 || data.code == 200) {
+                    data = data.data;
+                    $("#comprehensivePerformance").val(data.comprehensivePerformance);//综合绩效
+                } else {
+                    layer.alert(data.msg)
+                }
+
             }
         })
     }
@@ -855,6 +871,9 @@ function calculateAttendance() {
 function updBehavior() {
     jsonHtml();
     var id = $("#BeId").val();
+    if (id != "") {
+        id = Number(id);
+    }
     var employeeId = $("#employeeIdHidden2").val();
     var remark = $('#remark').val();
     /*var jiaban = $('#jiaban').text();
@@ -883,11 +902,12 @@ function updBehavior() {
         data: JSON.stringify(performance),
         contentType: "application/json; charset=utf-8",
         success: function (data) {
-            if (data == "SUCCESS") {
+            if (data.code == 0 || data.code == 200) {
                 layer.alert("修改成功");
                 showBehavior($("#test6").val());
                 showAchievementsList($("#test3").val());
-                // layer.closeAll();
+            } else {
+                layer.alert(data.msg);
             }
         }
     })

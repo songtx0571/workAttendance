@@ -308,7 +308,7 @@ public class AchievementsController {
     @ResponseBody
     @RequestMapping(value = "/updateBehavior", method = {RequestMethod.POST})
     public Result insertBe(@RequestBody Behavior behavior) {
-        int id = behavior.getId();
+        Integer id = behavior.getId();
         if (StringUtils.isEmpty(id) || id == 0) {
             behaviorService.insert(behavior);
         } else {
@@ -336,10 +336,6 @@ public class AchievementsController {
             behaviorQO.setCycle(cycle);
         }
         Behavior behavior = behaviorService.findAllBe(behaviorQO);
-        if (behavior == null) {
-            behavior = new Behavior();
-        }
-
         return Result.ok(1, behavior);
     }
 
