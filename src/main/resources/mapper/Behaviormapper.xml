@@ -26,9 +26,8 @@
 
     <insert id="insert">
         insert ignore into behavior (week1,week2,week3,week4,cycle,employeeId,period,jiaban,kaoqin,remark,sum)
-        value (#{obj.week1},#{obj.week2},#{obj.week3},#{obj.week4},#{obj.cycle},#{obj.employeeId},#{obj.period},#{obj.jiaban},#{obj.kaoqin},#{obj.remark},#{obj.sum})
+        value (#{week1},#{week2},#{week3},#{week4},#{cycle},#{employeeId},#{period},#{jiaban},#{kaoqin},#{remark},#{sum})
     </insert>
-    <!--tiaoxiu=#{tiaoxiu},qingjia=#{qingjia},kuanggong=#{kuanggong},chidao=#{chidao},lunxiu=#{lunxiu},,zhiban=#{zhiban},chuchai=#{chuchai},-->
     <update id="update">
         update behavior
         <set>
@@ -62,7 +61,7 @@
             <if test="sum!=null">
                 sum=#{sum},
             </if>
-            <if test="kaoqin!=null">
+            <if test="cycle!=null">
                 cycle2=concat(cycle,'-01'),
             </if>
         </set>

@@ -97,4 +97,9 @@ public class BehaviorServiceImpl implements BehaviorService {
     public Assessment getAssessmentByEmployeeId(Map map) {
         return behaviorMapper.getAssessmentByEmployeeId(map);
     }
+
+    @Override
+    public int insert(Behavior behavior) {
+        return behaviorMapper.insert(behavior);
+    }
 }

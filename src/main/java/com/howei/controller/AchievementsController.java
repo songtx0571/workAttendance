@@ -2,13 +2,16 @@ package com.howei.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
 import com.howei.service.PerformanceService;
 import com.howei.service.WorkingService;
 import com.howei.util.*;
+import com.sun.org.apache.regexp.internal.RE;
 import org.apache.catalina.User;
+import org.apache.ibatis.annotations.ResultType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -58,17 +61,18 @@ public class AchievementsController {
         return users;
     }
 
-    @RequestMapping("/getUserInform")
+    @RequestMapping("/getUserInfo")
     @ResponseBody
-    public Map getUserInform() {
+    public Result getUserInform() {
         Subject subject = SecurityUtils.getSubject();
         Users users = (Users) subject.getPrincipal();
-        Map map = new HashMap();
-        if (users != null) {
-            map.put("userName", users.getUserName());
-            map.put("userNumber", users.getUserNumber());
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
         }
-        return map;
+        Map map = new HashMap(2);
+        map.put("userName", users.getUserName());
+        map.put("userNumber", users.getUserNumber());
+        return Result.ok(1, map);
     }
 
     /**
@@ -77,21 +81,18 @@ public class AchievementsController {
      * @param request
      * @return
      */
-    @RequiresPermissions(value = {"绩效查询"}, logical = OR)
     @RequestMapping("/getAssessment")
     @ResponseBody
-    public String getAssessment(HttpServletRequest request) {
+    public Result getAssessment(HttpServletRequest request) {
         String cycle = request.getParameter("cycle");
         String empIdStr = "";
         Users users = this.getPrincipal();
         if (users == null) {
-            return "noUser";
+            return Result.fail(ResultEnum.NO_USER);
         }
         empIdStr += users.getEmployeeId() + ",";
         List<String> employeeIdList = new ArrayList<>();
-
         List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
-
         List<Employee> empList = employeeService.getEmployeeByManager(0);
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
 
@@ -108,34 +109,27 @@ public class AchievementsController {
         map.put("cycle", cycle);
         map.put("empId", empIdStr);
         List<Assessment> list = behaviorService.getAssessment(map);
-        if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                Assessment assessment = list.get(i);
-                //计算综合绩效与净绩效
-                double score1 = assessment.getScore1();
-                double score2 = assessment.getScore2();
-                //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
-                BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
-                double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                assessment.setNetPerformance(netPerformance);
-                //综合绩效=净绩效
-                assessment.setComprehensivePerformance(netPerformance);
-                if (users == null) {
-
-                } else {
-                    if (assessment.getUserNumber().equals(users.getUserNumber())) {
-                        list.remove(i);
-                        list.add(0, assessment);
-                    }
-                }
+        if (list == null || list.size() == 0) {
+            return Result.ok(0, new ArrayList<>());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Assessment assessment = list.get(i);
+            //计算综合绩效与净绩效
+            double score1 = assessment.getScore1();
+            double score2 = assessment.getScore2();
+            //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
+            BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
+            double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            assessment.setNetPerformance(netPerformance);
+            //综合绩效=净绩效
+            assessment.setComprehensivePerformance(netPerformance);
+            //将登录用户放在首位
+            if (users.getUserNumber().equals(assessment.getUserNumber())) {
+                list.remove(i);
+                list.add(0, assessment);
             }
         }
-        Result result = new Result();
-        result.setData(list);
-        result.setCount(list.size());
-        result.setCode(0);
-        result.setMsg("success");
-        return JSON.toJSONString(result);
+        return Result.ok(list.size(), list);
     }
 
 
@@ -167,29 +161,29 @@ public class AchievementsController {
             map.put("searchWord", searchWord);
         }
         List<Performance> list = performanceService.findAllAcc(map);
-        if (list == null) {
+        if (list == null || list.size() == 0) {
             return Result.ok(0, new ArrayList<>());
         }
         int count = list.size();
         if (page != null && limit != null) {
-            list = list.stream().skip(Integer.parseInt(page)-1).limit(Integer.parseInt(limit)).collect(Collectors.toList());
+            list = list.stream().skip(Integer.parseInt(page) - 1).limit(Integer.parseInt(limit)).collect(Collectors.toList());
         }
         return Result.ok(count, list);
     }
 
-    /**
-     * 根据id获取业绩数据
-     *
-     * @param request
-     * @return
-     */
-    @RequestMapping("/getPeAcc")
-    @ResponseBody
-    public String getPeAcc(HttpServletRequest request) {
-        String id = request.getParameter("id");
-        Performance performance = performanceService.getPeAcc(id);
-        return JSON.toJSONString(performance);
-    }
+//    /**
+//     * 根据id获取业绩数据
+//     *
+//     * @param request
+//     * @return
+//     */
+//    @RequestMapping("/getPeAcc")
+//    @ResponseBody
+//    public String getPeAcc(HttpServletRequest request) {
+//        String id = request.getParameter("id");
+//        Performance performance = performanceService.getPeAcc(id);
+//        return JSON.toJSONString(performance);
+//    }
 
     /**
      * 添加业绩标准
@@ -203,7 +197,7 @@ public class AchievementsController {
         Subject subject = SecurityUtils.getSubject();
         Users user = (Users) subject.getPrincipal();
         if (user == null) {
-            Result.fail(Type.noUser);
+            return Result.fail(ResultEnum.NO_USER);
         }
         performanceService.insert(performance);
         return Result.ok();
@@ -221,9 +215,9 @@ public class AchievementsController {
         Subject subject = SecurityUtils.getSubject();
         Users user = (Users) subject.getPrincipal();
         if (user == null) {
-            Result.fail(Type.noUser);
+            return Result.fail(ResultEnum.NO_USER);
         }
-        int count = performanceService.updateIsActiveByIds(ids, isActive);
+        performanceService.updateIsActiveByIds(ids, isActive);
 
         return Result.ok();
     }
@@ -236,46 +230,45 @@ public class AchievementsController {
      */
     @RequestMapping(value = "/updatePeAcc")
     @ResponseBody
-
-    public String updatePeAcc(@RequestBody String obj) {
-        if (obj != null) {
-            List list = (List) JSONArray.parse(obj);
-            try {
-                for (int i = 0; i < list.size(); i++) {
-                    Map<String, Object> map = (Map<String, Object>) list.get(i);
-                    String id = map.get("id") + "";
-                    String weights = map.get("weights") + "";//权重
-                    String access = map.get("access") + "";//考核标准
-                    String workTasks = map.get("workTasks") + "";
-                    String detail = map.get("detail") + "";
-                    String score = map.get("score") + "";
-                    Performance performance = performanceService.getPeAcc(id);
-                    if (performance != null) {
-                        if (weights != null && !weights.equals("")) {
-                            performance.setWeights(weights);
-                        }
-                        if (access != null && !access.equals("")) {
-                            performance.setAccess(access);
-                        }
-                        if (workTasks != null && !access.equals("")) {
-                            performance.setWorkTasks(workTasks);
-                        }
-                        if (detail != null && !detail.equals("")) {
-                            performance.setDetail(detail);
-                        }
-                        if (score != null && !score.equals("")) {
-                            performance.setScore(score);
-                        }
-                        performanceService.update(performance);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return JSON.toJSONString(Type.ERROR);
-            }
-            return JSON.toJSONString(Type.SUCCESS);
+    public Result updatePeAcc(@RequestBody String obj) {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
         }
-        return JSON.toJSONString(Type.CANCEL);
+        if (obj == null || "".equals(obj)) {
+            return Result.fail(ResultEnum.NO_PARAMETERS);
+        }
+        List list = (List) JSONArray.parse(obj);
+        for (int i = 0; i < list.size(); i++) {
+            Map<String, Object> map = (Map<String, Object>) list.get(i);
+            String id = map.get("id").toString();
+            String weights = map.get("weights").toString();//权重
+            String access = map.get("access").toString();//考核标准
+            String workTasks = map.get("workTasks").toString();
+            String detail = map.get("detail").toString();
+            String score = map.get("score").toString();
+            Performance performance = performanceService.getPeAcc(id);
+            if (performance != null) {
+                if (weights != null && !weights.equals("")) {
+                    performance.setWeights(weights);
+                }
+                if (access != null && !access.equals("")) {
+                    performance.setAccess(access);
+                }
+                if (workTasks != null && !access.equals("")) {
+                    performance.setWorkTasks(workTasks);
+                }
+                if (detail != null && !detail.equals("")) {
+                    performance.setDetail(detail);
+                }
+                if (score != null && !score.equals("")) {
+                    performance.setScore(score);
+                }
+                performanceService.update(performance);
+            }
+        }
+        return Result.ok();
     }
 
     /**
@@ -289,40 +282,39 @@ public class AchievementsController {
     public Result deletePeAcc(HttpServletRequest request) {
         String id = request.getParameter("id");
         if (StringUtils.isEmpty(id)) {
-            return Result.fail(Type.noParameters);
+            return Result.fail(ResultEnum.NO_PARAMETERS);
         }
         performanceService.deletePeAccById(id);
         return Result.ok();
     }
 
-    /**
-     * 获取行为考核
-     *
-     * @param request
-     * @return
-     */
-    @RequestMapping("/selectBeCycle")
-    @ResponseBody
-    public String selectBeCycle(HttpServletRequest request) {
-        String employeeId = request.getParameter("employeeId");
-        List<String> list = null;
-        if (employeeId != null) {
-            list = behaviorService.selectBeCycle(employeeId);
-        }
-        return JSON.toJSONString(list);
-    }
+//    /**
+//     * 获取行为考核
+//     *
+//     * @param request
+//     * @return
+//     */
+//    @RequestMapping("/selectBeCycle")
+//    @ResponseBody
+//    public String selectBeCycle(HttpServletRequest request) {
+//        String employeeId = request.getParameter("employeeId");
+//        List<String> list = null;
+//        if (employeeId != null) {
+//            list = behaviorService.selectBeCycle(employeeId);
+//        }
+//        return JSON.toJSONString(list);
+//    }
 
     @ResponseBody
     @RequestMapping(value = "/updateBehavior", method = {RequestMethod.POST})
-    public String insertBe(@RequestBody Behavior behavior) {
+    public Result insertBe(@RequestBody Behavior behavior) {
         int id = behavior.getId();
-        try {
+        if (StringUtils.isEmpty(id) || id == 0) {
+            behaviorService.insert(behavior);
+        } else {
             behaviorService.update(behavior);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JSON.toJSONString(Type.ERROR);
         }
-        return JSON.toJSONString(Type.SUCCESS);
+        return Result.ok();
     }
 
     /**
@@ -336,15 +328,19 @@ public class AchievementsController {
     public Result findBe(HttpServletRequest request) {
         String cycle = request.getParameter("cycle");
         String employeeId = request.getParameter("employeeId");
-        Behavior behavior = new Behavior();
+        Behavior behaviorQO = new Behavior();
         if (employeeId != null) {
-            behavior.setEmployeeId(Integer.parseInt(employeeId));
+            behaviorQO.setEmployeeId(Integer.parseInt(employeeId));
         }
         if (cycle != null) {
-            behavior.setCycle(cycle);
+            behaviorQO.setCycle(cycle);
         }
-        Behavior behaviorResult = behaviorService.findAllBe(behavior);
-        return Result.ok(1, behaviorResult);
+        Behavior behavior = behaviorService.findAllBe(behaviorQO);
+        if (behavior == null) {
+            behavior = new Behavior();
+        }
+
+        return Result.ok(1, behavior);
     }
 
     /**
@@ -355,7 +351,7 @@ public class AchievementsController {
      */
     @ResponseBody
     @RequestMapping("/getAssessmentByEmployeeId")
-    public String getAssessmentByEmployeeId(HttpServletRequest request) {
+    public Result getAssessmentByEmployeeId(HttpServletRequest request) {
         String cycle = request.getParameter("cycle");
         String employeeId = request.getParameter("employeeId");
         Map map = new HashMap();
@@ -415,7 +411,7 @@ public class AchievementsController {
             //综合绩效=净绩效
             assessment.setComprehensivePerformance(netPerformance);
         }
-        return JSON.toJSONString(assessment);
+        return Result.ok(1, assessment);
     }
 
     /**
@@ -425,7 +421,7 @@ public class AchievementsController {
      */
     @ResponseBody
     @RequestMapping("/getAssessmentByJiaban")
-    public String getAssessmentByJiaban(HttpServletRequest request) {
+    public Result getAssessmentByJiaban(HttpServletRequest request) {
         String cycle = request.getParameter("cycle");
         String employeeId = request.getParameter("employeeId");
         String jiaban = request.getParameter("jiaban");
@@ -441,30 +437,22 @@ public class AchievementsController {
             map.put("employeeId", employeeId);
         }
         Assessment assessment = behaviorService.getAssessmentByEmployeeId(map);
+        map.clear();
         if (assessment != null) {
-            map.clear();
             double score1 = assessment.getScore1();
             double score2 = assessment.getScore2();
             //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
             BigDecimal bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
             double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            //综合绩效=净绩效+加班*0.01
-            bd = new BigDecimal(netPerformance + jiabanDouble * 0.01);
+            //综合绩效=净绩效
+            bd = new BigDecimal(netPerformance);
             double comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             map.put("comprehensivePerformance", comprehensivePerformance);
             map.put("netPerformance", netPerformance);
         }
-        return JSON.toJSONString(map);
+        return Result.ok(1, map);
     }
 
-    @RequestMapping(value = "/copyPeAccMonth", method = {RequestMethod.POST})
-    @ResponseBody
-    public String copyPeAccMonth(@RequestBody String Data) {
-        if (Data != null && !Data.equals("")) {
-
-        }
-        return JSON.toJSONString("");
-    }
 
     /**
      * 复制考核周期
@@ -476,24 +464,24 @@ public class AchievementsController {
      */
     @ResponseBody
     @RequestMapping("/copyPeAcc")
-    public String copyPeAcc(Integer employeeId, String cycle, String lastcycle) {
+    public Result copyPeAcc(Integer employeeId, String cycle, String lastcycle) {
         //判斷複製周期是否存在10條記錄
         Performance performance = new Performance();
         performance.setEmployeeId(employeeId);
         performance.setCycle(lastcycle);
-        List<Performance> p = performanceService.findPeAcc(performance);
-        if (p == null || p.size() == 0) {
-            performance = new Performance();
-            performance.setEmployeeId(employeeId);
-            performance.setCycle(cycle);
-            p = performanceService.findPeAcc(performance);
-            for (int i = 0; i < p.size(); i++) {
-                Performance performance1 = p.get(i);
-                performance1.setCycle(lastcycle);
-                performanceService.insert(performance1);
-            }
-            return "success";
+        List<Performance> performanceList = performanceService.findPeAcc(performance);
+        if (performanceList != null && performanceList.size() > 0) {
+            return Result.fail(ResultEnum.HAVE_RECORD);
         }
-        return "havaRecord";//存在記錄
+        performance = new Performance();
+        performance.setEmployeeId(employeeId);
+        performance.setCycle(cycle);
+        performanceList = performanceService.findPeAcc(performance);
+        for (int i = 0; i < performanceList.size(); i++) {
+            Performance performance1 = performanceList.get(i);
+            performance1.setCycle(lastcycle);
+            performanceService.insert(performance1);
+        }
+        return Result.ok();
     }
 }

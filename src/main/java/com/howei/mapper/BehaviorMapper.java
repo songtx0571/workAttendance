@@ -20,4 +20,6 @@ public interface BehaviorMapper {
     Behavior findAll(@Param("behavior") Behavior behavior);
 
     Assessment getAssessmentByEmployeeId(Map map);
+
+    int insert(Behavior behavior);
 }

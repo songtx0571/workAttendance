@@ -16,4 +16,6 @@ public interface BehaviorService {
     Behavior findAllBe(Behavior behavior);
 
     Assessment getAssessmentByEmployeeId(Map map);
+
+    int insert(Behavior behavior);
 }

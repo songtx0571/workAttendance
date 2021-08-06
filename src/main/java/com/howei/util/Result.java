@@ -73,6 +73,12 @@ public class Result {
         result.setMsg(type.toString());
         return result;
     }
+    public static Result fail(ResultEnum resultType) {
+        Result result = new Result();
+        result.setCode(resultType.getCode());
+        result.setMsg(resultType.getMsg());
+        return result;
+    }
 
     public static Result fail() {
         return fail("操作失败");

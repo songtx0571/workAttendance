@@ -352,25 +352,26 @@ public class WorkingHoursController {
             paramMap.put("departmentId", userByEmpId.getDepartmentId());
             paramMap.put("month", month);
             List<ManagerHours> managerHoursList = workingService.getManagerHoursListByMap(paramMap);
+            if (managerHoursList == null || managerHoursList.size() == 0) {
+                continue;
+            }
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("employeeId", employeeId);
             resultMap.put("userNumber", userByEmpId.getUserNumber());
             resultMap.put("userName", userByEmpId.getUserName());
             Map<String, Object> mapDayData = this.defaultMothData(dayCount);//初始化日期
-            if (managerHoursList != null && managerHoursList.size() > 0) {
-                for (ManagerHours managerHours : managerHoursList) {
-                    String monthDay = managerHours.getMonthDay();
-                    String day = monthDay.substring(monthDay.lastIndexOf("-") + 1);
-                    Map dayDataMap = (Map) mapDayData.get(day);
-                    Double workIngHour = managerHours.getWorkingHour() == null ? 0.0 : managerHours.getWorkingHour();
-                    if (managerHours.getType() == 1) {
-                        workAttendance++;
-                        workingHoursTotal += workIngHour;
-                    }
-                    dayDataMap.put("total", workIngHour);
-                    dayDataMap.put("detail", managerHours);
-                    mapDayData.put(day, dayDataMap);
+            for (ManagerHours managerHours : managerHoursList) {
+                String monthDay = managerHours.getMonthDay();
+                String day = monthDay.substring(monthDay.lastIndexOf("-") + 1);
+                Map dayDataMap = (Map) mapDayData.get(day);
+                Double workIngHour = managerHours.getWorkingHour() == null ? 0.0 : managerHours.getWorkingHour();
+                if (managerHours.getType() == 1) {
+                    workAttendance++;
+                    workingHoursTotal += workIngHour;
                 }
+                dayDataMap.put("total", workIngHour);
+                dayDataMap.put("detail", managerHours);
+                mapDayData.put(day, dayDataMap);
             }
 
             resultMap.put("workAttendance", workAttendance);
