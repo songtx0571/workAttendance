@@ -3,7 +3,7 @@ var date = new Date();
 var year = date.getFullYear();
 var month = date.getMonth() + 1;
 var day = date.getDate();
-var objArr;
+var objType;
 $(function () {
     // 查询员工绩效信息
     if (month == 12) {
@@ -20,7 +20,32 @@ $(function () {
     $("#test").val(year + "-" + month);
     showTable(year + "-" + month);
     showCycleData();
+    showGoWorkBtn();
 })
+
+
+function showGoWorkBtn () {
+    $.ajax({
+        type: "get",
+        url: path + "/wa/working/getManagerWorkingType",
+        dataType: "json",
+        success: function (jsr) {
+            objType = jsr.data.type;
+            if (jsr.code == 0 || jsr.code == 200) {
+                if (jsr.data.type == 1) {
+                    $("#goWorkBtn").html("打卡结束");
+                } else if (jsr.data.type == 0) {
+                    $("#goWorkBtn").html("<span onclick=\"goWork()\">下班</span>")
+                } else {
+                    $("#goWorkBtn").html("<span onclick=\"goWork()\">上班</span>")
+                }
+            } else {
+                layer.alert(jsr.msg);
+            }
+        }
+    });
+
+}
 
 /*显示日期*/
 function showCycleData() {
@@ -60,18 +85,18 @@ function showTable(month) {
                     if (a.data[j].detail instanceof  Object) {
                         if (a.data[j].detail.type==1) {
                             var content = "'"+a.data[j].detail.workStartTime+"<br>"+a.data[j].detail.workEndTime+"'";
-                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workingHour+'</span>'
+                            return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">'+a.data[j].detail.workingHour+'</span>'
                         }else if (a.data[j].detail.type==0) {
                             var content = "'"+a.data[j].detail.workStartTime+"<br>无'";
-                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">0</span>'
+                            return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="'+a.employeeId+''+j+'" onclick="showTime('+content+','+a.employeeId+''+ j+')">0</span>'
                         } else  {
-                            return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                            return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
                         }
                     } else {
-                        return '<span style="width: 100%;display: inline-block;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
+                        return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="'+a.employeeId+''+j+'" onclick="showTime(0,'+a.employeeId+''+ j+')">0</span>'
                     }
                 } else {
-                    return '<span style="width: 100%;display: inline-block;" >/</span>'
+                    return '<span style="width: 100%;display: inline-block;line-height: 39px;" >/</span>'
                 }
             };
             cols.push(col);
@@ -91,20 +116,7 @@ function showTable(month) {
                     layer.alert(res.msg)
                 }
             }
-            , done: function (res, curr, count) {
-                objArr = res.data;
-                $("#goWorkBtn").css("display", "revert");
-                console.log(objArr[0].data[day<10?"0"+day:day])
-                if ( objArr[0].data[day<10?"0"+day:day].detail.length==0)	{
-                    $("#goWorkBtn").html("<span onclick=\"goWork()\">上班</span>")
-                } else if (objArr[0].data[day<10?"0"+day:day].detail.type == 1) {
-                    $("#goWorkBtn").html("打卡结束");
-                } else if (objArr[0].data[day<10?"0"+day:day].detail.type == 0) {
-                    $("#goWorkBtn").html("<span onclick=\"goWork()\">下班</span>")
-                } else {
-                    $("#goWorkBtn").html("<span onclick=\"goWork()\">上班</span>")
-                }
-            }
+            , done: function (res, curr, count) {}
         });
         //监听行工具事件
         table.on('tool(test)', function (obj) {
@@ -114,25 +126,27 @@ function showTable(month) {
 }
 
 function goWork() {
-    $(".loading").css("display",'block');
-    var data = objArr[0];
-    var monthDay = year + "-" + month + "-" + (day<10?"0"+day:day);
-    var type = 0;
-    if (data.data[day<10?"0"+day:day].detail.type == '0' || data.data[day<10?"0"+day:day].detail.type == '1') {
-        type = 1;
+    $(".loading").css("display", 'block');
+    var dataType = objType;
+    var monthDay = year + "-" + month + "-" + (day < 10 ? "0" + day : day);
+    if (dataType  == 0) {
+        dataType = 1;
+    } else {
+        dataType = 0;
     }
     $.ajax({
         type: "POST",
         url: path + "/wa/working/postManagerWorkingHours",
-        data: {employeeId: data.employeeId, monthDay: monthDay, type: type},
+        data: {monthDay: monthDay, type: dataType},
         dataType: "json",
         success: function (jsr) {
-            $(".loading").css("display",'none');
+            $(".loading").css("display", 'none');
             if (jsr.code == 0 || jsr.code == 200) {
                 showTable($("#test").val());
-                if (objArr[0].data[day<10?"0"+day:day].detail.type == 0 || objArr[0].data[day<10?"0"+day:day].detail.type == 1) {
+                if (objType == 0 || objType == 1) {
                     $("#goWorkBtn").html("打卡结束");
                 } else {
+                    objType = 0;
                     $("#goWorkBtn").html("<span onclick=\"goWork()\">下班</span>")
                 }
             } else {
@@ -144,7 +158,6 @@ function goWork() {
             layer.alert("操作失败");
         }
     });
-
 }
 
 //显示时间

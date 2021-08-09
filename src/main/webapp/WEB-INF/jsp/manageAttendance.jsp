@@ -83,6 +83,11 @@
         }
         .layui-table-cell{
             padding: 0;
+            height: 100%;
+        }
+        .layui-table-view .layui-table td{
+            padding: 0;
+            height: 39px;
         }
     </style>
 </head>
