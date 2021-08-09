@@ -314,6 +314,13 @@ public class WorkingHoursController {
         return result;
     }
 
+    /**
+     * 管理考勤 数据
+     *
+     * @param departmentId
+     * @param month
+     * @return
+     */
 
     @GetMapping("/getManagerWorkingHours")
     public Result getManagerHours(
@@ -352,7 +359,7 @@ public class WorkingHoursController {
             paramMap.put("departmentId", userByEmpId.getDepartmentId());
             paramMap.put("month", month);
             List<ManagerHours> managerHoursList = workingService.getManagerHoursListByMap(paramMap);
-            if (managerHoursList == null || managerHoursList.size() == 0) {
+            if ((managerHoursList == null || managerHoursList.size() == 0) && !employeeId.equals(loginUserEmployeeId.toString())) {
                 continue;
             }
             Map<String, Object> resultMap = new HashMap<>();
@@ -384,6 +391,8 @@ public class WorkingHoursController {
     }
 
     /**
+     * 点击上下班
+     *
      * @param employeeId
      * @param monthDay
      * @param type
@@ -459,5 +468,35 @@ public class WorkingHoursController {
             workingService.updateManagerHours(managerHours);
         }
         return Result.ok();
+    }
+
+    /**
+     * 获取登录用户的上下班状态
+     *
+     * @return
+     */
+    @GetMapping("/getManagerWorkingType")
+    @ResponseBody
+    public Result getManagerWorkStatus() {
+        Subject subject = SecurityUtils.getSubject();
+        Users loginUser = (Users) subject.getPrincipal();
+        //登录信息失效
+        if (loginUser == null) {
+            return Result.fail(Type.noUser.toString());
+        }
+        Map<String, Object> paramMap = new HashMap<>();
+        Integer employeeId = loginUser.getEmployeeId();
+        paramMap.put("employeeId", employeeId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String monthDay = sdf.format(new Date());
+        paramMap.put("monthDay", monthDay);
+        ManagerHours managerHours = workingService.getManagerHoursByMap(paramMap);
+        Map<String, Object> resultMap = new HashMap<>();
+        if (managerHours == null) {
+            resultMap.put("type", -1);
+        } else {
+            resultMap.put("type", managerHours.getType());
+        }
+        return Result.ok(1, resultMap);
     }
 }
