@@ -148,7 +148,7 @@ public class WagsController {
      * 生成本月工资信息
      * 工资小计=基本工资+技能工资+职务工资+工龄工资+其他+绩效工资
      * 应发工资=(基本工资+技能工资+职务工资+工龄工资+其他)+绩效工资*绩效系数
-     * 应发合计=工资小计+补贴小记
+     * 应发合计=工资工资+补贴小记
      * 扣款合计=养老保险+失业金+医疗保险+公积金+其他扣款+工会费
      * 计税合计=应发合计-扣款合计
      *
@@ -206,7 +206,7 @@ public class WagsController {
      * 生成本月工资信息
      * 工资小计=基本工资+技能工资+职务工资+工龄工资+其他+绩效工资
      * 应发工资=(基本工资+技能工资+职务工资+工龄工资+其他)+绩效工资*绩效系数
-     * 应发合计=工资小计+补贴小记
+     * 应发合计=工资工资+补贴小记
      * 扣款合计=养老保险+失业金+医疗保险+公积金+其他扣款+工会费
      * 计税合计=应发合计-扣款合计
      * <p>
@@ -256,7 +256,7 @@ public class WagsController {
         resultMap.put("wageSubtotal", new BigDecimal(wageSubtotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 
-        paramMap.put("cycle", lastYearMonth);
+        paramMap.put("cycle", lastYearMonth+"-01");
         Assessment assessment = behaviorService.getAssessmentByEmployeeId(paramMap);
         Wages wagesLastMonth = wagsService.getWagesByMap(paramMap);
         if (wagesLastMonth == null || !date.substring(0, 4).equals(lastYearMonth.substring(0, 4))) {
@@ -358,25 +358,21 @@ public class WagsController {
         paramMap.put("employeeId", employeeId);
         List<Wages> listWages = wagsService.getWagesToTax(paramMap);
         Double CommunicationFeeTotal = 0.00;
-        if (listWages != null) {
-            for (Wages wagesOtherMonth : listWages) {
-                System.out.println(wagesOtherMonth);
-                //计税合计
-//                            totalTaxTotal += wagesOtherMonth.getTotalTax();
-                String dateWagesOtherMonth = wagesOtherMonth.getDate();
-                if ("2021-04-01".compareTo(dateWagesOtherMonth) <= 0 && "否".equals(laowupaiqian)) {
-                    CommunicationFeeTotal += 300;
-                }
-
-            }
-            if ("否".equals(laowupaiqian)) {
-                CommunicationFeeTotal += 300;
-            }
-            System.out.println(CommunicationFeeTotal);
-//                        System.out.println(totalTaxTotal + totalTax);
-            //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
-            taxableIncomeTotal = totalTaxTotal - CommunicationFeeTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
-        }
+//        if (listWages != null) {
+//            for (Wages wagesOtherMonth : listWages) {
+//                String dateWagesOtherMonth = wagesOtherMonth.getDate();
+//                if ("2021-04-01".compareTo(dateWagesOtherMonth) <= 0 && "否".equals(laowupaiqian)) {
+//                    CommunicationFeeTotal += 300;
+//                }
+//
+//            }
+//            if ("否".equals(laowupaiqian)) {
+//                CommunicationFeeTotal += 300;
+//            }
+//            //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
+//            taxableIncomeTotal = totalTaxTotal - CommunicationFeeTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
+//        }
+        taxableIncomeTotal =incomeTotal-deductionOfExpensesTaxTotal-specialDeductionTaxTotal-specialAdditionalDeductionTaxTotal;
         resultMap.put("taxableIncomeTotal", new BigDecimal(taxableIncomeTotal).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 
@@ -581,11 +577,12 @@ public class WagsController {
                     //累计附加专项扣除
                     Double specialAdditionalDeductionTaxTotal = wagesLastMonth.getSpecialAdditionalDeductionTaxTotal() + wages.getSpecialAdditionalDeduction();
                     wages.setSpecialAdditionalDeductionTaxTotal(specialAdditionalDeductionTaxTotal);
-                    //累计其他扣除
+                    //累计应纳税所得额
                     double communicationFee = 0;
                     if ("否".equals(wages.getLaowupaiqian())) {
                         communicationFee = 300;
                     }
+                    //累计其他扣除
                     Double otherDeductionTaxTotal = wagesLastMonth.getOtherDeductionTaxTotal() + wages.getUnionFees() + communicationFee;
                     wages.setOtherDeductionTaxTotal(otherDeductionTaxTotal);
 
@@ -598,24 +595,25 @@ public class WagsController {
                     map.put("employeeId", employeeId);
                     List<Wages> listWages = wagsService.getWagesToTax(map);
                     Double CommunicationFeeTotal = 0.00;
-                    if (listWages != null) {
-                        for (Wages wagesOtherMonth : listWages) {
-                            System.out.println(wagesOtherMonth);
-                            //计税合计
-//                            totalTaxTotal += wagesOtherMonth.getTotalTax();
-                            String date = wagesOtherMonth.getDate();
-                            if ("2021-04-01".compareTo(date) <= 0 && "否".equals(wages.getLaowupaiqian())) {
-                                CommunicationFeeTotal += 300;
-                            }
-
-                        }
-                        if ("否".equals(wages.getLaowupaiqian())) {
-                            CommunicationFeeTotal += 300;
-                        }
-                        //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
-                        taxableIncomeTotal = wages.getTotalTaxTotal() - CommunicationFeeTotal - wages.getSpecialAdditionalDeductionTaxTotal() - deductionOfExpensesTaxTotal;
-                    }
-
+//                    if (listWages != null) {
+//                        for (Wages wagesOtherMonth : listWages) {
+//                            System.out.println(wagesOtherMonth);
+//                            //计税合计
+////                            totalTaxTotal += wagesOtherMonth.getTotalTax();
+//                            String date = wagesOtherMonth.getDate();
+//                            if ("2021-04-01".compareTo(date) <= 0 && "否".equals(wages.getLaowupaiqian())) {
+//                                CommunicationFeeTotal += 300;
+//                            }
+//
+//                        }
+//                        if ("否".equals(wages.getLaowupaiqian())) {
+//                            CommunicationFeeTotal += 300;
+//                        }
+//                        //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
+//                        System.out.println("CommunicationFeeTotal:::"+CommunicationFeeTotal);
+//                        taxableIncomeTotal = totalTaxTotal - CommunicationFeeTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
+//                    }
+                    taxableIncomeTotal =incomeTotal-deductionOfExpensesTaxTotal-specialDeductionTaxTotal-specialAdditionalDeductionTaxTotal-otherDeductionTaxTotal;
                     wages.setTaxableIncomeTotal(taxableIncomeTotal);
 
 
