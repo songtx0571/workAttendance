@@ -382,7 +382,7 @@ public class WorkingHoursController {
             }
 
             resultMap.put("workAttendance", workAttendance);
-            resultMap.put("workingHoursTotal", workingHoursTotal);
+            resultMap.put("workingHoursTotal", new BigDecimal(workingHoursTotal).setScale(1, BigDecimal.ROUND_HALF_UP));
             resultMap.put("data", mapDayData);
             resultMapList.add(resultMap);
         }

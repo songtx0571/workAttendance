@@ -225,7 +225,7 @@ public class WagsController {
      * <p>
      * 也就是 当月个调税=累计应纳税所得*税率-速算扣除数-历史月个调税
      */
-    @RequestMapping("/taxation")
+  /*  @RequestMapping("/taxation")
     @ResponseBody
     public Result taxation(@RequestBody Wages wagesDTO) {
 
@@ -420,6 +420,7 @@ public class WagsController {
         return Result.ok(1, resultMap);
     }
 
+*/
 
     /**
      * 修改工资信息
@@ -582,12 +583,10 @@ public class WagsController {
                     if ("否".equals(wages.getLaowupaiqian())) {
                         communicationFee = 300;
                     }
-                    //累计其他扣除
+                    //累计其他扣除 =上月累计其他扣除+工会费+通讯费(非派遣)
                     Double otherDeductionTaxTotal = wagesLastMonth.getOtherDeductionTaxTotal() + wages.getUnionFees() + communicationFee;
                     wages.setOtherDeductionTaxTotal(otherDeductionTaxTotal);
 
-                    //累计计税合计
-                    Double taxableIncomeTotal = 0.00;//累计应缴纳税所得额
                     Double totalTaxTotal = wagesLastMonth.getTotalTaxTotal() + totalTax;//累计计税合计
                     wages.setTotalTaxTotal(totalTaxTotal);
                     map = new HashMap();
@@ -613,7 +612,9 @@ public class WagsController {
 //                        System.out.println("CommunicationFeeTotal:::"+CommunicationFeeTotal);
 //                        taxableIncomeTotal = totalTaxTotal - CommunicationFeeTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
 //                    }
-                    taxableIncomeTotal =incomeTotal-deductionOfExpensesTaxTotal-specialDeductionTaxTotal-specialAdditionalDeductionTaxTotal-otherDeductionTaxTotal;
+                    //累计应缴纳谁所得额=累计收入额-累计费用见面-累计专项扣除-累计专项附加扣除-累计其他扣除
+                    //累计应缴纳税所得额
+                    Double taxableIncomeTotal = incomeTotal - deductionOfExpensesTaxTotal - specialDeductionTaxTotal - specialAdditionalDeductionTaxTotal - otherDeductionTaxTotal + communicationFee;
                     wages.setTaxableIncomeTotal(taxableIncomeTotal);
 
 
@@ -643,19 +644,17 @@ public class WagsController {
                         quickCalculationDeduction = 181920.00;
                     }
                     //累计个税 = 累计应纳税所得额*预扣税率 - 速算扣除数
-                    Double accumulatedPersonalIncomeTax = taxableIncomeTotal * taxRate - quickCalculationDeduction;
-                    //当月个税=累计个税-历史月个调税
-                    Double tax = accumulatedPersonalIncomeTax - wagesLastMonth.getIndividualIncomeTaxTotal();
+                    Double individualIncomeTaxTotal = taxableIncomeTotal * taxRate - quickCalculationDeduction;
+                    wages.setIndividualIncomeTaxTotal(individualIncomeTaxTotal);
+                    //当月个税=累计个税-上月累计个税
+                    Double tax = individualIncomeTaxTotal < 0 ? 0D : individualIncomeTaxTotal - wagesLastMonth.getIndividualIncomeTaxTotal() < 0 ? 0D : wagesLastMonth.getIndividualIncomeTaxTotal();
                     tax = (tax < 0) ? 0D : tax;
-                    //累计已缴纳个税
-                    Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal();
+                    wages.setIndividualTaxAdjustment(tax);
+                    //累计已缴纳个税=上月累计已缴纳个税+上月个调税
+                    Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal() + (wagesLastMonth.getIndividualTaxAdjustment() == null ? 0D : wagesLastMonth.getIndividualTaxAdjustment());
                     wages.setIndividualIncomeTaxPaidTotal(individualIncomeTaxPaidTotal);
-                    //累计个税
-                    //Double individualIncomeTaxTotal = wagesLastMonth.getIndividualIncomeTaxTotal() + tax;
-                    wages.setIndividualIncomeTaxTotal(accumulatedPersonalIncomeTax);
                     //实发工资
                     Double netSalary = totalTax - tax;
-                    wages.setIndividualTaxAdjustment(tax);
                     wages.setNetSalary(netSalary);
 
 

@@ -178,7 +178,7 @@ function threeDecimal(id, value) {
 }
 
 function sumWages() {
-    var wages = {};
+  /*  var wages = {};
     wages.employeeId = parseFloat($("#userId").val());//员工ID
     wages.date = $("#test15").val();//月份
     wages.basePay = parseFloat($(".basePay").val());//岗位工资
@@ -228,7 +228,7 @@ function sumWages() {
                 layer.alert(data.msg);
             }
         }
-    });
+    });*/
 }
 
 //查询数据
@@ -588,7 +588,7 @@ function updFinance() {
     wages.remark = $("#remark").val();
     wages.month = $("#test15").val();
     wages.incomeTotal = $("#incomeTotal").val();//累计收入额
-    wages.deductionOfExpensesTaxTotal = $("#deductionOfExpensesTaxTotal").val();//累计费用减免
+  /*  wages.deductionOfExpensesTaxTotal = $("#deductionOfExpensesTaxTotal").val();//累计费用减免
     wages.specialDeductionTaxTotal = $("#specialDeductionTaxTotal").val();//累计专项扣除
     wages.specialAdditionalDeductionTaxTotal = $("#specialAdditionalDeductionTaxTotal").val();//累计附加专项扣除
     wages.individualIncomeTaxTotal = $("#individualIncomeTaxTotal").val();//累计个税
@@ -596,7 +596,7 @@ function updFinance() {
     wages.otherDeductionTaxTotal = $("#otherDeductionTaxTotal").val();//累计其他扣除
     wages.taxableIncomeTotal = $("#taxableIncomeTotal").val();//累计应缴纳税所得额
     wages.specialAdditionalDeduction = $("#specialAdditionalDeduction").val();//专项附加扣除
-    wages.totalTaxTotal = $(".totalTaxTotal").val();//类计计税合计
+    wages.totalTaxTotal = $(".totalTaxTotal").val();//类计计税合计*/
     $.ajax({
         type: "post",
         url: path + "/wa/wags/updWages",
