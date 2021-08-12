@@ -414,18 +414,19 @@ public class WorkingHoursController {
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        Integer departmentId = null;
+        if (StringUtils.isEmpty(employeeId)) {
+            employeeId = loginUser.getEmployeeId();
+            departmentId = loginUser.getDepartmentId();
+        } else {
+            Users userByEmpId = userService.getUserByEmpId(employeeId);
+            departmentId = userByEmpId.getDepartmentId();
+        }
+        if (monthDay == null) {
+            monthDay = sdf1.format(new Date());
+        }
         if ("0".equals(type)) {
-            Integer departmentId = null;
-            if (employeeId == null) {
-                employeeId = loginUser.getEmployeeId();
-                departmentId = loginUser.getDepartmentId();
-            } else {
-                Users userByEmpId = userService.getUserByEmpId(employeeId);
-                departmentId = userByEmpId.getDepartmentId();
-            }
-            if (monthDay == null) {
-                monthDay = sdf1.format(new Date());
-            }
             Map<String, Object> paramsMap = new HashMap<>();
             paramsMap.put("employeeId", employeeId);
             paramsMap.put("monthDay", monthDay);
@@ -443,13 +444,8 @@ public class WorkingHoursController {
             workingService.insertManagerHours(managerHours);
         } else {
             Map<String, Object> paramsMap = new HashMap<>();
-            if (!StringUtils.isEmpty(employeeId)) {
-                paramsMap.put("employeeId", employeeId);
-            }
-            if (StringUtils.isEmpty(monthDay)) {
-                monthDay = sdf.format(new Date());
-            }
             paramsMap.put("monthDay", monthDay);
+            paramsMap.put("employeeId", employeeId);
             paramsMap.put("type", 0);
             ManagerHours managerHours = workingService.getManagerHoursByMap(paramsMap);
             String workStartTime = managerHours.getWorkStartTime();
