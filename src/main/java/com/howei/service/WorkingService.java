@@ -26,4 +26,10 @@ public interface WorkingService {
     int updateManagerHours(ManagerHours managerHours);
 
     List<ManagerHours> getManagerHoursListByMap(Map map);
+
+    int insertWorkingHour(Map<String, Object> workingHour);
+
+    int updateWorkingHourById(Map<String, Object> workingHour);
+
+    List<Map<String, Object>> getWorkingHourByMap(Map<String, Object> map);
 }

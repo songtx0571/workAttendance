@@ -56,4 +56,19 @@ public class WorkingServiceImpl implements WorkingService {
         return workingMapper.getManagerHoursListByMap(map);
     }
 
+    @Override
+    public int insertWorkingHour(Map<String, Object> workingHour) {
+        return workingMapper.insertWorkingHour(workingHour);
+    }
+
+    @Override
+    public int updateWorkingHourById(Map<String, Object> workingHour) {
+        return workingMapper.updateWorkingHourById(workingHour);
+    }
+
+    @Override
+    public List<Map<String, Object>> getWorkingHourByMap(Map<String, Object> map) {
+        return workingMapper.getWorkingHourByMap(map);
+    }
+
 }

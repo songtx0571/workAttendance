@@ -30,6 +30,11 @@
         value
         (#{departmentId},#{employeeId},#{monthDay},#{workStartTime},#{type})
     </insert>
+    <insert id="insertWorkingHour" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        workingHour( employeeId,userNumber,userName,month,type,workAttendance,workingHoursTotal,workingOvertimeTotal )
+        values ( #{employeeId},#{userNumber},#{userName},#{month},#{type},#{workAttendance},#{workingHoursTotal},#{workingOvertimeTotal} )
+    </insert>
     <update id="updateManagerHours">
         update managerHours
         <set>
@@ -56,6 +61,16 @@
             </if>
         </set>
         where id =#{id}
+
+    </update>
+    <update id="updateWorkingHourById">
+        update workingHour
+        <set>
+            <foreach collection="data" separator="," index="index" item="item">
+                day${index}=#{item.total}
+            </foreach>
+        </set>
+        where id = #{id}
 
     </update>
 
@@ -268,6 +283,9 @@
                 and m.type=#{type}
             </if>
         </where>
+    </select>
+    <select id="getWorkingHourByMap" resultType="java.util.Map">
+        select * from workingHour where date=#{date} and employeeId=#{employeeId}
     </select>
 
 </mapper>
