@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <html>
 <head>
     <title>管理考勤页面</title>
@@ -106,10 +107,11 @@
                 onclick="monthDownBtn()">&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;
         </button>
         <p id="goWorkBtn"><span onclick="goWork()">上班</span></p>
+        <shiro:hasPermission name="保存考勤数据">
         <button class="layui-btn layui-btn-sm layui-btn-normal" style="float: left;height: 38px;margin-left: 15px;"
                 onclick="preservationData()" id="preservationBtn">保存
         </button>
-
+        </shiro:hasPermission>
     </div>
     <%--表格--%>
     <div class="center">

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <html>
 <head>
     <title>检修考勤页面</title>
@@ -99,9 +100,11 @@
                 </div>
             </div>
         </form>
+        <shiro:hasPermission name="保存考勤数据">
         <button class="layui-btn layui-btn-sm layui-btn-normal" style="float: left;height: 38px;margin-left: 15px;"
                 onclick="preservationData()" id="preservationBtn">保存
         </button>
+        </shiro:hasPermission>
     </div>
     <div class="content">
         <div class="div"></div>
