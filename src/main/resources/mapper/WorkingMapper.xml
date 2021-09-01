@@ -73,6 +73,9 @@
         where id = #{id}
 
     </update>
+    <delete id="deleteWrokingHourByMap">
+        delete from workingHour  where data=#{date} and type=#{type}
+     </delete>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
         select oh.id,oh.scrdailyId,oh.monthDay,oh.tradersTime,oh.successorTime,oh.projectId,oh.other,oh.employeeId
@@ -285,7 +288,16 @@
         </where>
     </select>
     <select id="getWorkingHourByMap" resultType="java.util.Map">
-        select * from workingHour where date=#{date} and employeeId=#{employeeId}
+        select * from workingHour where 1=1
+        <if test="date!=null">
+            date=#{date}
+        </if>
+        <if test="employeeId!=null">
+            and employeeId=#{employeeId}
+        </if>
+        <if test="type!=null">
+            and type=#{type}
+        </if>
     </select>
 
 </mapper>

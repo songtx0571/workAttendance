@@ -501,20 +501,38 @@ public class WorkingHoursController {
      * 保存考勤数据数据
      *
      * @param date
-     * @param type 0运行考勤,1检修考勤,2管理考勤
-     * @return
+     * @param type         0运行考勤,1检修考勤,2管理考勤
+     * @param confirmType  0不删除,1删除
+     * @param departmentId 部门编号
      */
     @GetMapping("/saveWorkingHour")
     @Transactional
-    public Result saveWorkingHour(String date, String type, @RequestParam(required = false) Integer departmentId) {
+    public Result saveWorkingHour(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String confirmType,
+            @RequestParam(required = false) Integer departmentId) {
         Subject subject = SecurityUtils.getSubject();
         Users loginUser = (Users) subject.getPrincipal();
         //登录信息失效
         if (loginUser == null) {
             return Result.fail(Type.noUser.toString());
         }
-        Result middleResult = null;
+        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(type)) {
+            return Result.fail(ResultEnum.NO_PARAMETERS);
+        }
+        Result middleResult;
         Map<String, Object> map = new HashMap<>();
+        map.put("date", date);
+        map.put("type", type);
+        List<Map<String, Object>> workingHourList = workingService.getWorkingHourByMap(map);
+        if (!"1".equals(confirmType) && (workingHourList != null && workingHourList.size() > 0)) {
+            return Result.fail(ResultEnum.HAVE_RECORD_TO_OVERWRITE);
+        }
+        if ("1".equals(confirmType)) {
+            workingService.deleteWorkingHourByMap(map);
+        }
+
         if ("0".equals(type)) {
             middleResult = getOperatingHoursList(date, departmentId);
         } else if ("1".equals(type)) {
@@ -523,7 +541,7 @@ public class WorkingHoursController {
             middleResult = getManagerHours(date);
         }
 
-        List<Map<String, Object>> workingHourList = null;
+        workingHourList = new ArrayList<>();
         if (middleResult != null) {
             workingHourList = (List<Map<String, Object>>) middleResult.getData();
         }

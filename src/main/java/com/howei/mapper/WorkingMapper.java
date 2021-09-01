@@ -30,4 +30,6 @@ public interface WorkingMapper {
     int updateWorkingHourById(Map<String, Object> workingHour);
 
     List<Map<String, Object>> getWorkingHourByMap(Map<String, Object> map);
+
+    int deleteWrokingHourByMap(Map<String, Object> map);
 }

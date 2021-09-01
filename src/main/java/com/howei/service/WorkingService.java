@@ -32,4 +32,6 @@ public interface WorkingService {
     int updateWorkingHourById(Map<String, Object> workingHour);
 
     List<Map<String, Object>> getWorkingHourByMap(Map<String, Object> map);
+
+    int deleteWorkingHourByMap(Map<String, Object> map);
 }

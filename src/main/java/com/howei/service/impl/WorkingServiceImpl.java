@@ -71,4 +71,9 @@ public class WorkingServiceImpl implements WorkingService {
         return workingMapper.getWorkingHourByMap(map);
     }
 
+    @Override
+    public int deleteWorkingHourByMap(Map<String, Object> map) {
+        return workingMapper.deleteWrokingHourByMap(map);
+    }
+
 }
