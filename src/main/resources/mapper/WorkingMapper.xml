@@ -74,7 +74,7 @@
 
     </update>
     <delete id="deleteWrokingHourByMap">
-        delete from workingHour  where data=#{date} and type=#{type}
+        delete from workingHour  where month=#{date} and type=#{type}
      </delete>
 
     <select id="getOperatingHoursList" parameterType="java.util.HashMap" resultMap="workingMap">
@@ -290,7 +290,7 @@
     <select id="getWorkingHourByMap" resultType="java.util.Map">
         select * from workingHour where 1=1
         <if test="date!=null">
-            date=#{date}
+           and month=#{date}
         </if>
         <if test="employeeId!=null">
             and employeeId=#{employeeId}

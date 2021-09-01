@@ -21,6 +21,13 @@ $(function () {
     showTable(year + "-" + month);
     showCycleData();
     showGoWorkBtn();
+    var y = $("#test").val().substr(0,4);
+    var m = $("#test").val().substr(5,2)
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 })
 
 
@@ -57,6 +64,13 @@ function showCycleData() {
             , type: 'month'
             , trigger: 'click'//呼出事件改成click
             , done: function (value) {
+                var y = value.substr(0,4);
+                var m = value.substr(5,2)
+                if ((y == year && m < month) || y < year){
+                    $("#preservationBtn").css('display',"revert");
+                } else {
+                    $("#preservationBtn").css('display',"none");
+                }
                 showTable(value);
             }
         });
@@ -106,7 +120,7 @@ function showTable(month) {
         table.render({
             elem: '#demo'
             , height: height
-            , url: path + '/wa/working/getManagerWorkingHours?month='+month //数据接口
+            , url: path + '/wa/working/getManagerWorkingHours?date='+month //数据接口
             , cols: [cols]
             ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
                 if (res.code == 0 || res.code == 200) {
@@ -160,6 +174,60 @@ function goWork() {
     });
 }
 
+//保存数据
+function preservationData () {
+    $(".loading").css("display","block");
+    $.ajax({
+        url: path +"/wa/working/saveWorkingHour?type=2&date=" + $("#test").val()+"&confirmType=0",//请求地址
+        dataType: "json",//数据格式
+        type: "get",//请求方式
+        success: function (data) {
+            if (data.code == 0 || data.code == 200) {
+                $(".loading").css("display","none");
+            } else if (data.code == 223) {
+                $(".loading").css("display","none");
+                layer.open({
+                    type: 1,
+                    title: false ,
+                    closeBtn: false,
+                    area: '300px;',
+                    shade: 0.8,
+                    id: 'LAY_layuipro' ,
+                    btn: ['确定', '取消'],
+                    btnAlign: 'c',
+                    moveType: 1 ,
+                    content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">记录已经存在,是否覆盖他们？</div>',
+                    success: function (layero) {
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.find('.layui-layer-btn0').click(function () {
+                            $(".loading").css("display", 'block');
+                            $.ajax({
+                                url: path + "/wa/working/saveWorkingHour?type=2&date=" + $("#test").val()+"&confirmType=1",//请求地址
+                                dataType: "json",//数据格式
+                                type: "get",//请求方式
+                                success: function (data1) {
+                                    if (data1.code == 0 || data1.code == 200) {
+                                        $(".loading").css("display","none");
+                                    } else {
+                                        layer.alert(data1.msg);
+                                        $(".loading").css("display","none");
+                                    }
+                                }
+                            })
+                        });
+                    }
+                });
+            } else {
+                layer.alert(data.msg)
+                $(".loading").css("display","none");
+            }
+        },
+        error: function (data) {
+            layer.alert("操作错误");
+        }
+    })
+}
+
 //显示时间
 function showTime(content, id) {
     if (content == 0) {
@@ -186,6 +254,11 @@ function monthUpBtn() {
     }
     $("#test").val(y + "-" + m);
     showTable(y + "-" + m)
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 }
 
 //下个月
@@ -203,5 +276,9 @@ function monthDownBtn() {
     }
     $("#test").val(y + "-" + m);
     showTable(y + "-" + m)
-
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 }

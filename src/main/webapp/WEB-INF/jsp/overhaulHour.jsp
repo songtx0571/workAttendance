@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>检修考勤页面</title>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/layui/layui.js"></script>
     <link rel="stylesheet" href="../js/layui/css/layui.css">
@@ -99,6 +99,9 @@
                 </div>
             </div>
         </form>
+        <button class="layui-btn layui-btn-sm layui-btn-normal" style="float: left;height: 38px;margin-left: 15px;"
+                onclick="preservationData()" id="preservationBtn">保存
+        </button>
     </div>
     <div class="content">
         <div class="div"></div>

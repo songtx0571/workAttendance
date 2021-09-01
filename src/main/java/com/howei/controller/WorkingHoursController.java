@@ -255,7 +255,7 @@ public class WorkingHoursController {
                 mapMapMap.put("workingOvertimeTotal", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
 
                 mapMapMap.put("employeeId", employeeId);
-                mapMapMap.put("username", overhaulRecord.getUserName());
+                mapMapMap.put("userName", overhaulRecord.getUserName());
                 mapMapMap.put("userNumber", overhaulRecord.getUserNumber());
                 mapMapMap.put("workAttendance", 1);
             } else {
@@ -582,8 +582,8 @@ public class WorkingHoursController {
         int count = 0;
         if (workingHourList != null && workingHourList.size() > 0) {
             for (Map<String, Object> workingHourMap : workingHourList) {
-                int workAttendance = (int) workingHourMap.get("workAttendance");
-                if (count < workAttendance) {
+                Integer workAttendance = Integer.valueOf(workingHourMap.get("workAttendance").toString());
+                if (workAttendance != null && count < workAttendance) {
                     count = workAttendance;
                 }
             }

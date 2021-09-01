@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>管理考勤页面</title>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/layui/layui.js"></script>
     <link rel="stylesheet" href="../js/layui/css/layui.css">
@@ -39,7 +39,7 @@
             font-size: 16px;
             padding: 0px 10px;
             box-sizing: border-box;
-            background: #1E9FFF;
+            background: brown;
             color: #fff;
             display: inline-block;
         }
@@ -106,6 +106,9 @@
                 onclick="monthDownBtn()">&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;
         </button>
         <p id="goWorkBtn"><span onclick="goWork()">上班</span></p>
+        <button class="layui-btn layui-btn-sm layui-btn-normal" style="float: left;height: 38px;margin-left: 15px;"
+                onclick="preservationData()" id="preservationBtn">保存
+        </button>
 
     </div>
     <%--表格--%>

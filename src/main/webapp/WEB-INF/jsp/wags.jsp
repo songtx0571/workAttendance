@@ -202,6 +202,10 @@
                     </form>
                 </td>
             </tr>
+            <tr>
+                <td style="width: 16%;">人事异动：</td>
+                <td><input type="text" class="isChanged" id="isChanged" name="isChanged" readonly></td>
+            </tr>
             <tr style="line-height: 80px;font-size: 20px;font-weight: bold;">
                 <td colspan="4" style="text-align: center;">应发金额</td>
             </tr>
@@ -232,8 +236,8 @@
             </tr>
             <tr>
                 <td style="color: red;">应发工资：</td>
-                <td><input type="number" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00"
-                           onchange="twoDecimal('wagesPayable',this.value);" readonly></td>
+                <td><input type="text" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00"
+                          readonly></td>
                 <td>其他：</td>
                 <td><input type="text" class="other" id="other" name="other" placeholder="0.00"
                            onBlur="twoDecimal('other',this.value);sumWages();"></td>
@@ -311,7 +315,7 @@
                 <td style="color: red;">个调税：</td>
                 <td><input type="text" class="individualTaxAdjustment" id="individualTaxAdjustment"
                            name="individualTaxAdjustment" placeholder="0.00"
-                           onchange="twoDecimal('individualTaxAdjustment',this.value);" readonly></td>
+                           onchange="twoDecimal('individualTaxAdjustment',this.value);"></td>
                 <td>专项附加扣除：</td>
                 <td><input type="text" class="specialAdditionalDeduction" id="specialAdditionalDeduction"
                            name="specialAdditionalDeduction" placeholder="0.00"
@@ -332,39 +336,39 @@
             <tr>
                 <td>累计收入额：</td>
                 <td><input type="text" class="incomeTotal" id="incomeTotal" placeholder="0.00"
-                           onchange="twoDecimal('incomeTotal',this.value);" readonly></td>
+                           onchange="twoDecimal('incomeTotal',this.value);"></td>
                 <td>累计费用减免：</td>
                 <td><input type="text" class="deductionOfExpensesTaxTotal" id="deductionOfExpensesTaxTotal"
-                           placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);" readonly></td>
+                           placeholder="0.00" onBlur="twoDecimal('deductionOfExpensesTaxTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计专项扣除：</td>
                 <td><input type="text" class="specialDeductionTaxTotal" id="specialDeductionTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('specialDeductionTaxTotal',this.value);" readonly></td>
+                           onchange="twoDecimal('specialDeductionTaxTotal',this.value);"></td>
                 <td>累计附加专项扣除：</td>
                 <td><input type="text" class="specialAdditionalDeductionTaxTotal"
                            id="specialAdditionalDeductionTaxTotal" placeholder="0.00"
-                           onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);" readonly></td>
+                           onBlur="twoDecimal('specialAdditionalDeductionTaxTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计其他扣除：</td>
                 <td><input type="text" class="otherDeductionTaxTotal" id="otherDeductionTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('otherDeductionTaxTotal',this.value);" readonly></td>
+                           onchange="twoDecimal('otherDeductionTaxTotal',this.value);"></td>
                 <td>累计应缴纳税所得额：</td>
                 <td><input type="text" class="taxableIncomeTotal" id="taxableIncomeTotal" placeholder="0.00"
-                           onchange="twoDecimal('taxableIncomeTotal',this.value);" readonly></td>
+                           onchange="twoDecimal('taxableIncomeTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计个税：</td>
                 <td><input type="text" class="individualIncomeTaxTotal" id="individualIncomeTaxTotal" placeholder="0.00"
-                           onchange="twoDecimal('individualIncomeTaxTotal',this.value);" readonly></td>
+                           onchange="twoDecimal('individualIncomeTaxTotal',this.value);"></td>
                 <td>累计已缴纳个税：</td>
                 <td><input type="text" class="individualIncomeTaxPaidTotal" id="individualIncomeTaxPaidTotal"
-                           placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);" readonly></td>
+                           placeholder="0.00" onchange="twoDecimal('individualIncomeTaxPaidTotal',this.value);"></td>
             </tr>
             <tr>
                 <td>累计计税合计：</td>
-                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal"  placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);" readonly></td>
+                <td><input type="text" class="totalTaxTotal" id="totalTaxTotal"  placeholder="0.00" onchange="twoDecimal('totalTaxTotal',this.value);"></td>
             </tr>
             <tr style="line-height: 80px;">
                 <td colspan="4" style="text-align: center;">
@@ -394,6 +398,10 @@
                 <td><input type="text" class="userPost" name="userPost" readonly></td>
                 <td>职级：</td>
                 <td><input type="text" class="postLevel" name="postLevel" readonly></td>
+            </tr>
+            <tr>
+                <td style="width: 16%;">人事异动：</td>
+                <td><input type="text" class="isChanged" name="isChanged" readonly></td>
             </tr>
             <tr>
                 <td>岗位工资：</td>

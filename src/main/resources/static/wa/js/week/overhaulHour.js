@@ -19,6 +19,14 @@ $(function () {
     }
     showTableList(year + "-" + month,"");
     $("#test15").val(year + "-" + month);
+    $("#test15").val(year + "-" + month);
+    var y = $("#test15").val().substr(0,4);
+    var m = $("#test15").val().substr(5,2)
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 });
 
 //显示时间
@@ -30,6 +38,13 @@ function showMonth() {
             , type: 'month'
             ,trigger: 'click'//呼出事件改成click
             ,done: function(value){
+                var y = value.substr(0,4);
+                var m = value.substr(5,2)
+                if ((y == year && m < month) || y < year){
+                    $("#preservationBtn").css('display',"revert");
+                } else {
+                    $("#preservationBtn").css('display',"none");
+                }
                 showTableList($("#test15").val(),$("#selDepartNameHidden").val());
             }
         });
@@ -112,7 +127,7 @@ function  showTableList (month,projectId) {
                     var operatingTd = "'operaHourTd_"+item+"_"+i+"'";
                     table += '<td class="operaHourTd_" id="operaHourTd_'+item+"_"+i+'" onclick="showDiv('+content+','+operatingTd+')">'+data1.data[i].total+'</td>'
                 }
-                table += "<td style='font-weight: bold;color: red;'>"+data1.all+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.over+"</td></tr>"
+                table += "<td style='font-weight: bold;color: red;'>"+data1.workingHoursTotal+"</td><td style='font-weight: bold;color: red;'>"+data1.workAttendance+"</td><td style='font-weight: bold;color: red;'>"+data1.workingOvertimeTotal+"</td></tr>"
             }
             table += "</tbody></table>";
             div.html(table);
@@ -127,6 +142,60 @@ function showDiv (content, id) {
         layer.tips(content, "#"+id)
     })
 }
+
+//保存数据
+function preservationData () {
+    $(".loading").css("display","block");
+    $.ajax({
+        url:  path + "/wa/working/saveWorkingHour?type=1&date=" + $("#test15").val()+"&confirmType=0",//请求地址
+        dataType: "json",//数据格式
+        type: "get",//请求方式
+        success: function (data) {
+            if (data.code == 0 || data.code == 200) {
+                $(".loading").css("display","none");
+            } else if (data.code == 223) {
+                layer.open({
+                    type: 1,
+                    title: false ,
+                    closeBtn: false,
+                    area: '300px;',
+                    shade: 0.8,
+                    id: 'LAY_layuipro' ,
+                    btn: ['确定', '取消'],
+                    btnAlign: 'c',
+                    moveType: 1 ,
+                    content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">记录已经存在,是否覆盖他们？</div>',
+                    success: function (layero) {
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.find('.layui-layer-btn0').click(function () {
+                            $(".loading").css("display", 'block');
+                            $.ajax({
+                                url: path + "/wa/working/saveWorkingHour?type=1&date=" + $("#test15").val()+"&confirmType=1",//请求地址
+                                dataType: "json",//数据格式
+                                type: "get",//请求方式
+                                success: function (data1) {
+                                    if (data1.code == 0 || data1.code == 200) {
+                                        $(".loading").css("display","none");
+                                    } else {
+                                        layer.alert(data1.msg);
+                                        $(".loading").css("display","none");
+                                    }
+                                }
+                            })
+                        });
+                    }
+                });
+            } else {
+                layer.alert(data.msg)
+                $(".loading").css("display","none");
+            }
+        },
+        error: function (data) {
+            layer.alert("操作错误");
+        }
+    })
+}
+
 //上个月
 function monthUpBtn() {
     var time = $("#test15").val();
@@ -143,6 +212,11 @@ function monthUpBtn() {
     $("#test15").val(y+"-"+m);
     var a1 = y+"-"+m;
     showTableList(a1,$("#selDepartNameHidden").val())
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 }
 //下个月
 function monthDownBtn() {
@@ -160,7 +234,9 @@ function monthDownBtn() {
     $("#test15").val(y+"-"+m);
     var a2 = y+"-"+m;
     showTableList(a2,$("#selDepartNameHidden").val())
-}
-//取消
-function cancel() {
+    if ((y == year && m < month) || y < year){
+        $("#preservationBtn").css('display',"revert");
+    } else {
+        $("#preservationBtn").css('display',"none");
+    }
 }

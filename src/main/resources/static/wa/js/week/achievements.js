@@ -752,12 +752,26 @@ function showBehavior(cycle) {
                     /*$("#jiaban").text(data.jiaban);//加班
                     $("#kaoqin").text(data.kaoqin);//考勤*/
                     $("#jiaban").val(data.jiaban);//加班
-                    $("#kaoqin").val(data.kaoqin);//考勤
+
                     $("#remark").val(data.remark);//备注
                 }
                 leaveConfig.html(tr);
                 //计算数值
                 calculateAttendance();
+                //得到上月考勤天数
+                $.ajax({
+                    type: "get",
+                    url: path + '/wa/working/getWorkAttendance',
+                    data: {'employeeId': id, "date": cycle},
+                    dataType: "json",
+                    success: function (data1) {
+                        if (data1.code == 0 || data1.code == 200) {
+                            $("#kaoqin").val(data1.data);//考勤
+                        } else {
+                            layer.alert(data.msg);
+                        }
+                    }
+                })
                 $.ajax({
                     url: path + "/wa/achievements/getAssessmentByEmployeeId",//请求地址
                     datatype: "json",//数据格式
