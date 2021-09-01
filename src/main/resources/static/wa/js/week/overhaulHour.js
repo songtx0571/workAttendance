@@ -154,6 +154,7 @@ function preservationData () {
             if (data.code == 0 || data.code == 200) {
                 $(".loading").css("display","none");
             } else if (data.code == 223) {
+                $(".loading").css("display","none");
                 layer.open({
                     type: 1,
                     title: false ,
