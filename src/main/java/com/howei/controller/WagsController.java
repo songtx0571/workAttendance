@@ -334,7 +334,9 @@ public class WagsController {
                     Double meritPay = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setMeritPay(meritPay);
                     //工资小计=岗位工资+职级工资
-                    Double wageSubtotal = wages.getWageSubtotal();//工资小计
+                    bd = new BigDecimal( wages.getBasePay() + wages.getPositionSalary());
+                    Double wageSubtotal =bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    wages.setWageSubtotal(wageSubtotal);
                     //应发工资==(岗位工资+职级工资)/2+绩效工资
                     bd = new BigDecimal(wageSubtotal / 2.0 + meritPay);
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
