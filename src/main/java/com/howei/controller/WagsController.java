@@ -310,11 +310,12 @@ public class WagsController {
                     double comprehensivePerformance = 0.00;
                     double foodSupplement = 0.00;//餐补
                     double jianban = 0D;
+                    int kaoqin = 0;
                     if (assessment != null) {
                         double score1 = assessment.getScore1();
                         double score2 = assessment.getScore2();
                         jianban = assessment.getJiaban();//加班
-                        int kapqin = assessment.getKaoqin();//考勤
+                        kaoqin = assessment.getKaoqin();//考勤
                         //净绩效=(行为* 0.5 + 业绩 * 0.5)/90
                         bd = new BigDecimal((score1 * 0.5 + score2 * 0.5) / 90);
                         double netPerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -323,9 +324,10 @@ public class WagsController {
                         bd = new BigDecimal(netPerformance);
                         comprehensivePerformance = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         //餐补=20*考勤
-                        foodSupplement = 20 * kapqin;
+                        foodSupplement = 20 * kaoqin;
                     }
                     wages.setJiaban(jianban);
+                    wages.setWorkAttendance(kaoqin);
                     //绩效系数
                     wages.setPerformanceCoefficient(comprehensivePerformance);
 
@@ -334,8 +336,8 @@ public class WagsController {
                     Double meritPay = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setMeritPay(meritPay);
                     //工资小计=岗位工资+职级工资
-                    bd = new BigDecimal( wages.getBasePay() + wages.getPositionSalary());
-                    Double wageSubtotal =bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    bd = new BigDecimal(wages.getBasePay() + wages.getPositionSalary());
+                    Double wageSubtotal = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setWageSubtotal(wageSubtotal);
                     //应发工资==(岗位工资+职级工资)/2+绩效工资
                     bd = new BigDecimal(wageSubtotal / 2.0 + meritPay);
@@ -453,7 +455,7 @@ public class WagsController {
                     tax = (tax < 0) ? 0D : tax;
                     wages.setIndividualTaxAdjustment(tax);
                     //累计已缴纳个税=上月累计已缴纳个税+上月个调税
-                    Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal() + (wagesLastMonth.getIndividualTaxAdjustment() == null ? 0D : wagesLastMonth.getIndividualTaxAdjustment());
+                    Double individualIncomeTaxPaidTotal = wagesLastMonth.getIndividualIncomeTaxTotal() + (wagesLastMonth.getIndividualTaxAdjustment());
                     wages.setIndividualIncomeTaxPaidTotal(individualIncomeTaxPaidTotal);
                     //实发工资
                     Double netSalary = totalTax - tax;

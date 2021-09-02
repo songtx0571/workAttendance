@@ -8,48 +8,48 @@ import java.io.Serializable;
 public class Wages implements Serializable {
     private Integer id;
     private Integer employeeId;
-    private Double basePay;//基本工资 岗位工资
-    private Double skillPay;//技能工资
-    private Double positionSalary;//职务工资 职级工资
-    private Double seniorityWage;//工龄工资
-    private Double other;//其他
-    private Double meritBase;//绩效基数
-    private Double meritPay;//绩效工资
-    private Double wageSubtotal;//工资小记
-    private Double performanceCoefficient;//绩效系数:3位有效小数
-    private Double wagesPayable;//应发工资
-    private Double foodSupplement;//餐补
-    private Double totalPayable;//应发合计:本期收入
-    private Double endowmentInsurance;//养老保险
-    private Double unemploymentBenefits;//失业金
-    private Double medicalInsurance;//医疗保险
-    private Double accumulationFund;//公积金
-    private Double otherDeductions;//其他扣款
-    private Double unionFees;//工会费
-    private Double totalDeduction;//扣款合计
-    private Double totalTax;//计税合计
-    private Double sixSpecialDeductions;//六项专项扣除金额
-    private Double individualTaxAdjustment;//个调税
-    private Double netSalary;//实发工资
+    private double basePay;//基本工资 岗位工资
+    private double skillPay;//技能工资
+    private double positionSalary;//职务工资 职级工资
+    private double seniorityWage;//工龄工资
+    private double other;//其他
+    private double meritBase;//绩效基数
+    private double meritPay;//绩效工资
+    private double wageSubtotal;//工资小记
+    private double performanceCoefficient;//绩效系数:3位有效小数
+    private double wagesPayable;//应发工资
+    private double foodSupplement;//餐补
+    private double totalPayable;//应发合计:本期收入
+    private double endowmentInsurance;//养老保险
+    private double unemploymentBenefits;//失业金
+    private double medicalInsurance;//医疗保险
+    private double accumulationFund;//公积金
+    private double otherDeductions;//其他扣款
+    private double unionFees;//工会费
+    private double totalDeduction;//扣款合计
+    private double totalTax;//计税合计
+    private double sixSpecialDeductions;//六项专项扣除金额
+    private double individualTaxAdjustment;//个调税
+    private double netSalary;//实发工资
     private String remark;//备注
     private String date;//日期
     private String created;//创建时间
-    private Double highTemperatureSubsidy;//高温补贴
-    private Double subTotalOfSubsidies;//补贴小计
+    private double highTemperatureSubsidy;//高温补贴
+    private double subTotalOfSubsidies;//补贴小计
     private Integer postGradeId;//岗位等级Id
     private Integer wagesPostId;//工资岗位Id
-    private Double specialAdditionalDeduction;//专项附加扣除
-    private Double incomeTotal;//累计收入额
-    private Double deductionOfExpensesTaxTotal;//累计费用减免
-    private Double specialDeductionTaxTotal;//累计专项扣除
-    private Double specialAdditionalDeductionTaxTotal;//累计附加专项扣除
-    private Double otherDeductionTaxTotal;//累计其他扣除
-    private Double taxableIncomeTotal;//累计应缴纳税所得额
-    private Double individualIncomeTaxTotal;//累计个税
-    private Double individualIncomeTaxPaidTotal;//累计已缴纳个税
-    private Double totalTaxTotal;//累计计税合计
-    private Double overtimeSubsidy;//加班补贴
-
+    private double specialAdditionalDeduction;//专项附加扣除
+    private double incomeTotal;//累计收入额
+    private double deductionOfExpensesTaxTotal;//累计费用减免
+    private double specialDeductionTaxTotal;//累计专项扣除
+    private double specialAdditionalDeductionTaxTotal;//累计附加专项扣除
+    private double otherDeductionTaxTotal;//累计其他扣除
+    private double taxableIncomeTotal;//累计应缴纳税所得额
+    private double individualIncomeTaxTotal;//累计个税
+    private double individualIncomeTaxPaidTotal;//累计已缴纳个税
+    private double totalTaxTotal;//累计计税合计
+    private double overtimeSubsidy;//加班补贴
+    private double jiaban;//加班工时
     //虚字段
     private String employeeName;//员工姓名
     private String userNumber;//员工姓名
@@ -58,7 +58,7 @@ public class Wages implements Serializable {
     private String isChanged;//人事异动
     private String postGradeName;//岗位等级名称
     private String wagesPostName;//薪资岗位名称
-    private Double jiaban;//加班工时
+    private int workAttendance;//考勤天数
 
     public static Wages initTotalValue(Integer employeeId) {
         Wages wages = new Wages();
@@ -132,14 +132,6 @@ public class Wages implements Serializable {
                 '}';
     }
 
-    public Double getJiaban() {
-        return jiaban;
-    }
-
-    public void setJiaban(Double jiaban) {
-        this.jiaban = jiaban;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -156,187 +148,187 @@ public class Wages implements Serializable {
         this.employeeId = employeeId;
     }
 
-    public Double getBasePay() {
+    public double getBasePay() {
         return basePay;
     }
 
-    public void setBasePay(Double basePay) {
+    public void setBasePay(double basePay) {
         this.basePay = basePay;
     }
 
-    public Double getSkillPay() {
+    public double getSkillPay() {
         return skillPay;
     }
 
-    public void setSkillPay(Double skillPay) {
+    public void setSkillPay(double skillPay) {
         this.skillPay = skillPay;
     }
 
-    public Double getPositionSalary() {
+    public double getPositionSalary() {
         return positionSalary;
     }
 
-    public void setPositionSalary(Double positionSalary) {
+    public void setPositionSalary(double positionSalary) {
         this.positionSalary = positionSalary;
     }
 
-    public Double getSeniorityWage() {
+    public double getSeniorityWage() {
         return seniorityWage;
     }
 
-    public void setSeniorityWage(Double seniorityWage) {
+    public void setSeniorityWage(double seniorityWage) {
         this.seniorityWage = seniorityWage;
     }
 
-    public Double getOther() {
+    public double getOther() {
         return other;
     }
 
-    public void setOther(Double other) {
+    public void setOther(double other) {
         this.other = other;
     }
 
-    public Double getMeritBase() {
+    public double getMeritBase() {
         return meritBase;
     }
 
-    public void setMeritBase(Double meritBase) {
+    public void setMeritBase(double meritBase) {
         this.meritBase = meritBase;
     }
 
-    public Double getMeritPay() {
+    public double getMeritPay() {
         return meritPay;
     }
 
-    public void setMeritPay(Double meritPay) {
+    public void setMeritPay(double meritPay) {
         this.meritPay = meritPay;
     }
 
-    public Double getWageSubtotal() {
+    public double getWageSubtotal() {
         return wageSubtotal;
     }
 
-    public void setWageSubtotal(Double wageSubtotal) {
+    public void setWageSubtotal(double wageSubtotal) {
         this.wageSubtotal = wageSubtotal;
     }
 
-    public Double getPerformanceCoefficient() {
+    public double getPerformanceCoefficient() {
         return performanceCoefficient;
     }
 
-    public void setPerformanceCoefficient(Double performanceCoefficient) {
+    public void setPerformanceCoefficient(double performanceCoefficient) {
         this.performanceCoefficient = performanceCoefficient;
     }
 
-    public Double getWagesPayable() {
+    public double getWagesPayable() {
         return wagesPayable;
     }
 
-    public void setWagesPayable(Double wagesPayable) {
+    public void setWagesPayable(double wagesPayable) {
         this.wagesPayable = wagesPayable;
     }
 
-    public Double getFoodSupplement() {
+    public double getFoodSupplement() {
         return foodSupplement;
     }
 
-    public void setFoodSupplement(Double foodSupplement) {
+    public void setFoodSupplement(double foodSupplement) {
         this.foodSupplement = foodSupplement;
     }
 
-    public Double getTotalPayable() {
+    public double getTotalPayable() {
         return totalPayable;
     }
 
-    public void setTotalPayable(Double totalPayable) {
+    public void setTotalPayable(double totalPayable) {
         this.totalPayable = totalPayable;
     }
 
-    public Double getEndowmentInsurance() {
+    public double getEndowmentInsurance() {
         return endowmentInsurance;
     }
 
-    public void setEndowmentInsurance(Double endowmentInsurance) {
+    public void setEndowmentInsurance(double endowmentInsurance) {
         this.endowmentInsurance = endowmentInsurance;
     }
 
-    public Double getUnemploymentBenefits() {
+    public double getUnemploymentBenefits() {
         return unemploymentBenefits;
     }
 
-    public void setUnemploymentBenefits(Double unemploymentBenefits) {
+    public void setUnemploymentBenefits(double unemploymentBenefits) {
         this.unemploymentBenefits = unemploymentBenefits;
     }
 
-    public Double getMedicalInsurance() {
+    public double getMedicalInsurance() {
         return medicalInsurance;
     }
 
-    public void setMedicalInsurance(Double medicalInsurance) {
+    public void setMedicalInsurance(double medicalInsurance) {
         this.medicalInsurance = medicalInsurance;
     }
 
-    public Double getAccumulationFund() {
+    public double getAccumulationFund() {
         return accumulationFund;
     }
 
-    public void setAccumulationFund(Double accumulationFund) {
+    public void setAccumulationFund(double accumulationFund) {
         this.accumulationFund = accumulationFund;
     }
 
-    public Double getOtherDeductions() {
+    public double getOtherDeductions() {
         return otherDeductions;
     }
 
-    public void setOtherDeductions(Double otherDeductions) {
+    public void setOtherDeductions(double otherDeductions) {
         this.otherDeductions = otherDeductions;
     }
 
-    public Double getUnionFees() {
+    public double getUnionFees() {
         return unionFees;
     }
 
-    public void setUnionFees(Double unionFees) {
+    public void setUnionFees(double unionFees) {
         this.unionFees = unionFees;
     }
 
-    public Double getTotalDeduction() {
+    public double getTotalDeduction() {
         return totalDeduction;
     }
 
-    public void setTotalDeduction(Double totalDeduction) {
+    public void setTotalDeduction(double totalDeduction) {
         this.totalDeduction = totalDeduction;
     }
 
-    public Double getTotalTax() {
+    public double getTotalTax() {
         return totalTax;
     }
 
-    public void setTotalTax(Double totalTax) {
+    public void setTotalTax(double totalTax) {
         this.totalTax = totalTax;
     }
 
-    public Double getSixSpecialDeductions() {
+    public double getSixSpecialDeductions() {
         return sixSpecialDeductions;
     }
 
-    public void setSixSpecialDeductions(Double sixSpecialDeductions) {
+    public void setSixSpecialDeductions(double sixSpecialDeductions) {
         this.sixSpecialDeductions = sixSpecialDeductions;
     }
 
-    public Double getIndividualTaxAdjustment() {
+    public double getIndividualTaxAdjustment() {
         return individualTaxAdjustment;
     }
 
-    public void setIndividualTaxAdjustment(Double individualTaxAdjustment) {
+    public void setIndividualTaxAdjustment(double individualTaxAdjustment) {
         this.individualTaxAdjustment = individualTaxAdjustment;
     }
 
-    public Double getNetSalary() {
+    public double getNetSalary() {
         return netSalary;
     }
 
-    public void setNetSalary(Double netSalary) {
+    public void setNetSalary(double netSalary) {
         this.netSalary = netSalary;
     }
 
@@ -364,19 +356,19 @@ public class Wages implements Serializable {
         this.created = created;
     }
 
-    public Double getHighTemperatureSubsidy() {
+    public double getHighTemperatureSubsidy() {
         return highTemperatureSubsidy;
     }
 
-    public void setHighTemperatureSubsidy(Double highTemperatureSubsidy) {
+    public void setHighTemperatureSubsidy(double highTemperatureSubsidy) {
         this.highTemperatureSubsidy = highTemperatureSubsidy;
     }
 
-    public Double getSubTotalOfSubsidies() {
+    public double getSubTotalOfSubsidies() {
         return subTotalOfSubsidies;
     }
 
-    public void setSubTotalOfSubsidies(Double subTotalOfSubsidies) {
+    public void setSubTotalOfSubsidies(double subTotalOfSubsidies) {
         this.subTotalOfSubsidies = subTotalOfSubsidies;
     }
 
@@ -396,92 +388,100 @@ public class Wages implements Serializable {
         this.wagesPostId = wagesPostId;
     }
 
-    public Double getSpecialAdditionalDeduction() {
+    public double getSpecialAdditionalDeduction() {
         return specialAdditionalDeduction;
     }
 
-    public void setSpecialAdditionalDeduction(Double specialAdditionalDeduction) {
+    public void setSpecialAdditionalDeduction(double specialAdditionalDeduction) {
         this.specialAdditionalDeduction = specialAdditionalDeduction;
     }
 
-    public Double getIncomeTotal() {
+    public double getIncomeTotal() {
         return incomeTotal;
     }
 
-    public void setIncomeTotal(Double incomeTotal) {
+    public void setIncomeTotal(double incomeTotal) {
         this.incomeTotal = incomeTotal;
     }
 
-    public Double getDeductionOfExpensesTaxTotal() {
+    public double getDeductionOfExpensesTaxTotal() {
         return deductionOfExpensesTaxTotal;
     }
 
-    public void setDeductionOfExpensesTaxTotal(Double deductionOfExpensesTaxTotal) {
+    public void setDeductionOfExpensesTaxTotal(double deductionOfExpensesTaxTotal) {
         this.deductionOfExpensesTaxTotal = deductionOfExpensesTaxTotal;
     }
 
-    public Double getSpecialDeductionTaxTotal() {
+    public double getSpecialDeductionTaxTotal() {
         return specialDeductionTaxTotal;
     }
 
-    public void setSpecialDeductionTaxTotal(Double specialDeductionTaxTotal) {
+    public void setSpecialDeductionTaxTotal(double specialDeductionTaxTotal) {
         this.specialDeductionTaxTotal = specialDeductionTaxTotal;
     }
 
-    public Double getSpecialAdditionalDeductionTaxTotal() {
+    public double getSpecialAdditionalDeductionTaxTotal() {
         return specialAdditionalDeductionTaxTotal;
     }
 
-    public void setSpecialAdditionalDeductionTaxTotal(Double specialAdditionalDeductionTaxTotal) {
+    public void setSpecialAdditionalDeductionTaxTotal(double specialAdditionalDeductionTaxTotal) {
         this.specialAdditionalDeductionTaxTotal = specialAdditionalDeductionTaxTotal;
     }
 
-    public Double getOtherDeductionTaxTotal() {
+    public double getOtherDeductionTaxTotal() {
         return otherDeductionTaxTotal;
     }
 
-    public void setOtherDeductionTaxTotal(Double otherDeductionTaxTotal) {
+    public void setOtherDeductionTaxTotal(double otherDeductionTaxTotal) {
         this.otherDeductionTaxTotal = otherDeductionTaxTotal;
     }
 
-    public Double getTaxableIncomeTotal() {
+    public double getTaxableIncomeTotal() {
         return taxableIncomeTotal;
     }
 
-    public void setTaxableIncomeTotal(Double taxableIncomeTotal) {
+    public void setTaxableIncomeTotal(double taxableIncomeTotal) {
         this.taxableIncomeTotal = taxableIncomeTotal;
     }
 
-    public Double getIndividualIncomeTaxTotal() {
+    public double getIndividualIncomeTaxTotal() {
         return individualIncomeTaxTotal;
     }
 
-    public void setIndividualIncomeTaxTotal(Double individualIncomeTaxTotal) {
+    public void setIndividualIncomeTaxTotal(double individualIncomeTaxTotal) {
         this.individualIncomeTaxTotal = individualIncomeTaxTotal;
     }
 
-    public Double getIndividualIncomeTaxPaidTotal() {
+    public double getIndividualIncomeTaxPaidTotal() {
         return individualIncomeTaxPaidTotal;
     }
 
-    public void setIndividualIncomeTaxPaidTotal(Double individualIncomeTaxPaidTotal) {
+    public void setIndividualIncomeTaxPaidTotal(double individualIncomeTaxPaidTotal) {
         this.individualIncomeTaxPaidTotal = individualIncomeTaxPaidTotal;
     }
 
-    public Double getTotalTaxTotal() {
+    public double getTotalTaxTotal() {
         return totalTaxTotal;
     }
 
-    public void setTotalTaxTotal(Double totalTaxTotal) {
+    public void setTotalTaxTotal(double totalTaxTotal) {
         this.totalTaxTotal = totalTaxTotal;
     }
 
-    public Double getOvertimeSubsidy() {
+    public double getOvertimeSubsidy() {
         return overtimeSubsidy;
     }
 
-    public void setOvertimeSubsidy(Double overtimeSubsidy) {
+    public void setOvertimeSubsidy(double overtimeSubsidy) {
         this.overtimeSubsidy = overtimeSubsidy;
+    }
+
+    public double getJiaban() {
+        return jiaban;
+    }
+
+    public void setJiaban(double jiaban) {
+        this.jiaban = jiaban;
     }
 
     public String getEmployeeName() {
@@ -538,5 +538,13 @@ public class Wages implements Serializable {
 
     public void setWagesPostName(String wagesPostName) {
         this.wagesPostName = wagesPostName;
+    }
+
+    public int getWorkAttendance() {
+        return workAttendance;
+    }
+
+    public void setWorkAttendance(int workAttendance) {
+        this.workAttendance = workAttendance;
     }
 }

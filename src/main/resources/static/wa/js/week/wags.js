@@ -258,7 +258,7 @@ function showWagsList(m) {
                 , {field: 'wageSubtotal', title: '工资小计', sort: true, align: 'center', totalRow: true}
                 , {field: 'performanceCoefficient', title: '绩效系数', sort: true, align: 'center'}
                 , {field: 'jiaban', title: '加班工时', sort: true, align: 'center'}
-                , {field: 'kaiqin', title: '考勤天数', sort: true, align: 'center'}
+                // , {field: 'workAttendance', title: '考勤天数', sort: true, align: 'center'}
                 , {field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align: 'center'}
                 , {field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align: 'center'}
                 , {field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align: 'center'}
