@@ -171,6 +171,17 @@
         .warp .addateAchievement .layui-table{
             width: 100%;
         }
+        .obtainAttendanceBtn{
+            margin-left: 10px;
+            padding: 4px 7px;
+            box-sizing: border-box;
+            margin-top: 3px;
+            outline: none;
+            border: none;
+            background: chocolate;
+            color: #fff;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -431,7 +442,7 @@
                         <input value="0" id="jiaban" name="jiaban" class="inputCount">
                         <a style="display: inline" onclick="reduceCount('jiaban')"><img height="15px"
                                                                                         src="../img/reduce.png"></a>
-                        <span style="display: none;">数值已为0</span>
+                        <span style="display: none;" class="jiabanSpan">数值已为0</span>
                     </td>
                     <td colspan="4">考勤(天)</td>
                     <td colspan="4">
@@ -439,7 +450,8 @@
                         <input value="0" id="kaoqin" name="kaoqin" class="inputCount">
                         <a style="display: inline" onclick="reduceCount('kaoqin')"><img height="15px"
                                                                                         src="../img/reduce.png"></a>
-                        <span style="display: none;">数值已为0</span>
+                        <span style="display: none;" class="kaoqinSpan">数值已为0</span>
+                        <button class="obtainAttendanceBtn" onclick="obtainAttendance()">获取</button>
                     </td>
                 </tr>
                 <tr>

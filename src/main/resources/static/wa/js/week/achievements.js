@@ -714,7 +714,6 @@ function showBehavior(cycle) {
                     /*$('#jiaban').text('0');
                     $('#kaoqin').text('0');*/
                     $('#jiaban').val('0');
-                    $('#kaoqin').val('0');
                     $('#netPerformance').val('0');
                     $('#comprehensivePerformance').val('0');
                     $("#BeId").val("");
@@ -752,26 +751,11 @@ function showBehavior(cycle) {
                     /*$("#jiaban").text(data.jiaban);//加班
                     $("#kaoqin").text(data.kaoqin);//考勤*/
                     $("#jiaban").val(data.jiaban);//加班
-
                     $("#remark").val(data.remark);//备注
                 }
                 leaveConfig.html(tr);
                 //计算数值
                 calculateAttendance();
-                //得到上月考勤天数
-                $.ajax({
-                    type: "get",
-                    url: path + '/wa/working/getWorkAttendance',
-                    data: {'employeeId': id, "date": cycle},
-                    dataType: "json",
-                    success: function (data1) {
-                        if (data1.code == 0 || data1.code == 200) {
-                            $("#kaoqin").val(data1.data);//考勤
-                        } else {
-                            layer.alert(data.msg);
-                        }
-                    }
-                })
                 $.ajax({
                     url: path + "/wa/achievements/getAssessmentByEmployeeId",//请求地址
                     datatype: "json",//数据格式
@@ -801,10 +785,28 @@ function showBehavior(cycle) {
     }*/
 }
 
+//获取考核天数
+function obtainAttendance () {
+    var id = $("#employeeIdHidden2").val();
+    //得到上月考勤天数
+    $.ajax({
+        type: "get",
+        url: path + '/wa/working/getWorkAttendance',
+        data: {'employeeId': id, "date": $("#test6").val()},
+        dataType: "json",
+        success: function (data1) {
+            if (data1.code == 0 || data1.code == 200) {
+                $("#kaoqin").val(data1.data);//考勤
+            } else {
+                layer.alert(data.msg);
+            }
+        }
+    })
+}
+
 //增加
 function addCount(id) {
-    var td = $("#" + id).parents('td')[0];
-    var span = td.lastElementChild;
+    var span = document.getElementsByClassName(id+"Span")[0];
     var day = $("#" + id).val();
     if (day == null) {
         day = 0.5;
@@ -818,8 +820,7 @@ function addCount(id) {
 
 //减少
 function reduceCount(id) {
-    var td = $("#" + id).parents('td')[0];
-    var span = td.lastElementChild;
+    var span = document.getElementsByClassName(id+"Span")[0];
     span.style.display = "none";
     var day = $("#" + id).val();
     if (day == null | day == 0) {
