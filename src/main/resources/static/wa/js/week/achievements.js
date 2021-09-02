@@ -169,6 +169,7 @@ function showAchievementsList(cycle) {
             } else if (obj.event == 'showBehavior') {//工作行为考核
                 $("#test6").val($("#test3").val());
                 showBehavior($("#test3").val());
+                $('#kaoqin').val(data.kaoqin);
                 layer.open({
                     type: 1
                     , id: 'showBehaviorDiv' //防止重复弹出
@@ -691,7 +692,6 @@ function showBehavior(cycle) {
         return;
     }
     var leaveConfig = $("#leaveConfig");
-    $('#kaoqin').val('0');
     $.ajax({
         type: "post",
         url: path + '/wa/achievements/findBehavior',
@@ -786,6 +786,7 @@ function showBehavior(cycle) {
 
 //获取考核天数
 function obtainAttendance () {
+    $(".kaoqinSpan").css("display","none");
     var id = $("#employeeIdHidden2").val();
     //得到上月考勤天数
     $.ajax({
