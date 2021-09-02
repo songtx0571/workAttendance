@@ -258,6 +258,7 @@ function showWagsList(m) {
                 , {field: 'wageSubtotal', title: '工资小计', sort: true, align: 'center', totalRow: true}
                 , {field: 'performanceCoefficient', title: '绩效系数', sort: true, align: 'center'}
                 , {field: 'jiaban', title: '加班工时', sort: true, align: 'center'}
+                , {field: 'kaiqin', title: '考勤天数', sort: true, align: 'center'}
                 , {field: 'wagesPayable', title: '应发工资', sort: true, totalRow: true, align: 'center'}
                 , {field: 'subTotalOfSubsidies', title: '补贴小计', sort: true, totalRow: true, align: 'center'}
                 , {field: 'totalDeduction', title: '扣款合计', sort: true, totalRow: true, align: 'center'}
@@ -314,6 +315,11 @@ function showWagsList(m) {
             $(".userNumber").val(data.userNumber);//员工编号
             $(".employeeName").val(data.employeeName);//员工姓名
             laowupaiqian = data.laowupaiqian;//劳务派遣
+            /*if (data.isChanged != "试用期") {
+                $(".wagesPayableTd").text("应发工资");
+            } else {
+                $(".wagesPayableTd").text("应发工资×0.8");
+            }*/
             layui.use('form', function () {
                 var form = layui.form;
                 if (data.wagesPostId) {
@@ -360,8 +366,7 @@ function showWagsList(m) {
             $(".meritPay").val(data.meritPay);//绩效工资
             $(".other").val(data.other);//其他
             $(".wageSubtotal").val(data.wageSubtotal);//工资小计
-            var wagesPayableA = data.wagesPayable + "×0.8";
-            $(".wagesPayable").val(wagesPayableA);//应发工资
+            $(".wagesPayable").val(data.wagesPayable);//应发工资
             if (data.foodSupplement == "" || data.foodSupplement == null) {
                 data.foodSupplement = 0.00;
             }

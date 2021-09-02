@@ -235,7 +235,7 @@
                            onchange="twoDecimal('meritPay',this.value);" readonly></td>
             </tr>
             <tr>
-                <td style="color: red;">应发工资：</td>
+                <td style="color: red;" class="wagesPayableTd">应发工资：</td>
                 <td><input type="text" class="wagesPayable" id="wagesPayable" name="wagesPayable" placeholder="0.00"
                           readonly></td>
                 <td>其他：</td>
@@ -424,7 +424,7 @@
                 <td><input type="number" class="meritPay" name="meritPay" placeholder="0.00" readonly></td>
             </tr>
             <tr>
-                <td>应发工资：</td>
+                <td class="wagesPayableTd">应发工资：</td>
                 <td><input type="text" class="wagesPayable" name="wagesPayable" placeholder="0.00" readonly></td>
                 <td>其他：</td>
                 <td><input type="number" class="other" name="other" placeholder="0.00" readonly></td>

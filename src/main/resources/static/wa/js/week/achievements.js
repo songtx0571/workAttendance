@@ -3,7 +3,7 @@ var userNumber = "";
 var classUserNumber = "";
 var date = new Date();
 var year = date.getFullYear();
-var month = date.getMonth() + 1;
+var month = date.getMonth();
 var indexAdd = 0;
 $(function () {
     //显示考核日期
@@ -686,13 +686,12 @@ function showBehavior(cycle) {
         /*$('#jiaban').text('0');
         $('#kaoqin').text('0');*/
         $('#jiaban').val('0');
-        $('#kaoqin').val('0');
         $('#netPerformance').val('0');
         $('#comprehensivePerformance').val('0');
         return;
     }
     var leaveConfig = $("#leaveConfig");
-
+    $('#kaoqin').val('0');
     $.ajax({
         type: "post",
         url: path + '/wa/achievements/findBehavior',
