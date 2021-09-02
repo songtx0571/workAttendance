@@ -169,7 +169,8 @@ function showAchievementsList(cycle) {
             } else if (obj.event == 'showBehavior') {//工作行为考核
                 $("#test6").val($("#test3").val());
                 showBehavior($("#test3").val());
-                $('#kaoqin').val(data.kaoqin);
+                $('#kaoqin').val(data.kaoqin);//考勤
+                $("#jiaban").val(data.jiaban);//加班
                 layer.open({
                     type: 1
                     , id: 'showBehaviorDiv' //防止重复弹出
@@ -684,9 +685,6 @@ function showBehavior(cycle) {
         $('.week4').val("");
         $('#sum').val("");
         $('#remark').val("");
-        /*$('#jiaban').text('0');
-        $('#kaoqin').text('0');*/
-        $('#jiaban').val('0');
         $('#netPerformance').val('0');
         $('#comprehensivePerformance').val('0');
         return;
@@ -710,9 +708,6 @@ function showBehavior(cycle) {
                     $('.week4').val("0");
                     $('#sum').val("0");
                     $('#remark').val("");
-                    /*$('#jiaban').text('0');
-                    $('#kaoqin').text('0');*/
-                    $('#jiaban').val('0');
                     $('#netPerformance').val('0');
                     $('#comprehensivePerformance').val('0');
                     $("#BeId").val("");
@@ -747,9 +742,6 @@ function showBehavior(cycle) {
                     $(".week3").val(data.week3);
                     $(".week4").val(data.week4);
                     $(".period").val('10');
-                    /*$("#jiaban").text(data.jiaban);//加班
-                    $("#kaoqin").text(data.kaoqin);//考勤*/
-                    $("#jiaban").val(data.jiaban);//加班
                     $("#remark").val(data.remark);//备注
                 }
                 leaveConfig.html(tr);
@@ -796,7 +788,9 @@ function obtainAttendance () {
         dataType: "json",
         success: function (data1) {
             if (data1.code == 0 || data1.code == 200) {
-                $("#kaoqin").val(data1.data);//考勤
+
+                $("#kaoqin").val(data1.data.workAttendance);//考勤
+                $("#jiaban").val(data1.data.workingOvertimeTotal);//加班
             } else {
                 layer.alert(data.msg);
             }

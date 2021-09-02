@@ -578,16 +578,23 @@ public class WorkingHoursController {
         map.put("date", date);
         map.put("employeeId", employeeId);
         List<Map<String, Object>> workingHourList = workingService.getWorkingHourByMap(map);
-        int count = 0;
+        map.clear();
+        int workAttendanceMax = 0;
+        Double workingOvertimeTotalMax = 0D;
         if (workingHourList != null && workingHourList.size() > 0) {
             for (Map<String, Object> workingHourMap : workingHourList) {
-                Integer workAttendance = Integer.valueOf(workingHourMap.get("workAttendance").toString());
-                if (workAttendance != null && count < workAttendance) {
-                    count = workAttendance;
+                Integer workAttendance = StringUtils.isEmpty(workingHourMap.get("workAttendance")) ? 0 : Integer.valueOf(workingHourMap.get("workAttendance").toString());
+                if (workAttendance != null && workAttendanceMax < workAttendance) {
+                    workAttendanceMax = workAttendance;
+                }
+                Double workingOvertimeTotal = StringUtils.isEmpty(workingHourMap.get("workingOvertimeTotal")) ? 0D : Double.valueOf(workingHourMap.get("workingOvertimeTotal").toString());
+                if (workingOvertimeTotal != null && workingOvertimeTotalMax < workingOvertimeTotal) {
+                    workingOvertimeTotalMax = workingOvertimeTotal;
                 }
             }
         }
-        return Result.ok(1, count);
-
+        map.put("workAttendance", workAttendanceMax);
+        map.put("workingOvertimeTotal", workingOvertimeTotalMax);
+        return Result.ok(1, map);
     }
 }
