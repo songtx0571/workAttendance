@@ -3,10 +3,7 @@ package com.howei.controller;
 import com.alibaba.fastjson.JSON;
 import com.howei.pojo.*;
 import com.howei.service.*;
-import com.howei.util.DateFormat;
-import com.howei.util.ListUtils;
-import com.howei.util.Result;
-import com.howei.util.Type;
+import com.howei.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/wa/wags")
@@ -56,17 +54,14 @@ public class WagsController {
         String month = request.getParameter("month");
         Users users = this.getPrincipal();
 
-        String empIdStr = "";
-        Integer employeeId = null;
-        if (month == null || month.equals("")) {
+        String empIdStr;
+        if (month == null || "".equals(month)) {
             month = DateFormat.ThisMonth();
         }
-        //user为空
         if (users == null) {
-            Result result = new Result(0, null, 0, "noUser");
-            return result;
+            return Result.fail(ResultEnum.NO_USER);
         }
-        employeeId = users.getEmployeeId();
+        Integer employeeId = users.getEmployeeId();
         Map map = new HashMap<>();
         map.put("month", month + "-01");
         //判断是否存在以下角色，
@@ -74,29 +69,16 @@ public class WagsController {
         if (subject.hasRole("财务") || subject.hasRole("总部管理员")) {
             empIdStr = null;
         } else {
-            empIdStr += users.getEmployeeId() + ",";
             List<String> employeeIdList = new ArrayList<>();
-
+            employeeIdList.add(employeeId.toString());
             List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
-
             List<Employee> empList = employeeService.getEmployeeByManager(0);
             ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
-            for (String employeeIdStr : employeeIdList) {
-                empIdStr += employeeIdStr + ",";
-            }
-            if (empIdStr != null && !empIdStr.equals("")) {
-                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-            }
+            empIdStr = employeeIdList.stream().collect(Collectors.joining(","));
         }
         map.put("empId", empIdStr);
-        List<Wages> list = wagsService.getWagsList(map);
-
-
-        Result result = new Result();
-        result.setCode(0);
-        result.setCount(list.size());
-        result.setData(list);
-        return result;
+        List<Wages> wages = wagsService.getWagsList(map);
+        return Result.ok(wages.size(), wages);
     }
 
     /**
@@ -397,25 +379,6 @@ public class WagsController {
                     map.put("month", month + "-01");
                     map.put("employeeId", employeeId);
                     List<Wages> listWages = wagsService.getWagesToTax(map);
-                    Double CommunicationFeeTotal = 0.00;
-//                    if (listWages != null) {
-//                        for (Wages wagesOtherMonth : listWages) {
-//                            System.out.println(wagesOtherMonth);
-//                            //计税合计
-////                            totalTaxTotal += wagesOtherMonth.getTotalTax();
-//                            String date = wagesOtherMonth.getDate();
-//                            if ("2021-04-01".compareTo(date) <= 0 && "否".equals(wages.getLaowupaiqian())) {
-//                                CommunicationFeeTotal += 300;
-//                            }
-//
-//                        }
-//                        if ("否".equals(wages.getLaowupaiqian())) {
-//                            CommunicationFeeTotal += 300;
-//                        }
-//                        //计算累计应纳税所得额：累计应纳税所得额=累计计税合计 -（当前月份-3）*300-累计专项附加扣除-5000*月份
-//                        System.out.println("CommunicationFeeTotal:::"+CommunicationFeeTotal);
-//                        taxableIncomeTotal = totalTaxTotal - CommunicationFeeTotal - specialAdditionalDeductionTaxTotal - deductionOfExpensesTaxTotal;
-//                    }
                     //累计应缴纳谁所得额=累计收入额-累计费用见面-累计专项扣除-累计专项附加扣除-累计其他扣除
                     //累计应缴纳税所得额
                     Double taxableIncomeTotal = incomeTotal - deductionOfExpensesTaxTotal - specialDeductionTaxTotal - specialAdditionalDeductionTaxTotal - otherDeductionTaxTotal;
