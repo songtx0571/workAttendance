@@ -265,7 +265,7 @@ public class WagsController {
             return JSON.toJSONString(Type.success);
         }
         //当月天数
-        int daysOfMonth = DateFormat.getDaysOfMonth(month + "-1");
+        int daysOfMonth = DateFormat.getDaysOfMonth(lastYearMonth + "-1");
         String msg = "";
         for (int i = 0; i < wageslist.size(); i++) {
 
