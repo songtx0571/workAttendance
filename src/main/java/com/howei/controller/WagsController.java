@@ -330,7 +330,7 @@ public class WagsController {
                     bd = new BigDecimal(wageSubtotal / 2.0 + meritPay);
                     if ("当月离职".equals(wages.getIsChanged()) || "当月入职".equals(wages.getIsChanged())) {
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * kaoqin / daysOfMonth);
-                    } else if ("当月入职".equals(wages.getIsChanged())) {
+                    } else if ("试用期".equals(wages.getIsChanged())) {
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);
                     }
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
