@@ -331,6 +331,7 @@ function showWagsList(m) {
             } else  if (month == 4 || month == 6 || month == 9 || month == 11) {
                 day = 30;
             }
+            $(".isChanged").val(data.isChanged);
             if (data.isChanged == "试用期") {
                 $(".wagesPayableTd").html("应发工资<span style='color: #6a737b;'>×0.8</span>");
             } else if (data.isChanged == "当月离职") {

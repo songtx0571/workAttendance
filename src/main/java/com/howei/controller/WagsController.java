@@ -264,6 +264,8 @@ public class WagsController {
         if (wageslist == null || wageslist.size() == 0) {
             return JSON.toJSONString(Type.success);
         }
+        //当月天数
+        int daysOfMonth = DateFormat.getDaysOfMonth(month + "-1");
         String msg = "";
         for (int i = 0; i < wageslist.size(); i++) {
 
@@ -311,6 +313,9 @@ public class WagsController {
                     wages.setJiaban(jianban);
                     wages.setWorkAttendance(kaoqin);
                     //绩效系数
+                    if ("当月入职".equals(wages.getIsChanged())) {
+                        comprehensivePerformance = 1D;
+                    }
                     wages.setPerformanceCoefficient(comprehensivePerformance);
 
                     //绩效工资=绩效基数*绩效系数
@@ -321,9 +326,15 @@ public class WagsController {
                     bd = new BigDecimal(wages.getBasePay() + wages.getPositionSalary());
                     Double wageSubtotal = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     wages.setWageSubtotal(wageSubtotal);
-                    //应发工资==(岗位工资+职级工资)/2+绩效工资
+                    //应发工资==(岗位工资+职级工资)/2+绩效工资 * (N/D | 0.8)
                     bd = new BigDecimal(wageSubtotal / 2.0 + meritPay);
+                    if ("当月离职".equals(wages.getIsChanged()) || "当月入职".equals(wages.getIsChanged())) {
+                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * kaoqin / daysOfMonth);
+                    } else if ("当月入职".equals(wages.getIsChanged())) {
+                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);
+                    }
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
                     wages.setWagesPayable(wagesPayable);
                     //餐补
                     bd = new BigDecimal(foodSupplement);
@@ -350,8 +361,6 @@ public class WagsController {
                     //计税合计
                     wages.setTotalTax(totalTax);
 
-                    System.out.println("wagesLastMonth::" + wagesLastMonth);
-                    System.out.println("wagesthisMonth::" + wages);
                     //累计收入额=上个月的累计收入额+(当月应发合计-其他扣款)
                     Double incomeTotal = wagesLastMonth.getIncomeTotal() + totalPayable - wages.getOtherDeductions();
                     wages.setIncomeTotal(incomeTotal);
