@@ -516,6 +516,7 @@ public class WagsController {
      * @return
      */
     @GetMapping("/getPayableWageFormula")
+    @ResponseBody
     public Result getWageLabel(Integer employeeId, String month, String changedType) {
         if ("2".equals(changedType)) {
             return Result.ok(1, "×0.8");

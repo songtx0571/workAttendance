@@ -316,30 +316,33 @@ function showWagsList(m) {
             $(".userNumber").val(data.userNumber);//员工编号
             $(".employeeName").val(data.employeeName);//员工姓名
             laowupaiqian = data.laowupaiqian;//劳务派遣
-            var date = new Date();
-            var year = date.getFullYear();
-            var month = date.getMonth() + 1;
-            var day = 31;
-            if ((year % 4 == 0) && (year % 100 != 0 || year % 400 == 0)) {
-                if (month == 2) {
-                    day = 28;
-                } else {
-                    day = 29;
-                }
-            }
-            if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month ==12) {
-                day = 31;
-            } else  if (month == 4 || month == 6 || month == 9 || month == 11) {
-                day = 30;
-            }
+            var changedType = -1;
             $(".isChanged").val(data.isChanged);
             if (data.isChanged == "试用期") {
-                $(".wagesPayableTd").html("应发工资<span style='color: #6a737b;'>×0.8</span>");
+                changedType = 2;
             } else if (data.isChanged == "当月离职") {
-                $(".wagesPayableTd").html("应发工资<span style='color: #6a737b'>×"+data.workAttendance+"/"+day+"</span>");
-            } else {
-                $(".wagesPayableTd").html("应发工资");
+                changedType = 1;
+            } else if (data.isChanged == "当月入职") {
+                changedType = 0;
             }
+            var content = "应发工资";
+            if (changedType != -1) {
+                $.ajax({
+                    type: "GET",
+                    url: path + "/wa/wags/getPayableWageFormula",
+                    data: {employeeId: data.employeeId,month: m, changedType:changedType},
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code == 0 || data.code == 200) {
+                            content += "<span style='color: #6a737b;'>"+data.data+"</span>"
+                        } else {
+                            layer.alert(data.msg)
+                        }
+                    }
+                });
+            }
+            $(".wagesPayableTd").html(content);
             layui.use('form', function () {
                 var form = layui.form;
                 if (data.wagesPostId) {
