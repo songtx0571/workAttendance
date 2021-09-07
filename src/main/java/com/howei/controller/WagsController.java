@@ -350,6 +350,7 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "0");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+                        System.out.println("0:::"+maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth);
                     } else if ("当月离职".equals(wages.getIsChanged())) {
                         map.clear();
@@ -357,6 +358,7 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "1");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+                        System.out.println("1:::"+maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth);
                     } else if ("试用期".equals(wages.getIsChanged())) {
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);

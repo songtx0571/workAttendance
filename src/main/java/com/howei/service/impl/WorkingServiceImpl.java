@@ -80,26 +80,28 @@ public class WorkingServiceImpl implements WorkingService {
     @Override
     public int getMaxMinWorkAttendanceDayByMap(Map map) {
         List<Map<String, Object>> workingHourByMapList = workingMapper.getWorkingHourByMap(map);
-        Integer WorkAttendance = 0;
-        workingHourByMapList = workingHourByMapList.stream().filter(item -> item.containsKey("day")).collect(Collectors.toList());
-
+        Integer workAttendance;
         Object changedType = map.get("changedType");
         if ("0".equals(changedType)) {
+            workAttendance = 31;
             for (Map<String, Object> workingHourMap : workingHourByMapList) {
+                System.out.println("workingHourMap::" + workingHourMap);
                 for (int i = 1; i <= 31; i++) {
                     String key = (i <= 9) ? "0" + i : "" + i;
-                    if (!"0".equals(workingHourMap.get(key)) && i < WorkAttendance) {
-                        WorkAttendance = i;
+                    System.out.println("::" + workingHourMap.get("day" + key));
+                    if (!"0".equals(workingHourMap.get("day" + key)) && i < workAttendance) {
+                        workAttendance = i;
                     }
 
                 }
             }
         } else {
+            workAttendance = 0;
             for (Map<String, Object> workingHourMap : workingHourByMapList) {
                 for (int i = 31; i > 1; i--) {
                     String key = (i <= 9) ? "0" + i : "" + i;
-                    if (!"0".equals(workingHourMap.get(key)) && i > WorkAttendance) {
-                        WorkAttendance = i;
+                    if (!"0".equals(workingHourMap.get("day" + key)) && i > workAttendance) {
+                        workAttendance = i;
                     }
 
                 }
@@ -107,7 +109,7 @@ public class WorkingServiceImpl implements WorkingService {
 
         }
 
-        return WorkAttendance;
+        return workAttendance;
     }
 }
 
