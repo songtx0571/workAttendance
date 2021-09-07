@@ -149,7 +149,7 @@ public class WagsController {
         String confirmType = request.getParameter("confirmType");
         Map map = new HashMap<>();
         map.put("month", monthEnd + "-01");
-        List<Wages> list = wagsService.getWagsList(map);
+        List<Wages> list = wagsService.getSimpleWagsListByMap(map);
         if (list != null) {
             if ("1".equals(confirmType)) {
                 wagsService.deleteByMonth(monthEnd);

@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface WagsService {
-
+    /**
+     * 查询工资表,多表列连接
+     *
+     * @param map
+     * @return
+     */
     List<Wages> getWagsList(Map map);
 
     int copyToThisMonthWags(List<Wages> list);
@@ -23,4 +28,12 @@ public interface WagsService {
     List<Wages> getWagesToTax(Map map);
 
     int deleteByMonth(String month);
+
+    /**
+     * 查询工资表
+     *
+     * @param map
+     * @return
+     */
+    List<Wages> getSimpleWagsListByMap(Map map);
 }

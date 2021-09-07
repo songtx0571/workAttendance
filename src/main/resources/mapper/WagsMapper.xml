@@ -231,6 +231,10 @@
         and DATE_FORMAT(#{month},'%Y-01-01') &lt;= DATE_FORMAT(w.`date`,'%Y-%m-%d')
          and w.employeeId=#{employeeId} order by `date`
    </select>
+    <select id="getSimpleWagsListByMap" resultType="com.howei.pojo.Wages">
+        select * from wages where   and date=#{month}
+
+    </select>
 
 
 </mapper>
