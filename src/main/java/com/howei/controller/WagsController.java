@@ -81,6 +81,7 @@ public class WagsController {
         }
         map.put("empId", empIdStr);
         List<Wages> wages = wagsService.getWagsList(map);
+
         return Result.ok(wages.size(), wages);
     }
 
@@ -152,7 +153,7 @@ public class WagsController {
         List<Wages> list = wagsService.getSimpleWagsListByMap(map);
         if (list != null && list.size() > 0) {
             if ("1".equals(confirmType)) {
-                wagsService.deleteByDate(monthEnd+ "-01");
+                wagsService.deleteByDate(monthEnd + "-01");
             } else {
                 return Result.fail(ResultEnum.HAVE_RECORD_TO_OVERWRITE);
             }
@@ -350,7 +351,7 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "0");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
-                        System.out.println("0:::"+maxMinWorkAttendanceDay);
+                        System.out.println("0:::" + maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth);
                     } else if ("当月离职".equals(wages.getIsChanged())) {
                         map.clear();
@@ -358,7 +359,7 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "1");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
-                        System.out.println("1:::"+maxMinWorkAttendanceDay);
+                        System.out.println("1:::" + maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth);
                     } else if ("试用期".equals(wages.getIsChanged())) {
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);
@@ -506,6 +507,28 @@ public class WagsController {
         }
         List<Map<String, String>> list = wageBaseService.getPostGradeMap(id);
         return JSON.toJSONString(list);
+    }
+
+    /**
+     * @param employeeId
+     * @param month
+     * @param changedType 0当月入职,1当月离职,2试用期
+     * @return
+     */
+    @GetMapping("/getPayableWageFormula")
+    public Result getWageLabel(Integer employeeId, String month, String changedType) {
+        if ("2".equals(changedType)) {
+            return Result.ok(1, "×0.8");
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("employeeId", employeeId);
+        //获取指定日期的上一月份
+        String lastYearMonth = DateFormat.getYearMonthByMonth(month, -1);
+        map.put("date", lastYearMonth);
+        map.put("changedType", changedType);
+        int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+        int daysOfMonth = DateFormat.getDaysOfMonth(lastYearMonth + "-1");
+        return Result.ok(1, "×" + maxMinWorkAttendanceDay + "/" + daysOfMonth);
     }
 
 }
