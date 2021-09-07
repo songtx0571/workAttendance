@@ -52,8 +52,8 @@ public class WagsServiceImpl implements WagsService {
     }
 
     @Override
-    public int deleteByMonth(String month) {
-        return wagsMapper.deleteByMonth(month);
+    public int deleteByDate(String date) {
+        return wagsMapper.deleteByDate(date);
     }
 
     @Override

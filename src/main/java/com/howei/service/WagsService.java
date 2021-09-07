@@ -27,7 +27,7 @@ public interface WagsService {
 
     List<Wages> getWagesToTax(Map map);
 
-    int deleteByMonth(String month);
+    int deleteByDate(String date);
 
     /**
      * 查询工资表

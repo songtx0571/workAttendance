@@ -27,7 +27,7 @@
             </if>
         </where>
     </select>
-    
+
     <select id="findPostGradeByName" resultType="int">
         select count(*) from postGrade where wagesPostId=#{wagesPostId} and gradeName=#{gradeName}
     </select>
@@ -96,6 +96,6 @@
     </select>
 
     <select id="getWagesPostById" resultType="com.howei.pojo.WagesPost">
-        select * from wagesPost where isactive=1 and companyId=1
+        select * from wagesPost where isactive=1 and companyId=1 and id=#{wagesPostId}
     </select>
 </mapper>

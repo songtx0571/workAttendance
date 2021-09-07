@@ -6,6 +6,7 @@ var day = date.getDate();
 var upBtnYear = year;
 var upBtnMonth = month;
 var laowupaiqian = ""
+var indexCopy = 0;
 $(function () {
     showMonth();
     if (month == 12) {
@@ -464,7 +465,7 @@ function copyWags() {
         form.render('select');
         form.render(); //更新全部
     });
-    layer.open({
+    indexCopy = layer.open({
         type: 1
         , id: 'copyDiv' //防止重复弹出
         , content: $(".copyDiv")
@@ -487,7 +488,7 @@ function copyOk() {
     $.ajax({
         url: path + "/wa/wags/copyToThisMonthWags",//请求地址
         dataType: "json",//数据格式
-        data: {"monthStart": monthStart, "monthEnd": monthEnd},
+        data: {"monthStart": monthStart, "monthEnd": monthEnd,confirmType: 0},
         type: "get",//请求方式
         success: function (data) {
             if (data.code == 0 || data.code == 200) {
@@ -508,10 +509,11 @@ function copyOk() {
                     success: function (layero) {
                         var btn = layero.find('.layui-layer-btn');
                         btn.find('.layui-layer-btn0').click(function () {
+                            layer.close(indexCopy);
                             $.ajax({
                                 url: path + "/wa/wags/copyToThisMonthWags",//请求地址
                                 dataType: "json",//数据格式
-                                data: {"monthStart": monthStart, "monthEnd": monthEnd},
+                                data: {"monthStart": monthStart, "monthEnd": monthEnd,confirmType:1},
                                 type: "get",//请求方式
                                 success: function (data) {
                                     if (data.code == 0 || data.code == 200) {
@@ -519,7 +521,6 @@ function copyOk() {
                                     } else {
                                         layer.alert(data.msg);
                                     }
-                                    layer.closeAll();
                                 }
                             })
                         });

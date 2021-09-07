@@ -150,9 +150,9 @@ public class WagsController {
         Map map = new HashMap<>();
         map.put("month", monthEnd + "-01");
         List<Wages> list = wagsService.getSimpleWagsListByMap(map);
-        if (list != null) {
+        if (list != null && list.size() > 0) {
             if ("1".equals(confirmType)) {
-                wagsService.deleteByMonth(monthEnd);
+                wagsService.deleteByDate(monthEnd+ "-01");
             } else {
                 return Result.fail(ResultEnum.HAVE_RECORD_TO_OVERWRITE);
             }

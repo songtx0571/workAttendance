@@ -25,7 +25,7 @@ public interface WagsMapper {
 
     List<Wages> getWagesToTax(Map map);
 
-    int deleteByMonth(String month);
+    int deleteByDate(String date);
 
     List<Wages> getSimpleWagsListByMap(Map map);
 }
