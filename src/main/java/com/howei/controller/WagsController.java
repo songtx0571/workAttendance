@@ -36,6 +36,9 @@ public class WagsController {
     @Autowired
     private WageBaseService wageBaseService;
 
+    @Autowired
+    private WorkingService workingService;
+
 
     public Users getPrincipal() {
         Subject subject = SecurityUtils.getSubject();
@@ -127,61 +130,74 @@ public class WagsController {
 
 
     /**
-     * 生成本月工资信息
-     * 工资小计=基本工资+技能工资+职务工资+工龄工资+其他+绩效工资
-     * 应发工资=(基本工资+技能工资+职务工资+工龄工资+其他)+绩效工资*绩效系数
-     * 应发合计=应发工资+补贴小记
-     * 扣款合计=养老保险+失业金+医疗保险+公积金+其他扣款+工会费
-     * 计税合计=应发合计-扣款合计
+     * monthStart 初始月,年月
+     * monthEnd 复制月,年月
+     * confirmType 确认按钮,1确认
      *
      * @return
      */
     @RequestMapping("/copyToThisMonthWags")
     @ResponseBody
-    public String copyToThisMonthWags(HttpServletRequest request) {
+    public Result copyToThisMonthWags(HttpServletRequest request) {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
+        }
         String monthStart = request.getParameter("monthStart");
         String monthEnd = request.getParameter("monthEnd");
+        String confirmType = request.getParameter("confirmType");
         Map map = new HashMap<>();
-        map.put("month", monthStart + "-01");
+        map.put("month", monthEnd + "-01");
         List<Wages> list = wagsService.getWagsList(map);
         if (list != null) {
-            List<Wages> wagesList = new ArrayList<>();
-            for (Wages wages : list) {
-                //判断员工是否在职
-                Integer empId = wages.getEmployeeId();
-                Users user = userService.getUserByEmpId(empId);
-                if (user != null && user.getState() == 1) {
-                    wages.setDate(monthEnd + "-01");
-                    wages.setCreated(monthEnd + "-01");
-                    wages.setPerformanceCoefficient(0.00);//设置绩效系数
-                    wages.setFoodSupplement(0.00);//餐补
-                    wages.setHighTemperatureSubsidy(0.00);//高温补贴
-                    wages.setTotalPayable(0.00);//应发合计
-                    wages.setTotalDeduction(0.00);//扣款合计
-                    wages.setOtherDeductions(0.00);//其他扣款
-                    wages.setIndividualTaxAdjustment(0.00);//个调税
-                    wages.setNetSalary(0.00);//实发工资
-                    wages.setSubTotalOfSubsidies(0.00);//补贴小计
-                    if (wages.getWagesPostId() != null) {
-                        WagesPost wagesPost = wageBaseService.getWagesPostById(wages.getWagesPostId());
-                        wages.setBasePay(wagesPost.getWagesPostWage());//基本工资
-                        PostGrade postGrade = wageBaseService.getPostBaseById(wages.getPostGradeId());
-                        wages.setPositionSalary(postGrade.getPostGradeWage());//职级工资
-                        //工资小计=岗位工资+职级工资
-                        wages.setWageSubtotal(wagesPost.getWagesPostWage() + postGrade.getPostGradeWage());//工资小计
-                        //绩效工资
-                        wages.setMeritPay(wages.getWageSubtotal() / 2.0);
-                    }
-                    wagesList.add(wages);
-                }
+            if ("1".equals(confirmType)) {
+                wagsService.deleteByMonth(monthEnd);
+            } else {
+                return Result.fail(ResultEnum.HAVE_RECORD_TO_OVERWRITE);
             }
-            int result = wagsService.copyToThisMonthWags(wagesList);
-            if (result > 0) {
-                return JSON.toJSONString(Type.SUCCESS);
-            }
-            return JSON.toJSONString(Type.CANCEL);
         }
-        return JSON.toJSONString(Type.CANCEL);
+        map.put("month", monthStart + "-01");
+        list = wagsService.getWagsList(map);
+        if (list == null) {
+            return Result.fail(ResultEnum.HAVE_NO_RECORD);
+        }
+
+        List<Wages> wagesList = new ArrayList<>();
+        for (Wages wages : list) {
+            //判断员工是否在职
+            Integer empId = wages.getEmployeeId();
+            Users user = userService.getUserByEmpId(empId);
+            if (user != null && user.getState() == 1) {
+                wages.setDate(monthEnd + "-01");
+                wages.setCreated(monthEnd + "-01");
+                wages.setPerformanceCoefficient(0.00);//设置绩效系数
+                wages.setFoodSupplement(0.00);//餐补
+                wages.setHighTemperatureSubsidy(0.00);//高温补贴
+                wages.setTotalPayable(0.00);//应发合计
+                wages.setTotalDeduction(0.00);//扣款合计
+                wages.setOtherDeductions(0.00);//其他扣款
+                wages.setIndividualTaxAdjustment(0.00);//个调税
+                wages.setNetSalary(0.00);//实发工资
+                wages.setSubTotalOfSubsidies(0.00);//补贴小计
+                if (wages.getWagesPostId() != null) {
+                    WagesPost wagesPost = wageBaseService.getWagesPostById(wages.getWagesPostId());
+                    wages.setBasePay(wagesPost.getWagesPostWage());//基本工资
+                    PostGrade postGrade = wageBaseService.getPostBaseById(wages.getPostGradeId());
+                    wages.setPositionSalary(postGrade.getPostGradeWage());//职级工资
+                    //工资小计=岗位工资+职级工资
+                    wages.setWageSubtotal(wagesPost.getWagesPostWage() + postGrade.getPostGradeWage());//工资小计
+                    //绩效工资
+                    wages.setMeritPay(wages.getWageSubtotal() / 2.0);
+                }
+                wagesList.add(wages);
+            }
+        }
+        int result = wagsService.copyToThisMonthWags(wagesList);
+        if (result > 0) {
+            return Result.ok();
+        }
+        return Result.fail();
     }
 
     /**
@@ -328,8 +344,20 @@ public class WagsController {
                     wages.setWageSubtotal(wageSubtotal);
                     //应发工资==(岗位工资+职级工资)/2+绩效工资 * (N/D | 0.8)
                     bd = new BigDecimal(wageSubtotal / 2.0 + meritPay);
-                    if ("当月离职".equals(wages.getIsChanged()) || "当月入职".equals(wages.getIsChanged())) {
-                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * kaoqin / daysOfMonth);
+                    if ("当月入职".equals(wages.getIsChanged())) {
+                        map.clear();
+                        map.put("employeeId", employeeId);
+                        map.put("date", lastYearMonth);
+                        map.put("changedType", "0");
+                        int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth);
+                    } else if ("当月离职".equals(wages.getIsChanged())) {
+                        map.clear();
+                        map.put("employeeId", employeeId);
+                        map.put("date", lastYearMonth);
+                        map.put("changedType", "1");
+                        int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth);
                     } else if ("试用期".equals(wages.getIsChanged())) {
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);
                     }

@@ -50,4 +50,9 @@ public class WagsServiceImpl implements WagsService {
     public List<Wages> getWagesToTax(Map map) {
         return wagsMapper.getWagesToTax(map);
     }
+
+    @Override
+    public int deleteByMonth(String month) {
+        return wagsMapper.deleteByMonth(month);
+    }
 }

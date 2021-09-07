@@ -34,4 +34,6 @@ public interface WorkingService {
     List<Map<String, Object>> getWorkingHourByMap(Map<String, Object> map);
 
     int deleteWorkingHourByMap(Map<String, Object> map);
+
+    int getMaxMinWorkAttendanceDayByMap(Map map);
 }

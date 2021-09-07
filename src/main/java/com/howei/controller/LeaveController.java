@@ -35,11 +35,8 @@ public class LeaveController {
     @Autowired
     private UserService userService;
 
-    private Map<Integer, String> empName;
 
-    void init() {
-        empName = employeeService.getEmployeeMap();
-    }
+
 
     /**
      * 跳转请假配置页面
@@ -186,7 +183,7 @@ public class LeaveController {
     @RequestMapping("/getLeaveDataList")
     @ResponseBody
     public String getLeaveDataList(HttpServletRequest request) {
-        init();
+         Map<Integer, String>  empName = employeeService.getEmployeeMap();
         String startTime = request.getParameter("startTime");
         String empId = request.getParameter("employeeId");
         String page = request.getParameter("page");
@@ -637,11 +634,4 @@ public class LeaveController {
         return JSON.toJSONString(result);
     }
 
-    public Map<Integer, String> getEmpName() {
-        return empName;
-    }
-
-    public void setEmpName(Map<Integer, String> empName) {
-        this.empName = empName;
-    }
 }

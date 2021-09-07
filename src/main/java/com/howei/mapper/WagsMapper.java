@@ -24,4 +24,6 @@ public interface WagsMapper {
     int addThisMonthWags(@Param("wages") Wages wages);
 
     List<Wages> getWagesToTax(Map map);
+
+    int deleteByMonth(String month);
 }

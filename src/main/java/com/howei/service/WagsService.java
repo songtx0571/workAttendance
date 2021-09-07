@@ -21,4 +21,6 @@ public interface WagsService {
     int addThisMonthWags(Wages wages);
 
     List<Wages> getWagesToTax(Map map);
+
+    int deleteByMonth(String month);
 }

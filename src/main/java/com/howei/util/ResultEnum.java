@@ -27,7 +27,8 @@ public enum ResultEnum {
     POSTPERATOR_OPEN(220, "OPEN"),
     POSTPERATOR_CONSOLE(221, "该检修已经完成,请等候下一周期到来"),
     DEFECT_TWO_START_EXECUTING(222, "已有两条缺陷正在执行,请先完成它们"),
-    HAVE_RECORD_TO_OVERWRITE(223, "记录已经存在,是否覆盖他们");
+    HAVE_RECORD_TO_OVERWRITE(223, "记录已经存在,是否覆盖他们"),
+    HAVE_NO_RECORD(224, "当前没有记录");
 
     private Integer code;
     private String msg;
