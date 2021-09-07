@@ -55,4 +55,9 @@ public class WagsServiceImpl implements WagsService {
     public int deleteByMonth(String month) {
         return wagsMapper.deleteByMonth(month);
     }
+
+    @Override
+    public List<Wages> getSimpleWagsListByMap(Map map) {
+        return wagsMapper.getSimpleWagsListByMap(map);
+    }
 }
