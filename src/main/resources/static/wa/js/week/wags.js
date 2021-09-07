@@ -480,18 +480,55 @@ function copyWags() {
 function copyOk() {
     var monthStart = $("#test15").val();
     var monthEnd = $("#test16").val();
+    if (monthEnd == "") {
+        layer.alert("请选择复制到的时间");
+        return;
+    }
     $.ajax({
         url: path + "/wa/wags/copyToThisMonthWags",//请求地址
         dataType: "json",//数据格式
         data: {"monthStart": monthStart, "monthEnd": monthEnd},
         type: "get",//请求方式
         success: function (data) {
-            if (data == "success") {
-                alert("周期已复制");
-            } else if (data == 'fail') {
-                alert("周期已存在");
+            if (data.code == 0 || data.code == 200) {
+                layer.alert(data.msg);
+                layer.closeAll();
+            } else if (data.code == 223) {
+                layer.open({
+                    type: 1,
+                    title: false,
+                    closeBtn: false,
+                    area: '300px;',
+                    shade: 0.8,
+                    id: 'LAY_copy',
+                    btn: ['确定', '取消'],
+                    btnAlign: 'c',
+                    moveType: 1,
+                    content: '<div style="padding: 50px 10px 50px 17px; box-sizing: border-box; line-height: 22px; background-color: #f2f2f2; color: #000; font-weight: 500;font-size: 18px;">'+data.msg+'？</div>',
+                    success: function (layero) {
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.find('.layui-layer-btn0').click(function () {
+                            $.ajax({
+                                url: path + "/wa/wags/copyToThisMonthWags",//请求地址
+                                dataType: "json",//数据格式
+                                data: {"monthStart": monthStart, "monthEnd": monthEnd},
+                                type: "get",//请求方式
+                                success: function (data) {
+                                    if (data.code == 0 || data.code == 200) {
+                                        layer.alert(data.msg);
+                                    } else {
+                                        layer.alert(data.msg);
+                                    }
+                                    layer.closeAll();
+                                }
+                            })
+                        });
+                    }
+                });
+            } else {
+                layer.alert(data.msg);
+                layer.closeAll();
             }
-            layer.closeAll();
         }
     });
 }
