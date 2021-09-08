@@ -29,8 +29,16 @@ $(function () {
                     , {field: 'postName', title: '岗位', sort: true}
                     , {field: 'managerName', title: '绩效管理人', sort: true}
                     , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
-                    , {field: 'phone', title: '电话', hide: true}
-                    , {field: 'idNumber', title: '身份证', hide: true}
+                    , {
+                        field: 'phone', title: '电话', hide: true, templet: function (d) {
+                            return d.phone + "\t";
+                        }
+                    }
+                    , {
+                        field: 'idNumber', title: '身份证', hide: true, templet: function (d) {
+                            return d.idNumber + "\t";
+                        }
+                    }
                     , {field: 'address', title: '住址', sort: true, hide: true}
                     , {field: 'email', title: '邮箱', hide: true}
                     , {field: 'laowupaiqian', title: '劳务派遣', sort: true, hide: true}
@@ -39,7 +47,11 @@ $(function () {
                     , {field: 'credentials2', title: '证书2', hide: true}
                     , {field: 'credentials3', title: '证书3', hide: true}
                     , {field: 'bank', title: '开户行', sort: true, hide: true}
-                    , {field: 'card', title: '银行卡号', hide: true}
+                    , {
+                        field: 'card', title: '银行卡号', hide: true, templet: function (d) {
+                            return d.card + "\t";
+                        }
+                    }
                     , {fixed: '', title: '操作', toolbar: '#barDemo11', width: 70, align: 'center '}
                 ]]
                 , done: function (res, curr, count) {
@@ -131,7 +143,7 @@ function showEmployeeList(type) {
             , height: height
             , toolbar: true
             , totalRow: true
-            , url: path + '/wa/employee/getEmployeeList?sign='+type  //数据接口
+            , url: path + '/wa/employee/getEmployeeList?sign=' + type  //数据接口
             , cols: [[ //表头
                 {field: 'userNumber', title: '编号', width: 80, sort: true}
                 , {field: 'name', title: '姓名', width: 100}
@@ -142,8 +154,16 @@ function showEmployeeList(type) {
                 , {field: 'managerName', title: '绩效管理人', sort: true}
                 , {field: 'isChanged', title: '人事异动', sort: true}
                 , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
-                , {field: 'phone', title: '电话', hide: true}
-                , {field: 'idNumber', title: '身份证', hide: true}
+                , {
+                    field: 'phone', title: '电话', hide: true, templet: function (d) {
+                        return d.phone + "\t";
+                    }
+                }
+                , {
+                    field: 'idNumber', title: '身份证', hide: true, templet: function (d) {
+                        return d.idNumber + "\t";
+                    }
+                }
                 , {field: 'address', title: '住址', sort: true, hide: true}
                 , {field: 'email', title: '邮箱', hide: true}
                 , {field: 'laowupaiqian', title: '劳务派遣', sort: true, hide: true}
@@ -152,7 +172,11 @@ function showEmployeeList(type) {
                 , {field: 'credentials2', title: '证书2', hide: true}
                 , {field: 'credentials3', title: '证书3', hide: true}
                 , {field: 'bank', title: '开户行', sort: true, hide: true}
-                , {field: 'card', title: '银行卡号', hide: true}
+                , {
+                    field: 'card', title: '银行卡号', hide: true, templet: function (d) {
+                        return d.card + "\t";
+                    }
+                }
                 , {fixed: '', title: '操作', toolbar: '#barDemo11', width: 70, align: 'center '}
             ]]
             , done: function (res, curr, count) {
