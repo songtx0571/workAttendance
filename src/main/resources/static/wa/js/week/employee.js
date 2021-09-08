@@ -29,6 +29,17 @@ $(function () {
                     , {field: 'postName', title: '岗位', sort: true}
                     , {field: 'managerName', title: '绩效管理人', sort: true}
                     , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
+                    , {field: 'phone', title: '电话', hide: true}
+                    , {field: 'idNumber', title: '身份证', hide: true}
+                    , {field: 'address', title: '住址', sort: true, hide: true}
+                    , {field: 'email', title: '邮箱', hide: true}
+                    , {field: 'laowupaiqian', title: '劳务派遣', sort: true, hide: true}
+                    , {field: 'education', title: '学历', sort: true, hide: true}
+                    , {field: 'credentials1', title: '证书1', hide: true}
+                    , {field: 'credentials2', title: '证书2', hide: true}
+                    , {field: 'credentials3', title: '证书3', hide: true}
+                    , {field: 'bank', title: '开户行', sort: true, hide: true}
+                    , {field: 'card', title: '银行卡号', hide: true}
                     , {fixed: '', title: '操作', toolbar: '#barDemo11', width: 70, align: 'center '}
                 ]]
                 , done: function (res, curr, count) {
@@ -40,7 +51,7 @@ $(function () {
                 $("#userIdHidden").val(data.id)
                 shouInfo();
                 if (obj.event === 'edit') {
-                    index = layer.open({
+                    layer.open({
                         type: 1
                         , id: 'updateUser' //防止重复弹出
                         , content: $(".updateUser")
@@ -63,9 +74,14 @@ $(function () {
         type: "GET",
         url: path + "/wa/employee/getNoDistributionList",
         data: {},
-        dataType: "text",
+        dataType: "json",
         success: function (data) {
-            $("#peopleNum").html(data)
+            if (data.code == 0 || data.code == 200) {
+                $("#peopleNum").html(data.data)
+            } else {
+                $("#peopleNum").html('0')
+            }
+
         }
     })
 });
@@ -126,6 +142,17 @@ function showEmployeeList(type) {
                 , {field: 'managerName', title: '绩效管理人', sort: true}
                 , {field: 'isChanged', title: '人事异动', sort: true}
                 , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
+                , {field: 'phone', title: '电话', hide: true}
+                , {field: 'idNumber', title: '身份证', hide: true}
+                , {field: 'address', title: '住址', sort: true, hide: true}
+                , {field: 'email', title: '邮箱', hide: true}
+                , {field: 'laowupaiqian', title: '劳务派遣', sort: true, hide: true}
+                , {field: 'education', title: '学历', sort: true, hide: true}
+                , {field: 'credentials1', title: '证书1', hide: true}
+                , {field: 'credentials2', title: '证书2', hide: true}
+                , {field: 'credentials3', title: '证书3', hide: true}
+                , {field: 'bank', title: '开户行', sort: true, hide: true}
+                , {field: 'card', title: '银行卡号', hide: true}
                 , {fixed: '', title: '操作', toolbar: '#barDemo11', width: 70, align: 'center '}
             ]]
             , done: function (res, curr, count) {
@@ -137,7 +164,7 @@ function showEmployeeList(type) {
             $("#userIdHidden").val(data.id);
             shouInfo();
             if (obj.event === 'edit') {
-                index = layer.open({
+                layer.open({
                     type: 1
                     , id: 'updateUser' //防止重复弹出
                     , content: $(".updateUser")
@@ -160,39 +187,44 @@ function shouInfo() {
         data: {"id": $("#userIdHidden").val()},
         dataType: "json",
         success: function (data) {
-            $("#name").val(data.name);//姓名
-            $("#sex").val(data.sexName);//性别
-            $("#phone").val(data.phone);//电话
-            $("#idNumber").val(data.idNumber); //身份证
-            $("#address").val(data.address);//住址
-            $("#remark").val(data.remark);//备注
-            $("#sign").val(data.sign);//签名
-            $("#email").val(data.email);//邮箱
-            $("#emergency").val(data.emergency);//应急联系人
-            $("#emergencyTel").val(data.emergencyTel); //应急电话
-            $("#closhe").val(data.closhe);//衣服尺寸
-            $("#hat").val(data.hat);//安全帽编号
-            $("#laowupaiqianHidden").val(data.laowupaiqian);//劳务派遣
-            $("#isChangedHidden").val(data.isChanged);//人事异动
-            $("#education").val(data.education);//学历
-            $("#entryDate").val(data.entryDate);//入职日期
-            $("#departmentName").val(data.departmentName); //部门
-            $("#postName").val(data.postName);//岗位
-            $("#userNumber").val(data.userNumber);//编号
-            $("#credentials1").val(data.credentials1);//证书1
-            $("#credentials2").val(data.credentials2);//证书2
-            $("#credentials3").val(data.credentials3);//证书3
+            if (data.code == 0 || data.code == 200) {
+                data = data.data;
+                $("#name").val(data.name);//姓名
+                $("#sex").val(data.sexName);//性别
+                $("#phone").val(data.phone);//电话
+                $("#idNumber").val(data.idNumber); //身份证
+                $("#address").val(data.address);//住址
+                $("#remark").val(data.remark);//备注
+                $("#sign").val(data.sign);//签名
+                $("#email").val(data.email);//邮箱
+                $("#emergency").val(data.emergency);//应急联系人
+                $("#emergencyTel").val(data.emergencyTel); //应急电话
+                $("#closhe").val(data.closhe);//衣服尺寸
+                $("#hat").val(data.hat);//安全帽编号
+                $("#laowupaiqianHidden").val(data.laowupaiqian);//劳务派遣
+                $("#isChangedHidden").val(data.isChanged);//人事异动
+                $("#education").val(data.education);//学历
+                $("#entryDate").val(data.entryDate);//入职日期
+                $("#departmentName").val(data.departmentName); //部门
+                $("#postName").val(data.postName);//岗位
+                $("#userNumber").val(data.userNumber);//编号
+                $("#credentials1").val(data.credentials1);//证书1
+                $("#credentials2").val(data.credentials2);//证书2
+                $("#credentials3").val(data.credentials3);//证书3
 
-            $("#bank").val(data.bank); //开户行
-            $("#card").val(data.card);//银行卡号
-            layui.use('form', function () {
-                var form = layui.form;
-                $("#managerName").val(data.manager);//绩效管理人
-                $("#laowupaiqian").val(data.laowupaiqian);//绩效管理人
-                $("#isChanged").val(data.isChanged);//绩效管理人
-                form.render('select');
-                form.render(); //更新全部
-            });
+                $("#bank").val(data.bank); //开户行
+                $("#card").val(data.card);//银行卡号
+                layui.use('form', function () {
+                    var form = layui.form;
+                    $("#managerName").val(data.manager);//绩效管理人
+                    $("#laowupaiqian").val(data.laowupaiqian);//绩效管理人
+                    $("#isChanged").val(data.isChanged);//绩效管理人
+                    form.render('select');
+                    form.render(); //更新全部
+                });
+            } else {
+                layer.alert(data.msg);
+            }
         }
     });
 }
@@ -240,8 +272,12 @@ function updUserInfo() {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            layer.close(index);
-            showEmployeeList('distribution');
+            if (data.code == 0 || data.code == 200) {
+                layer.closeAll();
+                showEmployeeList('distribution');
+            } else {
+                layer.alert(data.msg);
+            }
         }
     });
 }
@@ -249,5 +285,5 @@ function updUserInfo() {
 //取消
 function cancel() {
     $(".updateUser").css("display", "none");
-    layer.close(index);
+    layer.closeAll();
 }
