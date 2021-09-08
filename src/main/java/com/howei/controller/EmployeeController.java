@@ -4,16 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.howei.pojo.Employee;
 import com.howei.pojo.Users;
 import com.howei.service.EmployeeService;
-import com.howei.util.ListUtils;
-import com.howei.util.Page;
-import com.howei.util.Result;
-import com.howei.util.Type;
+import com.howei.util.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.apache.shiro.authz.annotation.Logical.OR;
 
@@ -33,186 +32,189 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @RequestMapping("/toEmployee")
-    public String toEmployee(){
+    public String toEmployee() {
         return "employee";
     }
 
-    public Users getPrincipal(){
-        Subject subject=SecurityUtils.getSubject();
-        Users users=(Users)subject.getPrincipal();
+    public Users getPrincipal() {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
         return users;
     }
 
     /**
      * 获取员工登录信息
+     *
      * @return
      */
     @RequestMapping("/getEmployeeInf")
     @ResponseBody
-    public String getEmployeeInf(){
-        Subject subject=SecurityUtils.getSubject();
-        Users users=(Users)subject.getPrincipal();
-        Employee employee=employeeService.getEmployeeById(users.getEmployeeId()+"");
-        return JSON.toJSONString(employee);
+    public Result getEmployeeInf() {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
+        }
+        int employeeId = users.getEmployeeId();
+        Employee employee = employeeService.getEmployeeById(String.valueOf(employeeId));
+
+        return Result.ok(1, employee);
     }
 
     /**
-     * 获取员工列表
-     * @return result
+     * 查询员工信息
+     *
+     * @param sign noDistribution未分配,distributiond已分配
+     * @return
      */
     @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/getEmployeeList")
     @ResponseBody
-    public String getEmployeeList(String sign) {
+    public Result getEmployeeList(String sign) {
         Subject subject = SecurityUtils.getSubject();
-        Users users=(Users)subject.getPrincipal();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
+        }
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
         List<Employee> list = null;
-        Integer employeeId = null;
-        String empIdStr = "";
-        if (users != null) {
-            employeeId = users.getEmployeeId();
-        }
+        Integer employeeId = users.getEmployeeId();
+        Map map = new HashMap();
         if (selectAllFlag) {
-            Map map = new HashMap();
-            if(sign!=null && !sign.equals("")){
+            if (sign != null && !"".equals(sign)) {
                 map.put("sign", sign);
             }
             list = employeeService.getEmployeeList(map);
         } else {
-            empIdStr += users.getEmployeeId() + ",";
             List<String> employeeIdList = new ArrayList<>();
-            List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
-
+            employeeIdList.add(employeeId.toString());
+            List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
             List<Employee> empList = employeeService.getEmployeeByManager(0);
             ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
-
-            for (String employeeIdStr : employeeIdList) {
-                empIdStr += employeeIdStr + ",";
-            }
-            if (empIdStr != null && !empIdStr.equals("")) {
-                empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-            }
-            Map map = new HashMap();
+            String empIdStr = employeeIdList.stream().collect(Collectors.joining(","));
             map.put("empId", empIdStr);
-            if(sign!=null && !sign.equals("")){
+            if (sign != null && !"".equals(sign)) {
                 map.put("sign", sign);
             }
             list = employeeService.getEmployeeList(map);
         }
-        Result result = new Result();
-        result.setCode(0);
-        result.setCount(list.size());
-        result.setData(list);
-        return JSON.toJSONString(result);
+        return Result.ok(list.size(), list);
     }
 
 
     /**
      * 下拉框员工
+     *
      * @return
      */
     @RequestMapping("/getEmployeeNameMap")
     @ResponseBody
-    public String getEmployeeName(){
-        List<Map> list=employeeService.getEmployeeNameMap(new HashMap());
-        return JSON.toJSONString(list);
+    public Result getEmployeeName() {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
+        }
+        List<Map> list = employeeService.getEmployeeNameMap(null);
+        return Result.ok(list.size(), list);
     }
 
     /**
      * 获取员工信息
+     *
      * @param request
      * @return
      */
     @RequestMapping("/getEmployee")
     @ResponseBody
-    public String getEmployee(HttpServletRequest request){
-        String id=request.getParameter("id");
-        Employee employee=new Employee();
-        if(id!=null&&!id.equals("")){
-            employee=employeeService.getEmployeeById(id);
+    public Result getEmployee(HttpServletRequest request) {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
         }
-        return JSON.toJSONString(employee);
+        String id = request.getParameter("id");
+        if (StringUtils.isEmpty(id)) {
+            return Result.fail(ResultEnum.NO_PARAMETERS);
+        }
+        Employee employee = employeeService.getEmployeeById(id);
+        return Result.ok(1, employee);
     }
 
     /**
      * 修改
+     *
      * @param employee
      * @return
      */
-    @RequestMapping(value="/updateEmployee",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateEmployee", method = RequestMethod.POST)
     @ResponseBody
-    public String updateEmployee(@RequestBody Employee employee){
-        if(employee!=null&&employee.getId()!=-1){
-            employeeService.updateEmployee(employee);
-            return JSON.toJSONString("success");
+    public Result updateEmployee(@RequestBody Employee employee) {
+        Subject subject = SecurityUtils.getSubject();
+        Users users = (Users) subject.getPrincipal();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
         }
-        return JSON.toJSONString("");
+        if (employee.getId() != null) {
+            employeeService.updateEmployee(employee);
+        }
+        return Result.ok();
     }
 
     @RequiresPermissions(value = {"员工信息"}, logical = OR)
     @RequestMapping("/searchEmployee")
     @ResponseBody
-    public String searchEmployee(HttpServletRequest request) {
+    public Result searchEmployee(HttpServletRequest request) {
         Users users = this.getPrincipal();
-        Integer employeeId = null;
-        String empIdStr = "";
-        if (users != null) {
-            employeeId = users.getEmployeeId();
+        if (users == null) {
+            return Result.fail(ResultEnum.NO_USER);
         }
-        empIdStr += users.getEmployeeId() + ",";
+        Integer employeeId = users.getEmployeeId();
         List<String> employeeIdList = new ArrayList<>();
-
-        List<Employee> rootList = employeeService.getEmployeeByManager(users.getEmployeeId());
+        employeeIdList.add(employeeId.toString());
+        List<Employee> rootList = employeeService.getEmployeeByManager(employeeId);
 
         List<Employee> empList = employeeService.getEmployeeByManager(0);
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
-
-        for (String employeeIdStr : employeeIdList) {
-            empIdStr += employeeIdStr + ",";
-        }
-        if (empIdStr != null && !empIdStr.equals("")) {
-            empIdStr = empIdStr.substring(0, empIdStr.lastIndexOf(","));
-        }
-        String search = request.getParameter("search");
         Map map = new HashMap();
+        String empIdStr = employeeIdList.stream().collect(Collectors.joining(","));
         map.put("empId", empIdStr);
-        map.put("search", search);
+        String search = request.getParameter("search");
+        if (search != null && !"".equals(search)) {
+            map.put("search", search);
+        }
         List<Employee> list = employeeService.searchEmployee(map);
-        Result result = new Result();
-        result.setCode(0);
-        result.setCount(list.size());
-        result.setData(list);
-        return JSON.toJSONString(result);
+        return Result.ok(list.size(), list);
     }
 
     /**-----------------------------------------------获取未分配人员-------------------------------------------*/
 
     /**
      * 获取未分配人员列表
+     *
      * @return
      */
     @RequestMapping("getNoDistributionList")
     @ResponseBody
-    public String getNoDistributionList(){
+    public Result getNoDistributionList() {
         Subject subject = SecurityUtils.getSubject();
         boolean selectAllFlag = subject.isPermitted("员工信息查询所有");
-        Users users=this.getPrincipal();
+        Users users = this.getPrincipal();
         //用户信息过期，重新登录
         if (users == null) {
-            return JSON.toJSONString(Type.noUser);
+            return Result.fail(ResultEnum.NO_USER);
         }
         //没有查询权限
         if (!selectAllFlag) {
-            return JSON.toJSONString(null);
+            return Result.fail(ResultEnum.NO_PERMISSION);
         }
         Map map = new HashMap();
         map.put("sign", "noDistribution");
         List<Employee> list = employeeService.getEmployeeList(map);
-        if(list==null){
-            return JSON.toJSONString(0);
+        if (list != null && list.size() > 0) {
+            return Result.ok(list.size(), list.size());
         }
-        return JSON.toJSONString(list.size());
+        return Result.ok(0, 0);
     }
 
 }

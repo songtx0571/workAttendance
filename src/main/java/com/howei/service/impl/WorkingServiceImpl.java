@@ -98,7 +98,7 @@ public class WorkingServiceImpl implements WorkingService {
         } else {
             workAttendance = 0;
             for (Map<String, Object> workingHourMap : workingHourByMapList) {
-                for (int i = 1; i < 31; i++) {
+                for (int i = 1; i <= 31; i++) {
                     String key = (i <= 9) ? "0" + i : "" + i;
                     if (!"0".equals(workingHourMap.get("day" + key)) && i > workAttendance) {
                         workAttendance = i;
