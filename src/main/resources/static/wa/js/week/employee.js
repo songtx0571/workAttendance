@@ -260,7 +260,7 @@ function updUserInfo() {
     employee.name = $("#name").val();
     employee.sex = $("#sex").val();
     employee.phone = $("#phone").val();
-    employee.idnumber = $("#idNumber").val();
+    employee.idNumber = $("#idNumber").val();
     employee.address = $("#address").val();
     employee.sign = $("#sign").val();
     employee.email = $("#email").val();
