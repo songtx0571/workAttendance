@@ -351,7 +351,7 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "0");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
-                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth);
+                        bd = new BigDecimal(((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth) * 0.8);
                     } else if ("当月离职(正常)".equals(wages.getIsChanged())) {
                         map.clear();
                         map.put("employeeId", employeeId);
@@ -366,7 +366,7 @@ public class WagsController {
                         map.put("changedType", "1");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
                         bd = new BigDecimal(((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth) * 0.8);
-                    } 
+                    }
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
                     wages.setWagesPayable(wagesPayable);
@@ -521,9 +521,6 @@ public class WagsController {
     @GetMapping("/getPayableWageFormula")
     @ResponseBody
     public Result getWageLabel(Integer employeeId, String month, String changedType) {
-        if ("2".equals(changedType)) {
-            return Result.ok(1, "*0.8");
-        }
         Map<String, Object> map = new HashMap<>();
         map.put("employeeId", employeeId);
         //获取指定日期的上一月份
@@ -532,8 +529,8 @@ public class WagsController {
         map.put("changedType", changedType);
         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
         int daysOfMonth = DateFormat.getDaysOfMonth(lastYearMonth + "-1");
-        String data = "*" + maxMinWorkAttendanceDay + "/" + daysOfMonth;
-        if ("3".equals(changedType)) {
+        String data = "*(" + maxMinWorkAttendanceDay + "/" + daysOfMonth + ")";
+        if (!"1".equals(changedType)) {
             data = data + "*0.8";
         }
         return Result.ok(1, data);
