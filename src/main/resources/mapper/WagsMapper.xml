@@ -9,22 +9,15 @@
         SELECT e.id employeeId,
         (
         CASE e.isChanged
-        WHEN 0 THEN
-        '正常'
-        WHEN 1 THEN
-        '当月入职'
-        WHEN 2 THEN
-        '当月离职'
-        WHEN 3 THEN
-        '试用期'
-        WHEN 4 THEN
-        '试用转正'
-        WHEN 5 THEN
-        '派遣调整'
-        WHEN 6 THEN
-        '部门调整'
-        WHEN 7 THEN
-        '薪酬调整'
+        WHEN 0 THEN '正常'
+        WHEN 1 THEN  '当月入职'
+        WHEN 2 THEN '当月离职(正常)'
+        WHEN 3 THEN '试用期'
+        WHEN 4 THEN '试用转正'
+        WHEN 5 THEN '派遣调整'
+        WHEN 6 THEN  '部门调整'
+        WHEN 7 THEN '薪酬调整'
+        WHEN 8 THEN '当月离职(试用期)'
         END
         ) isChanged,c.name departmentName, w.*, e.userNumber,e.name employeeName,e.laowupaiqian
         ,wp.name as wagesPostName,pg.gradeName as postGradeName

@@ -351,19 +351,22 @@ public class WagsController {
                         map.put("date", lastYearMonth);
                         map.put("changedType", "0");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
-                        System.out.println("0:::" + maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * (daysOfMonth - maxMinWorkAttendanceDay) / daysOfMonth);
-                    } else if ("当月离职".equals(wages.getIsChanged())) {
+                    } else if ("当月离职(正常)".equals(wages.getIsChanged())) {
                         map.clear();
                         map.put("employeeId", employeeId);
                         map.put("date", lastYearMonth);
                         map.put("changedType", "1");
                         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
-                        System.out.println("1:::" + maxMinWorkAttendanceDay);
                         bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth);
-                    } else if ("试用期".equals(wages.getIsChanged())) {
-                        bd = new BigDecimal((wageSubtotal / 2.0 + meritPay) * 0.8);
-                    }
+                    } else if ("当月离职(试用期)".equals(wages.getIsChanged())) {
+                        map.clear();
+                        map.put("employeeId", employeeId);
+                        map.put("date", lastYearMonth);
+                        map.put("changedType", "1");
+                        int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
+                        bd = new BigDecimal(((wageSubtotal / 2.0 + meritPay) * maxMinWorkAttendanceDay / daysOfMonth) * 0.8);
+                    } 
                     Double wagesPayable = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
                     wages.setWagesPayable(wagesPayable);
@@ -512,14 +515,14 @@ public class WagsController {
     /**
      * @param employeeId
      * @param month
-     * @param changedType 0当月入职,1当月离职,2试用期
+     * @param changedType 0当月入职,1当月离职(正常),2试用期,3当月离职(试用期)
      * @return
      */
     @GetMapping("/getPayableWageFormula")
     @ResponseBody
     public Result getWageLabel(Integer employeeId, String month, String changedType) {
         if ("2".equals(changedType)) {
-            return Result.ok(1, "×0.8");
+            return Result.ok(1, "*0.8");
         }
         Map<String, Object> map = new HashMap<>();
         map.put("employeeId", employeeId);
@@ -529,7 +532,11 @@ public class WagsController {
         map.put("changedType", changedType);
         int maxMinWorkAttendanceDay = workingService.getMaxMinWorkAttendanceDayByMap(map);
         int daysOfMonth = DateFormat.getDaysOfMonth(lastYearMonth + "-1");
-        return Result.ok(1, "×" + maxMinWorkAttendanceDay + "/" + daysOfMonth);
+        String data = "*" + maxMinWorkAttendanceDay + "/" + daysOfMonth;
+        if ("3".equals(changedType)) {
+            data = data + "*0.8";
+        }
+        return Result.ok(1, data);
     }
 
 }

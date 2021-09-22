@@ -210,12 +210,13 @@
                                                 lay-search="" id="isChanged">
                                             <option value="0">正常</option>
                                             <option value="1">当月入职</option>
-                                            <option value="2">当月离职</option>
+                                            <option value="2">当月离职(正常)</option>
                                             <option value="3">试用期</option>
                                             <option value="4">试用转正</option>
                                             <option value="5">派遣调整</option>
                                             <option value="6">部门调整</option>
                                             <option value="7">薪酬调整</option>
+                                            <option value="8">当月离职(试用期)</option>
                                         </select>
                                     </div>
                                 </div>
