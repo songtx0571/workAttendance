@@ -401,8 +401,8 @@ public class WagsController {
                     //累计费用减免
                     Double deductionOfExpensesTaxTotal = wagesLastMonth.getDeductionOfExpensesTaxTotal() + 5000;
                     wages.setDeductionOfExpensesTaxTotal(deductionOfExpensesTaxTotal);
-                    //累计专项扣除
-                    Double specialDeductionTaxTotal = wagesLastMonth.getSpecialDeductionTaxTotal() + totalDeduction - wages.getUnionFees();
+                    //累计专项扣除 = 上月累计专项扣除+扣款合计-其他扣款-工会费
+                    Double specialDeductionTaxTotal = wagesLastMonth.getSpecialDeductionTaxTotal() + totalDeduction - wages.getOtherDeductions() - wages.getUnionFees();
                     wages.setSpecialDeductionTaxTotal(specialDeductionTaxTotal);
                     //累计附加专项扣除
                     Double specialAdditionalDeductionTaxTotal = wagesLastMonth.getSpecialAdditionalDeductionTaxTotal() + wages.getSpecialAdditionalDeduction();
