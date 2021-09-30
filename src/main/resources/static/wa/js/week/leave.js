@@ -116,7 +116,7 @@ function showLeaveList(pageCount,startTime) {
                     dataType: "json",//数据格式
                     type: "post",//请求方式
                     success: function (data) {
-                        if (employeeId == data.id){
+                        if (employeeId == data.data.id){
                             //配置一个透明的询问框
                             layer.msg('无权限', {
                                 time: 2000, //2s后自动关闭
@@ -135,7 +135,7 @@ function showLeaveList(pageCount,startTime) {
                                 }
                             });
                         }
-                        $("#exmName").text(data.name);
+                        $("#exmName").text(data.data.name);
                     }
                 });
                 $(".examineBtn").css("display","block");
@@ -250,16 +250,21 @@ function showLeaveName() {
             url: path + "/wa/leave/getLeaveNameMap ",
             dataType: "json",
             success: function (data) {
-                //通用公司下拉框
-                $("#addLeaveName").empty();
-                $("#updLeaveName").empty();
-                var option = "<option value='0' >请选择类型</option>";
-                for (var i = 0; i < data.length; i++) {
-                    option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
+                if (data.code == 0 || data.code == 200) {
+                    data = data.data;
+                    //通用公司下拉框
+                    $("#addLeaveName").empty();
+                    $("#updLeaveName").empty();
+                    var option = "<option value='0' >请选择类型</option>";
+                    for (var i = 0; i < data.length; i++) {
+                        option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
+                    }
+                    $('#addLeaveName').html(option);
+                    $('#updLeaveName').html(option);
+                    form.render('select');//菜单渲染 把内容加载进去
+                } else {
+                    layer.alert(data.msg);
                 }
-                $('#addLeaveName').html(option);
-                $('#updLeaveName').html(option);
-                form.render('select');//菜单渲染 把内容加载进去
             }
         });
         form.on('select(addLeaveName)', function (data) {
@@ -285,16 +290,21 @@ function showEmployeeName() {
             url: path + "/wa/leave/getEmployeeName",
             dataType: "json",
             success: function (data) {
-                //通用公司下拉框
-                $("#addEmployeeName").empty();
-                $("#updEmployeeName").empty();
-                var option = "<option value='0' >请选择人员</option>";
-                for (var i = 0; i < data.length; i++) {
-                    option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
+                if (data.code == 0 || data.code == 200) {
+                    data = data.data;
+                    //通用公司下拉框
+                    $("#addEmployeeName").empty();
+                    $("#updEmployeeName").empty();
+                    var option = "<option value='0' >请选择人员</option>";
+                    for (var i = 0; i < data.length; i++) {
+                        option += "<option value='" + data[i].id + "'>" + data[i].name + "</option>"
+                    }
+                    $('#addEmployeeName').html(option);
+                    $('#updEmployeeName').html(option);
+                    form.render();//菜单渲染 把内容加载进去
+                } else {
+                    layer.alert(data.msg);
                 }
-                $('#addEmployeeName').html(option);
-                $('#updEmployeeName').html(option);
-                form.render();//菜单渲染 把内容加载进去
             }
         });
         form.on('select(addEmployeeName)', function (data) {
@@ -364,12 +374,12 @@ function addBtnOk() {
         data: JSON.stringify(leaveData),
         contentType: "application/json; charset=utf-8",
         success: function (data) {
-            if (data == "CANCEL") {
-                $(".addLeave p").css("display","block");
-            }else {
-                layer.closeAll();
+            if (data.code == 0 || data.code == 200) {
                 showLeaveList(1,$("#test15").val());
+            }else {
+                $(".addLeave p").css("display","block");
             }
+            layer.closeAll();
         }
     });
 }
@@ -386,8 +396,12 @@ function updBtnOk() {
         type: "post",//请求方式
         data: {"id": id, "startTime": startTime, "endTime": endTime, "leaveId": leaveId, "remark": remark},
         success: function (data) {
+            if(data.code == 0 || data.code == 200) {
+                showLeaveList(1,$("#test15").val());
+            } else {
+                layer.alert(data.msg);
+            }
             layer.closeAll();
-            showLeaveList(1,$("#test15").val());
         }
     });
 }

@@ -101,9 +101,11 @@ function getConfigureList() {
                     type: "post",//请求方式
                     data: {name:name, unit: unit, data: data1, status: status, id : id,remark: remark, quota: quota},
                     success: function(data){
-                        if (data == "SUCCESS") {
+                        if (data.code == 0 || data.code == 200) {
                             // alert("修改成功");
                             getConfigureList();
+                        } else {
+                            layer.alert(data.msg)
                         }
                     }
                 });
@@ -154,8 +156,12 @@ function addLeaveConfigure() {
             data: JSON.stringify(leave),
             contentType: "application/json; charset=utf-8",
             success: function(data){
-                getConfigureList();
-                $(".addLeaveConfigureHtml").css("display", "none");
+                if (data.code == 0 || data.code == 200) {
+                    getConfigureList();
+                    $(".addLeaveConfigureHtml").css("display", "none");
+                } else {
+                    layer.alert(data.msg);
+                }
             }
         });
     }

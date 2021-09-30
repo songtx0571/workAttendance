@@ -591,7 +591,6 @@ public class LeaveController {
         List<Employee> empList = employeeService.getEmployeeByManager(0);
         ListUtils.getChildEmployeeId(rootList, empList, employeeIdList, null);
         empIdStr = employeeIdList.stream().collect(Collectors.joining(","));
-        map = new HashMap();
         map.put("empIdStr", empIdStr);
         List<LeaveData> list = leaveService.getLeaveDataStatisticsList(map);
         int count = list.size();

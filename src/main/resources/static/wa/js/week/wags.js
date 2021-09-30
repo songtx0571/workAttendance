@@ -320,8 +320,10 @@ function showWagsList(m) {
             $(".isChanged").val(data.isChanged);
             if (data.isChanged == "试用期") {
                 changedType = 2;
-            } else if (data.isChanged == "当月离职") {
+            } else if (data.isChanged == "当月离职(正常)") {
                 changedType = 1;
+            }  else if (data.isChanged == "当月离职(试用期)") {
+                changedType = 3;
             } else if (data.isChanged == "当月入职") {
                 changedType = 0;
             }
