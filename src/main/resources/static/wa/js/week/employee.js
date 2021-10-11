@@ -46,6 +46,8 @@ $(function () {
                     , {field: 'credentials1', title: '证书1', hide: true}
                     , {field: 'credentials2', title: '证书2', hide: true}
                     , {field: 'credentials3', title: '证书3', hide: true}
+                    , {field: 'closhe', title: '衣服尺寸', hide: true}
+                    , {field: 'hat', title: '安全帽编号', hide: true}
                     , {field: 'bank', title: '开户行', sort: true, hide: true}
                     , {
                         field: 'card', title: '银行卡号', hide: true, templet: function (d) {
@@ -171,6 +173,8 @@ function showEmployeeList(type) {
                 , {field: 'credentials1', title: '证书1', hide: true}
                 , {field: 'credentials2', title: '证书2', hide: true}
                 , {field: 'credentials3', title: '证书3', hide: true}
+                , {field: 'closhe', title: '衣服尺寸', hide: true}
+                , {field: 'hat', title: '安全帽编号', hide: true}
                 , {field: 'bank', title: '开户行', sort: true, hide: true}
                 , {
                     field: 'card', title: '银行卡号', hide: true, templet: function (d) {

@@ -43,7 +43,7 @@
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,
         p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
         e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign,
-        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,
+        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe,
         (CASE e.isChanged
         WHEN 0 THEN '正常'
         WHEN 1 THEN '当月入职'
@@ -91,7 +91,7 @@
     <select id="searchEmployee" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
         select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
         e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign,
-        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card
+        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
         LEFT JOIN employee e1 on e1.id=e.manager
