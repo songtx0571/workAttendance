@@ -31,6 +31,7 @@ $(function () {
                     , {field: 'postName', title: '岗位', sort: true}
                     , {field: 'managerName', title: '绩效管理人', sort: true}
                     , {field: 'isChanged', title: '人事异动', sort: true}
+                    , {field: 'entryDate', title: '入职日期', sort: true, hide: true}
                     , {field: 'boardDate', title: '转正日期', sort: true, hide: true}
                     , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
                     , {
@@ -170,6 +171,7 @@ function showEmployeeList(type) {
                 , {field: 'postName', title: '岗位', sort: true}
                 , {field: 'managerName', title: '绩效管理人', sort: true}
                 , {field: 'isChanged', title: '人事异动', sort: true}
+                , {field: 'entryDate', title: '入职日期', sort: true, hide: true}
                 , {field: 'boardDate', title: '转正日期', sort: true, hide: true}
                 , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
                 , {
