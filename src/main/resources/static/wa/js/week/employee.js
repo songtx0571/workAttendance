@@ -1,5 +1,7 @@
 var path = "";
 $(function () {
+    //显示转正日期
+    showDate();
     // 显示员工信息();
     showEmployeeList('distribution');
     //显示绩效管理人
@@ -28,6 +30,8 @@ $(function () {
                     , {field: 'departmentName', title: '部门', sort: true}
                     , {field: 'postName', title: '岗位', sort: true}
                     , {field: 'managerName', title: '绩效管理人', sort: true}
+                    , {field: 'isChanged', title: '人事异动', sort: true}
+                    , {field: 'boardDate', title: '转正日期', sort: true, hide: true}
                     , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
                     , {
                         field: 'phone', title: '电话', hide: true, templet: function (d) {
@@ -100,6 +104,17 @@ $(function () {
     })
 });
 
+function showDate() {
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#boardDate'
+            ,eventElem: '#boardDate'
+            ,trigger: 'click'
+        });
+    })
+}
+
 //显示绩效管理人  、 劳务派遣
 function showManagerName() {
     layui.use(['form'], function () {
@@ -155,6 +170,7 @@ function showEmployeeList(type) {
                 , {field: 'postName', title: '岗位', sort: true}
                 , {field: 'managerName', title: '绩效管理人', sort: true}
                 , {field: 'isChanged', title: '人事异动', sort: true}
+                , {field: 'boardDate', title: '转正日期', sort: true, hide: true}
                 , {field: 'stateName', title: '在职状态', width: 110, sort: true, hide: true}// 1 在职
                 , {
                     field: 'phone', title: '电话', hide: true, templet: function (d) {
@@ -231,6 +247,7 @@ function shouInfo() {
                 $("#hat").val(data.hat);//安全帽编号
                 $("#laowupaiqianHidden").val(data.laowupaiqian);//劳务派遣
                 $("#isChangedHidden").val(data.isChanged);//人事异动
+                $("#boardDate").val(data.boardDate);//转正日期
                 $("#education").val(data.education);//学历
                 $("#entryDate").val(data.entryDate);//入职日期
                 $("#departmentName").val(data.departmentName); //部门
@@ -275,6 +292,7 @@ function updUserInfo() {
     employee.hat = $("#hat").val();
     employee.laowupaiqian = $("#laowupaiqianHidden").val();
     employee.isChanged = $("#isChangedHidden").val();
+    employee.boardDate = $("#boardDate").val();
     employee.education = $("#education").val();
     employee.entryDate = $("#entryDate").val();
     employee.departmentName = $("#departmentName").val();

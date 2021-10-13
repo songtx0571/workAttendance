@@ -201,6 +201,10 @@
                     <tr>
                         <td>住址：</td>
                         <td><input type="text" id="address" name="address"></td>
+                        <td>学历：</td>
+                        <td><input type="text" id="education" name="education"></td>
+                    </tr>
+                    <tr>
                         <td>人事异动：</td>
                         <td>
                             <div class="layui-form-item" style="margin-bottom: 0px">
@@ -222,6 +226,14 @@
                                 </div>
                             </div>
                             <input type="hidden" id="isChangedHidden" name="isChangedHidden">
+                        </td>
+                        <td>转正日期：</td>
+                        <td>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="boardDate" placeholder="年月日">
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -274,10 +286,8 @@
                         <td><input type="number" id="card" name="card"></td>
                     </tr>
                     <tr>
-                        <td>学历：</td>
-                        <td><input type="text" id="education" name="education"></td>
                         <td>签名：</td>
-                        <td><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
+                        <td colspan="3"><input type="text" id="sign" name="sign" placeholder="最长输入30字！"></td>
                     </tr>
                     <tr>
                         <td>备注：</td>
