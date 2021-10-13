@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.howei.mapper.EmployeeMapper" >
+<mapper namespace="com.howei.mapper.EmployeeMapper">
     <resultMap id="empMap" type="com.howei.pojo.Employee">
         <result column="id" property="id"></result>
         <result column="name" property="name"></result>
@@ -40,10 +40,12 @@
     </resultMap>
 
     <select id="getEmployeeList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
-        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,
-        p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as
+        companyName,c1.`name` as departmentName,
+        p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as
+        stateName,e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,
         e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign,
-        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe,
+        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe,e.boardDate
         (CASE e.isChanged
         WHEN 0 THEN '正常'
         WHEN 1 THEN '当月入职'
@@ -54,7 +56,8 @@
         WHEN 6 THEN '部门调整'
         WHEN 7 THEN '薪酬调整'
         WHEN 8 THEN '当月离职(试用期)'
-        END )isChanged
+        END )isChanged,
+        e.hat,closhe
 
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
@@ -74,11 +77,11 @@
             limit ${page},${pageSize}
         </if>
     </select>
-<!--,e.paymentBase-->
+    <!--,e.paymentBase-->
     <select id="getEmployeeById" parameterType="java.lang.String" resultType="com.howei.pojo.Employee">
         select u.email,e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
         e.idnumber,e.bank,e.card,e.phone,e.closhe,e.hat,e.laowupaiqian,e.education,e.credentials1,e.credentials2,e.credentials3,e.emergency,e.emergencyTel,e.remark,e.wages,e.basicwages,e.meritpay,e.address,e.created,e.createdBy,
-        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign, e.isChanged
+        e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign, e.isChanged,e.boardDate
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
 		LEFT JOIN employee e1 on e1.id=e.manager
@@ -89,21 +92,23 @@
     </select>
 
     <select id="searchEmployee" parameterType="java.util.HashMap" resultType="com.howei.pojo.Employee">
-        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as managerName,IF(u.state=0,'离职','在职') as stateName,
+        select e.id,u.userNumber,u.userName as name,u.entryDate,IF(u.sex=1,'男','女') as sexName,c.`name` as
+        companyName,c1.`name` as departmentName,p.`name` as postName,e.manager,e1.name as
+        managerName,IF(u.state=0,'离职','在职') as stateName,
         e.skillPay,e.positionSalary,e.seniorityWage,e.foodSupplement,e.endowmentInsurance,e.unemploymentBenefits,e.medicalInsurance,e.accumulationFund,e.unionFees,e.sign,
-        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe
+        e.phone,e.idNumber,e.address,u.email,e.laowupaiqian,e.credentials1,e.credentials2,e.credentials3,e.bank,e.card,e.hat,e.closhe,e.boardDate
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
         LEFT JOIN employee e1 on e1.id=e.manager
         LEFT JOIN company c on c.id=u.companyId
         LEFT JOIN company c1 on c1.id=u.departmentId
         LEFT JOIN post p on p.id=u.postId
-        where   (
+        where (
         e.address like concat('%',#{search},'%') or
         e.name like concat('%',#{search},'%') OR
         e.userNumber like concat('%',#{search},'%')
         )
-        <if test="empId!=null and flag ==1" >
+        <if test="empId!=null and flag ==1">
             and FIND_IN_SET(e.id,#{empId})
         </if>
         <if test="page!=null and pageSize!=null">
@@ -111,7 +116,7 @@
         </if>
     </select>
 
-    <update id="updateEmployee" parameterType="com.howei.pojo.Employee" keyProperty="id" useGeneratedKeys="true" >
+    <update id="updateEmployee" parameterType="com.howei.pojo.Employee" keyProperty="id" useGeneratedKeys="true">
         update employee e join users u on u.employeeId=e.id
         <trim prefix="set" suffixOverrides=",">
             <if test="email!=null and email!=''">
@@ -206,7 +211,10 @@
                 e.sign=#{sign},
             </if>
             <if test="isChanged!=null">
-                e.isChanged=#{isChanged}
+                e.isChanged=#{isChanged},
+            </if>
+            <if test="boardDate!=null">
+                e.boardDate=#{boardDate},
             </if>
         </trim>
         where e.id=#{id}
@@ -245,7 +253,7 @@
         join users u on u.employeeId=e.id
         where u.state=1
         <if test="companyId!=null">
-          and u.companyId=#{companyId}
+            and u.companyId=#{companyId}
         </if>
         <if test="departmentId!=null">
             and u.departmentId=#{departmentId}
