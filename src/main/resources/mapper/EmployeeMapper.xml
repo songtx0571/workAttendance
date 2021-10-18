@@ -56,9 +56,7 @@
         WHEN 6 THEN '部门调整'
         WHEN 7 THEN '薪酬调整'
         WHEN 8 THEN '当月离职(试用期)'
-        END )isChanged,
-        e.hat,e.closhe
-
+        END )isChanged
         from employee e
         LEFT JOIN users u on u.employeeId=e.id
         LEFT JOIN employee e1 on e1.id=e.manager

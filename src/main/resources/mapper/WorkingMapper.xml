@@ -211,6 +211,7 @@
         DATE_FORMAT(mr.datetime,"%Y-%m") finish_year_month,
         DATE_FORMAT(mr.datetime,"%d") finish_day,
         mr.workingHours working_hour,
+        mr.overtime overtime,
         "2" as type
         FROM
         maintenanceRecord mr

@@ -295,7 +295,7 @@ public class DateFormat {
         } else if(hour==1){
             result=1.0;
         } else if(day<1&&hour>7){
-            result=8.5;
+            result=8.25;
         }
         return result;
     }
