@@ -603,6 +603,7 @@ public class LeaveController {
     }
 
     @GetMapping("/delete")
+    @ResponseBody
     public Result deleteLeave(@RequestParam(required = false) Integer id) {
 
         Subject subject = SecurityUtils.getSubject();

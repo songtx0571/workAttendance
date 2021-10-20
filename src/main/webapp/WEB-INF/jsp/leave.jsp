@@ -112,10 +112,12 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="barDemo1">
             {{#  if(d.status == 2){ }}
-            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="showLeave" id="showLeave">查看</a>
+            <a class="layui-btn  layui-btn-xs" lay-event="showLeave" id="showLeave">查看</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="delLeave" id="delLeave">删除</a>
             <%--{{#  } else if(d.status == 1) { }}--%>
             {{#  } else { }}
             <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="exmLeave" id="exmLeave">审核</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="delLeave" id="delLeave">删除</a>
             <%--{{#  } else { }}--%>
             <%--<a class="layui-btn layui-btn-xs" lay-event="updLeave" id="updLeave">修改</a>--%>
             {{#  } }}

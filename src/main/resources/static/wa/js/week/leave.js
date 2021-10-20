@@ -54,7 +54,7 @@ function showLeaveList(pageCount,startTime) {
                 , {field: 'createdName', title: '创建人',sort: true}
                 , {fixed: '', title: '审核状态',sort: true, width: 120, align: 'center', toolbar: '#barDemo2'}//审核状态 0待审核 1审核中 2审核结束
                 , {field: 'reviewResult', title: '审核结果',sort: true, align: 'center', width: 120}
-                , {fixed: '', title: '操作', toolbar: '#barDemo1', align: 'center', width: 100}
+                , {fixed: '', title: '操作', toolbar: '#barDemo1', align: 'center', width: 150}
             ]]
             , done: function (res, curr, count) {
                 for(var i =0;i<res.data.length;i++){
@@ -88,7 +88,7 @@ function showLeaveList(pageCount,startTime) {
             $(".exmCreatedName").text(data.createdName);
             $(".exmStatusName").text(data.statusName);
             $(".exmRemark").text(data.remark);
-            if (obj.event == 'updLeave') {// 修改
+            /*if (obj.event == 'updLeave') {// 修改
                 layer.open({
                     type: 1 //此处以iframe举例
                     ,area: ['100%', '100%']
@@ -98,7 +98,7 @@ function showLeaveList(pageCount,startTime) {
                     ,yes: function(){
                     }
                 });
-            }else if (obj.event == 'exmLeave') {// 审核
+            }else */if (obj.event == 'exmLeave') {// 审核
                 var employeeId = data.employeeId;
                 $(".examineLeavePeople").css("display", "block");
                 $(".showExamineLeavePeople").css("display","none");
@@ -180,6 +180,20 @@ function showLeaveList(pageCount,startTime) {
                     ,yes: function(){
                     }
                 });
+            } else if (obj.event == "delLeave") {
+                $.ajax({
+                    url: path + "/wa/leave/delete",
+                    dataType: "json",
+                    type: "get",
+                    data: {id: data.id},
+                    success: function (res) {
+                        if (res.code == 0 || res.code == 200) {
+                            showLeaveList(1,$("#test15").val());
+                        } else {
+                            layer.alert(rea.msg);
+                        }
+                    }
+                })
             }
         });
     });
