@@ -134,7 +134,7 @@ function showTableList(month, projectId) {
                 workingOvertimeId = "'workingOvertime_" + item + "_" + i + "'";
                 if (data1.workingOvertimeDetailList.length > 0) {
                     for (var j = 0; j < data1.workingOvertimeDetailList.length; j++) {
-                        overtimeCon += "" + "<p>缺陷编号:" + data1.workingOvertimeDetailList[j].overhaulNo + "；天数:" + data1.workingOvertimeDetailList[j].day + "；加班时间:" + data1.workingOvertimeDetailList[j].overtime + "</p><br>";
+                        overtimeCon += "" + "<p>日期:" + data1.workingOvertimeDetailList[j].day + "；缺陷编号:" + data1.workingOvertimeDetailList[j].overhaulNo + "；加班时间:" + data1.workingOvertimeDetailList[j].overtime + "</p><br>";
                     }
                     overtimeCon += "'"
                 } else {
