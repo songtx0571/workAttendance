@@ -251,8 +251,18 @@ public class WorkingHoursController {
                 //本月工时
                 mapMapMap.put("workingHoursTotal", overhaulRecord.getWorkingHour() == null ? 0 : df.format(overhaulRecord.getWorkingHour()));
                 //加班工时
-                mapMapMap.put("workingOvertimeTotal", overhaulRecord.getOvertime() == null ? 0 : df.format(overhaulRecord.getOvertime()));
-
+                Double overtime = overhaulRecord.getOvertime();
+                mapMapMap.put("workingOvertimeTotal", overtime == null ? 0 : df.format(overtime));
+                //加班工时详情数组
+                List<Map<String, Object>> workingOvertimeDetailList = new ArrayList<>();
+                if (overtime != null && overtime > 0) {
+                    Map<String, Object> workingOvertimeDetail = new HashMap<>();
+                    workingOvertimeDetail.put("day", overhaulRecord.getFinishDay());
+                    workingOvertimeDetail.put("overhaulNo", overhaulRecord.getOverhaulNo());
+                    workingOvertimeDetail.put("overtime", overhaulRecord.getOvertime());
+                    workingOvertimeDetailList.add(workingOvertimeDetail);
+                }
+                mapMapMap.put("workingOvertimeDetailList", workingOvertimeDetailList);
                 mapMapMap.put("employeeId", employeeId);
                 mapMapMap.put("userName", overhaulRecord.getUserName());
                 mapMapMap.put("userNumber", overhaulRecord.getUserNumber());
@@ -279,7 +289,18 @@ public class WorkingHoursController {
                     allWorkHours = baseWorkHours;
                 }
                 mapMapMap.put("workingHoursTotal", df.format(allWorkHours));
-                mapMapMap.put("workingOvertimeTotal", df.format(restHours + (overhaulRecord.getOvertime() == null ? 0 : overhaulRecord.getOvertime()) + Double.valueOf(mapMapMap.get("workingOvertimeTotal").toString())));
+                Double overtime = overhaulRecord.getOvertime();
+                //加班工时
+                mapMapMap.put("workingOvertimeTotal", df.format(restHours + (overtime == null ? 0 : overtime) + Double.valueOf(mapMapMap.get("workingOvertimeTotal").toString())));
+                if (overtime != null && overtime > 0) {
+                    List<Map<String, Object>> workingOvertimeDetailList = (List<Map<String, Object>>) mapMapMap.get("workingOvertimeDetailList");
+                    Map<String, Object> workingOvertimeDetail = new HashMap<>();
+                    workingOvertimeDetail.put("day", overhaulRecord.getFinishDay());
+                    workingOvertimeDetail.put("overhaulNo", overhaulRecord.getOverhaulNo());
+                    workingOvertimeDetail.put("overtime", overhaulRecord.getOvertime());
+                    workingOvertimeDetailList.add(workingOvertimeDetail);
+                    mapMapMap.put("workingOvertimeDetailList", workingOvertimeDetailList);
+                }
             }
             resultMap.put(employeeId.toString(), mapMapMap);
         }
