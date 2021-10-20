@@ -34,4 +34,6 @@ public interface LeaveMapper {
     int addReview(Review reviewObject);
 
     List<LeaveData> getLeaveDataToAchievements(Map map);
+
+    int deleteById(Integer id);
 }

@@ -117,4 +117,9 @@ public class LeaveServiceImpl implements LeaveService {
     public List<LeaveData> getLeaveDataToAchievements(Map map) {
         return leaveMapper.getLeaveDataToAchievements(map);
     }
+
+    @Override
+    public int deleteById(Integer id) {
+        return leaveMapper.deleteById(id);
+    }
 }

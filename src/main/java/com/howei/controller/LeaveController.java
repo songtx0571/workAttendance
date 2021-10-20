@@ -602,4 +602,16 @@ public class LeaveController {
         return Result.ok(count, list);
     }
 
+    @GetMapping("/delete")
+    public Result deleteLeave(@RequestParam(required = false) Integer id) {
+
+        Subject subject = SecurityUtils.getSubject();
+        Users user = (Users) subject.getPrincipal();
+        if (user == null) {
+            return Result.fail(ResultEnum.NO_USER);
+        }
+        leaveService.deleteById(id);
+        return Result.ok();
+    }
+
 }

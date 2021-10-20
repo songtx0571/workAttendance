@@ -12,6 +12,9 @@
         <result column="created" property="created"></result>
         <result column="quota" property="quota"></result>
     </resultMap>
+    <delete id="deleteById">
+        delete from leave_data where id=#{id}
+    </delete>
 
     <select id="getConfigureList" parameterType="java.util.HashMap" resultType="com.howei.pojo.Leave">
         select id,name,data,unit,created,status,quota,remark,IF(status=0,'开启','关闭') statusName from `leave`
