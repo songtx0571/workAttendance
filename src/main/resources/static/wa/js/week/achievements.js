@@ -745,6 +745,7 @@ function showBehavior(cycle) {
                     $("#remark").val(data.remark);//备注
                 }
                 leaveConfig.html(tr);
+                obtainAttendance(id, cycle)
                 //计算数值
                 calculateAttendance();
                 $.ajax({
@@ -777,14 +778,14 @@ function showBehavior(cycle) {
 }
 
 //获取考核天数
-function obtainAttendance () {
+function obtainAttendance (id,date) {
     $(".kaoqinSpan").css("display","none");
-    var id = $("#employeeIdHidden2").val();
+    // var id = $("#employeeIdHidden2").val();
     //得到上月考勤天数
     $.ajax({
         type: "get",
         url: path + '/wa/working/getWorkAttendance',
-        data: {'employeeId': id, "date": $("#test6").val()},
+        data: {'employeeId': id, "date": date},
         dataType: "json",
         success: function (data1) {
             if (data1.code == 0 || data1.code == 200) {
