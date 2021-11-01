@@ -23,7 +23,7 @@
             height: 50px;
         }
         .addLeave{
-            width: 600px;
+            width: 620px;
             display: none;
             margin: 20px auto;
             position: relative;
@@ -165,7 +165,7 @@
                         <span id="addLeaveNameSpan" style="position: absolute;right: -125px;top: 0px;color: red;display: none">请选择请假类型</span>
                     </td>
                 </tr>
-                <tr>
+                <%--<tr>
                     <td>选择日期：</td>
                     <td style="position: relative;">
                         <input type="hidden" id="addLeaveTimeHidden">
@@ -190,6 +190,34 @@
                             </div>
                         </div>
                         <span id="addEndTimeSpan" style="position: absolute;right: -125px;top: 0px;color: red;display: none">请选择请假时间</span>
+                    </td>
+                </tr>--%>
+                <tr>
+                    <td>开始时间：</td>
+                    <td style="position: relative;">
+                        <div class="layui-inline" style="width: 100%">
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="test4" placeholder="年-月-日">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="test5" placeholder="时:分:秒">
+                            </div>
+                        </div>
+                        <span id="addStartTimeSpan" style="position: absolute;right: -125px;top: 0px;color: red;display: none">请选择开始时间</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间：</td>
+                    <td style="position: relative;">
+                        <div class="layui-inline" style="width: 100%">
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="test2" placeholder="年-月-日">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="test3" placeholder="时:分:秒">
+                            </div>
+                        </div>
+                        <span id="addEndTimeSpan" style="position: absolute;right: -125px;top: 0px;color: red;display: none">请选择结束时间</span>
                     </td>
                 </tr>
                 <tr class="inputTr">
