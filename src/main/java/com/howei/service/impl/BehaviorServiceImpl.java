@@ -74,26 +74,22 @@ public class BehaviorServiceImpl implements BehaviorService {
         //获取工作业绩考勤
         List<Achievement> achievements = usersmapper.findAchievementsByUserName1(behaviorQO);
         for (Achievement achievement : achievements) {
-            String week1 = "0";
-            if (achievement.getWeek() == 1 && !"".equals(behavior.getWeek1()) && !"-1".equals(behavior.getWeek1())) {
-                week1 = String.valueOf(achievement.getMaxValue() / 10.0);
+            if (achievement.getWeek() == 1 && !"".equals(behavior.getWeek1())) {
+                String week1 = String.valueOf(achievement.getMaxValue() / 10.0);
+                behavior.setWeek1(week1);
             }
-            behavior.setWeek1(week1);
-            String week2 = "0";
-            if (achievement.getWeek() == 2 && !"".equals(behavior.getWeek2()) && !"-1".equals(behavior.getWeek2())) {
-                week2 = String.valueOf(achievement.getMaxValue() / 10.0);
+            if (achievement.getWeek() == 2 && !"".equals(behavior.getWeek2())) {
+                String week2 = String.valueOf(achievement.getMaxValue() / 10.0);
+                behavior.setWeek2(week2);
             }
-            behavior.setWeek2(week2);
-            String week3 = "0";
-            if (achievement.getWeek() == 3 && !"".equals(behavior.getWeek3()) && !"-1".equals(behavior.getWeek3())) {
-                week3 = String.valueOf(achievement.getMaxValue() / 10.0);
+            if (achievement.getWeek() == 3 && !"".equals(behavior.getWeek3())) {
+                String week3 = String.valueOf(achievement.getMaxValue() / 10.0);
+                behavior.setWeek3(week3);
             }
-            behavior.setWeek3(week3);
-            String week4 = "0";
-            if (achievement.getWeek() == 4 && !"".equals(behavior.getWeek4()) && !"-1".equals(behavior.getWeek4())) {
-                week4 = String.valueOf(achievement.getMaxValue() / 10.0);
+            if (achievement.getWeek() == 4 && !"".equals(behavior.getWeek4())) {
+                String week4 = String.valueOf(achievement.getMaxValue() / 10.0);
+                behavior.setWeek4(week4);
             }
-            behavior.setWeek4(week4);
         }
         return behavior;
     }

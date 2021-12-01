@@ -115,16 +115,11 @@ public class Achievement {
 
 
     public int getMaxValue() {
-        int maxValue = result1;
-        if (result2 > maxValue) {
-            maxValue = result2;
-        }
-        if (result3 > maxValue) {
-            maxValue = result3;
-        }
-        if (result4 > maxValue) {
-            maxValue = result4;
-        }
+        int maxValue = 0;
+        maxValue = (result1 > maxValue) ? result1 : maxValue;
+        maxValue = (result2 > maxValue) ? result2 : maxValue;
+        maxValue = (result3 > maxValue) ? result3 : maxValue;
+        maxValue = (result4 > maxValue) ? result4 : maxValue;
         return maxValue;
     }
 }
