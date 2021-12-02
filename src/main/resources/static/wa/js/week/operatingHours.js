@@ -6,14 +6,6 @@ var day = date.getDate();
 $(function () {
     showMonth();
     showDepart();
-    if (month == 12) {
-        month = 1;
-        year = year + 1;
-    }
-    if (month == 0) {
-        month = 12;
-        year = year - 1;
-    }
     if (month < 10) {
         month = "0" + month;
     }
@@ -21,7 +13,7 @@ $(function () {
     $("#test15").val(year + "-" + month);
     var y = $("#test15").val().substr(0,4);
     var m = $("#test15").val().substr(5,2)
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");
@@ -39,7 +31,7 @@ function showMonth() {
             ,done: function(value){
                 var y = value.substr(0,4);
                 var m = value.substr(5,2)
-                if ((y == year && m < month) || y < year){
+                if ((y == year && m <= month) || y < year){
                     $("#preservationBtn").css('display',"revert");
                 } else {
                     $("#preservationBtn").css('display',"none");
@@ -214,7 +206,7 @@ function monthUpBtn() {
     $("#test15").val(y+"-"+m);
     var a1 = y+"-"+m;
     showTableList(a1,$("#selDepartNameHidden").val())
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");
@@ -236,7 +228,7 @@ function monthDownBtn() {
     $("#test15").val(y+"-"+m);
     var a2 = y+"-"+m;
     showTableList(a2,$("#selDepartNameHidden").val())
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");

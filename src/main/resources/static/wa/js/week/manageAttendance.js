@@ -5,15 +5,6 @@ var month = date.getMonth() + 1;
 var day = date.getDate();
 var objType;
 $(function () {
-    // 查询员工绩效信息
-    if (month == 12) {
-        month = 1;
-        year = year + 1;
-    }
-    if (month == 0) {
-        month = 12;
-        year = year - 1;
-    }
     if (month < 10) {
         month = "0" + month;
     }
@@ -23,7 +14,7 @@ $(function () {
     showGoWorkBtn();
     var y = $("#test").val().substr(0,4);
     var m = $("#test").val().substr(5,2)
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");
@@ -66,7 +57,7 @@ function showCycleData() {
             , done: function (value) {
                 var y = value.substr(0,4);
                 var m = value.substr(5,2)
-                if ((y == year && m < month) || y < year){
+                if ((y == year && m <= month) || y < year){
                     $("#preservationBtn").css('display',"revert");
                 } else {
                     $("#preservationBtn").css('display',"none");
@@ -254,7 +245,7 @@ function monthUpBtn() {
     }
     $("#test").val(y + "-" + m);
     showTable(y + "-" + m)
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");
@@ -276,7 +267,7 @@ function monthDownBtn() {
     }
     $("#test").val(y + "-" + m);
     showTable(y + "-" + m)
-    if ((y == year && m < month) || y < year){
+    if ((y == year && m <= month) || y < year){
         $("#preservationBtn").css('display',"revert");
     } else {
         $("#preservationBtn").css('display',"none");
