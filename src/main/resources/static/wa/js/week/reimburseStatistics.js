@@ -69,14 +69,47 @@ function showTable(cycle, depart) {
             , totalRow: true
             , page: false
             , cols: [[ //表头
-                {field: 'id', title: '编号', align: 'center', hide: true}
-                , {
+                {
                     field: 'subject',
                     title: '科目',
-                    toolbar: '#barDemoDepartSubject',
                     align: 'center',
                     sort: true,
-                    totalRowText: '合计'
+                    totalRowText: '合计',
+                    templet: function (a) {
+                        if (a.subject == 1) {
+                            return '差旅费'
+                        } else if (a.subject == 2) {
+                            return '差旅补助'
+                        } else if (a.subject == 3) {
+                            return '招待费'
+                        } else if (a.subject == 4) {
+                            return '办公费'
+                        } else if (a.subject == 5) {
+                            return '劳保费'
+                        } else if (a.subject == 6) {
+                            return '员工福利费'
+                        } else if (a.subject == 7) {
+                            return '员工保险费'
+                        } else if (a.subject == 8) {
+                            return '员工培训费'
+                        } else if (a.subject == 9) {
+                            return '车辆费用'
+                        } else if (a.subject == 10) {
+                            return '器具'
+                        } else if (a.subject == 11) {
+                            return '固定资产'
+                        } else if (a.subject == 12) {
+                            return '房租'
+                        } else if (a.subject == 14) {
+                            return '工资'
+                        } else if (a.subject == 15) {
+                            return '社保、公积金'
+                        } else if (a.subject == 16) {
+                            return '中介机构费'
+                        } else {
+                            return '其他'
+                        }
+                    }
                 }
                 , {field: 'jasAmount', title: '嘉爱斯报销金额(元)', align: 'center', totalRow: true}
                 , {field: 'tasAmount', title: '泰爱斯报销金额(元)', align: 'center', totalRow: true}

@@ -73,41 +73,6 @@
         </div>
         <div class="content">
             <table id="demo" lay-filter="test"></table>
-            <script type="text/html" id="barDemoDepartSubject">
-                {{#  if(d.subject == 1){ }}
-                <span>差旅费</span>
-                {{#  } else if(d.subject == 2) { }}
-                <span>差旅补助</span>
-                {{#  } else if(d.subject == 3) { }}
-                <span>招待费</span>
-                {{#  } else if(d.subject == 4) { }}
-                <span>办公费</span>
-                {{#  } else if(d.subject == 5) { }}
-                <span>劳保费</span>
-                {{#  } else if(d.subject == 6) { }}
-                <span>员工福利费</span>
-                {{#  } else if(d.subject == 7) { }}
-                <span>员工保险费</span>
-                {{#  } else if(d.subject == 8) { }}
-                <span>员工培训费</span>
-                {{#  } else if(d.subject == 9) { }}
-                <span>车辆费用</span>
-                {{#  } else if(d.subject == 10) { }}
-                <span>器具</span>
-                {{#  } else if(d.subject == 11) { }}
-                <span>固定资产</span>
-                {{#  } else if(d.subject == 12) { }}
-                <span>房租</span>
-                {{#  } else if(d.subject == 14) { }}
-                <span>工资</span>
-                {{#  } else if(d.subject == 15) { }}
-                <span>社保、公积金</span>
-                {{#  } else if(d.subject == 16) { }}
-                <span>中介机构费</span>
-                {{#  } else { }}
-                <span>其他</span>
-                {{#  } }}
-            </script>
         </div>
     </div>
 </body>
