@@ -149,7 +149,7 @@ function showDiv(content, id) {
     layui.use('layer', function () {
         var layer = layui.layer;
         layer.tips(content, "#"+id,  {
-            tips: ['1','#000'],
+            tips: ['3','#000'],
             time:0
         });
     })
