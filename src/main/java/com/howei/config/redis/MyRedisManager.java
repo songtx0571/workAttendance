@@ -24,7 +24,9 @@ public class MyRedisManager {
     private String database;
 
     public String getDatabase() {
-        if(null == database || "".equals(database)) return "0";
+        if (null == database || "".equals(database)) {
+            return "0";
+        }
         return database;
     }
 
@@ -37,9 +39,11 @@ public class MyRedisManager {
     }
 
     public static MyRedisManager getRedisSingleton() {
-        if(redisSingleton == null) {
+        if (redisSingleton == null) {
             synchronized (MyRedisManager.class) {
-                if(redisSingleton == null) return new MyRedisManager();
+                if (redisSingleton == null){
+                    return new MyRedisManager();
+                }
             }
         }
         return redisSingleton;
@@ -104,7 +108,7 @@ public class MyRedisManager {
         }
     }
 
-    public Long expire(String key,int seconds) {
+    public Long expire(String key, int seconds) {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
