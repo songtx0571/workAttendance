@@ -34,7 +34,6 @@ public class ShiroConfig1 {
 
     @Value("${shiro.loginUrl}")
     private String masterLoginUrl;
-
     @Value("${shiro.jessionid}")
     private String jessionId;
     //取redis连接配置
@@ -50,6 +49,7 @@ public class ShiroConfig1 {
     private int isRedisCache;
     @Value("${shiro.conf.sessionTimeout}")
     private Integer maxAge;
+
 
     @Bean("loginRealm")
     @DependsOn(value = "lifecycleBeanPostProcessor")

@@ -102,7 +102,7 @@
                 AND reimbursementDate LIKE concat("%", #{date}, "%")
                 GROUP BY
                     `subject`
-            ) lj ON lj.subjectId = `subject`
+            ) pj ON pj.subjectId = `subject`
 
 
             LEFT JOIN (
@@ -117,7 +117,7 @@
                 AND reimbursementDate LIKE concat("%", #{date}, "%")
                 GROUP BY
                     `subject`
-            ) pj ON pj.subjectId = `subject`
+            ) lj ON lj.subjectId = `subject`
 
 
             LEFT JOIN (

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 @Component
-@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
+//@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
 public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
