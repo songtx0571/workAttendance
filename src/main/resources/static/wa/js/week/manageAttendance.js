@@ -224,9 +224,13 @@ function showTime(content, id) {
     if (content == 0) {
         content = "无";
     }
+    layer.closeAll();
     layui.use('layer', function () {
         var layer = layui.layer;
-        layer.tips(content, "#" + id)
+        layer.tips(content, "#"+id,  {
+            tips: ['1','#000'],
+            time:0
+        });
     })
 }
 

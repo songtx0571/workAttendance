@@ -145,10 +145,13 @@ function showTableList(month, projectId) {
 }
 
 function showDiv(content, id) {
-    console.log(content, id)
+    layer.closeAll();
     layui.use('layer', function () {
         var layer = layui.layer;
-        layer.tips(content, "#" + id,{tips:1})
+        layer.tips(content, "#"+id,  {
+            tips: ['1','#000'],
+            time:0
+        });
     })
 }
 
