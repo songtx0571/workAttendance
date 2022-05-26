@@ -1,5 +1,8 @@
 package com.howei;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.howei.mapper.AchievementMapper;
 import com.howei.pojo.*;
 import com.howei.service.BehaviorService;
 import com.howei.service.EmployeeService;
@@ -16,6 +19,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 class workAttendanceApplicationTests {
@@ -29,10 +33,85 @@ class workAttendanceApplicationTests {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private AchievementMapper achievementMapper;
+
     @Test
     void contextLoads() {
+        List<Achievement> achievementList = achievementMapper.select();
+        Map<String, List<Achievement>> collect = achievementList.stream().collect(Collectors.groupingBy(item -> item.getCycle() + "##" + item.getName()));
+        List<JSONObject> jsonObjectList = new ArrayList<>();
+        for (String s : collect.keySet()) {
+            JSONObject jsonObject = new JSONObject();
+            String[] split = s.split("##");
+            jsonObject.put("createMonth", split[0]);
+            jsonObject.put("name", split[1]);
+            List<Achievement> achievements = collect.get(s);
+            for (Achievement achievement : achievements) {
+                int result = 0;
+                Integer result1 = null;
+                try {
+                    result1 = Integer.parseInt(achievement.getResult1());
+                } catch (Exception e) {
+
+                }
+                if (result1 != null && result1 > result) {
+                    result = result1;
+                }
+
+
+                Integer result2 = null;
+                try {
+                    result2 = Integer.parseInt(achievement.getResult2());
+                } catch (Exception e) {
+
+                }
+                if (result2 != null && result2 > result) {
+                    result = result2;
+                }
+
+
+                Integer result3 = null;
+                try {
+                    result3 = Integer.parseInt(achievement.getResult3());
+                } catch (Exception e) {
+
+                }
+                if (result3 != null && result3 > result) {
+                    result = result3;
+                }
+
+                Integer result4 = null;
+                try {
+                    result4 = Integer.parseInt(achievement.getResult4());
+                } catch (Exception e) {
+
+                }
+                if (result4 != null && result3 > result) {
+                    result = result4;
+                }
+                jsonObject.put("week" + achievement.getWeek(), result);
+            }
+            jsonObjectList.add(jsonObject);
+        }
+        List<JSONObject> collect1 = jsonObjectList.stream()
+                .sorted((o1, o2) -> {
+                    String c1 = "-" + o1.get("createMonth").toString() + "-" + o1.get("name").toString();
+                    String c2 = "-" + o2.get("createMonth").toString() + "-" + o2.get("name").toString();
+                    return c1.compareTo(c2);
+                }).collect(Collectors.toList());
+        for (JSONObject jsonObject : collect1) {
+            String row = jsonObject.getString("createMonth") + ",";
+            row += jsonObject.getString("name") + ",";
+            row += jsonObject.getString("week1") + ",";
+            row += jsonObject.getString("week2") + ",";
+            row += jsonObject.getString("week3") + ",";
+            row += jsonObject.getString("week4") + ",";
+            System.out.println(row);
+        }
 
     }
+
 
     /**
      * 4月之前工资计算测试
@@ -259,9 +338,9 @@ class workAttendanceApplicationTests {
     }
 
     @Test
-    public void a(){
+    public void a() {
         System.out.println(new Date());
-        Map<String,Double> mapDayData=new HashMap<>();//初始化日期
+        Map<String, Double> mapDayData = new HashMap<>();//初始化日期
         defaultMothData(mapDayData);
         System.out.println(mapDayData.hashCode());
         for (Integer i = 1; i <= 30; i++) {

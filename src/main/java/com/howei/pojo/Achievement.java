@@ -6,6 +6,8 @@ public class Achievement {
 
     private String userName;
 
+    private String name;
+
     private int week;
 
     private int result1;
@@ -20,6 +22,29 @@ public class Achievement {
 
     private int times;
 
+    @Override
+    public String toString() {
+        return "Achievement{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
+                ", week=" + week +
+                ", result1=" + result1 +
+                ", result2=" + result2 +
+                ", result3=" + result3 +
+                ", result4=" + result4 +
+                ", cycle='" + cycle + '\'' +
+                ", times=" + times +
+                '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Achievement() {
         super();
