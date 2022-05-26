@@ -79,6 +79,10 @@
         .layui-layer-tips {
             width: 200px;
         }
+        .layui-table-view .layui-table td{
+            padding: 0;
+            height: 39px;
+        }
     </style>
 </head>
 <body>
@@ -108,7 +112,8 @@
         </shiro:hasPermission>
     </div>
     <div class="content">
-        <div class="div"></div>
+<%--        <div class="div"></div>--%>
+    <table id="demo" lay-filter="test"></table>
     </div>
     <div class="loading">
         <div style="width: 50px;margin: 0 auto;">

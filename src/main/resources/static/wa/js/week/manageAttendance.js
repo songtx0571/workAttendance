@@ -76,8 +76,8 @@ function showTable(month) {
     var height = win - 90;
     layui.use(['table', "form"], function () {
         var table = layui.table;
-        var cols = [{field: 'userNumber', title: '编号', align: 'center', width: 80}
-            , {field: 'userName', title: '员工名称', align: 'center', width: 80}];
+        var cols = [{field: 'userNumber', title: '编号', align: 'center', width: 80, fixed: 'left'}
+            , {field: 'userName', title: '员工名称', align: 'center', width: 80, fixed: 'left'}];
         for (let i = 0; i < 31; i++) {
             col = {};
             col.field='';
@@ -106,8 +106,8 @@ function showTable(month) {
             };
             cols.push(col);
         }
-        cols.push({field: 'workAttendance', title: '考勤天数', align: 'center', width: 80})
-        cols.push({field: 'workingHoursTotal', title: '本月工时', align: 'center', width: 80});
+        cols.push({field: 'workAttendance', title: '考勤天数', align: 'center', width: 80, style: 'color:red;'})
+        cols.push({field: 'workingHoursTotal', title: '本月工时', align: 'center', width: 80, style: 'color:red;'});
         table.render({
             elem: '#demo'
             , height: height
