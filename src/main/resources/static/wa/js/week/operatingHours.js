@@ -143,21 +143,24 @@ function  showTableList (month,projectId) {
             col.width= '65';
             col.templet=function(a){
                 var j = i < 9 ? "0"+(i+1): (i + 1)
-                console.log(a.data[j])
                 var content = "'";
-                if (a.data[j].detail.length < 3) {
-                    a.data[j].detail.successorTime = "无";
-                    a.data[j].detail.tradersTime = "无";
+                if (a.data[j]) {
+                    if (a.data[j].detail.toString().length < 3) {
+                        a.data[j].detail.successorTime = "无";
+                        a.data[j].detail.tradersTime = "无";
+                    }
+                    if (a.data[j].detail.successorTime == "" || a.data[j].detail.successorTime == null) {
+                        a.data[j].detail.successorTime = "无";
+                    }
+                    if (a.data[j].detail.tradersTime == "" || a.data[j].detail.tradersTime == null) {
+                        a.data[j].detail.tradersTime = "无";
+                    }
+                    content += "" + "<p>接班时间:" + a.data[j].detail.successorTime + "；</p><p>交班时间:" + a.data[j].detail.tradersTime + "</p><br>";
+                    content += "'"
+                    return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="' + a.employeeId + '' + j + '" onclick="showDiv(' + content + ',' + a.employeeId + '' + j + ')">' + a.data[j].total + '</span>'
+                } else {
+                    return '<span style="width: 100%;display: inline-block;line-height: 39px;" >/</span>'
                 }
-                if (a.data[j].detail.successorTime == "" || a.data[j].detail.successorTime == null) {
-                    a.data[j].detail.successorTime ="无";
-                }
-                if (a.data[j].detail.tradersTime == "" || a.data[j].detail.tradersTime == null) {
-                    a.data[j].detail.tradersTime ="无";
-                }
-                content += ""+"<p>接班时间:"+a.data[j].detail.successorTime+"；</p><p>交班时间:"+a.data[j].detail.tradersTime+"</p><br>";
-                content += "'"
-                return '<span style="width: 100%;display: inline-block;line-height: 39px;" id="'+a.employeeId+''+j+'" onclick="showDiv('+content+','+a.employeeId+''+ j+')">'+a.data[j].total+'</span>'
             };
             cols.push(col);
         }
